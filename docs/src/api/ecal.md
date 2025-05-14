@@ -7,7 +7,13 @@ The `Ecal` struct manages initialization and finalization of the eCAL system.
 ```rust
 use rustecal::Ecal;
 
-let ecal = Ecal::initialize("my_rust_app")?;
-// use publishers or subscribers
-drop(ecal); // finalizes on drop
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    Ecal::initialize(Some("my ecal app"), EcalComponents::DEFAULT)?;
+
+// use publishers, subscribers, clients, server
+
+
+    Ecal::finalize();
+    Ok(())
+}
 ```
