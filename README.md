@@ -147,7 +147,7 @@ mdbook serve
 
 ## License
 
-Licensed under Apache-2.0 or MIT.
+Licensed under Apache-2.0.
 
 ---
 
