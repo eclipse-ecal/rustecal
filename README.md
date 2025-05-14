@@ -136,7 +136,7 @@ fn main() {
 
 ## Documentation
 
-Full user guide: [https://rex-schilasky.github.io/rustecal](https://rex-schilasky.github.io/rustecal)
+Full user guide: [https://eclipse-ecal.github.io/rustecal](https://eclipse-ecal.github.io/rustecal)
 
 ```bash
 cd docs/
