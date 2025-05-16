@@ -173,15 +173,16 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     }
 
     Ecal::finalize();
+    Ok(())
 }</code></pre></pre>
 <h2 id="subscriber"><a class="header" href="#subscriber">Subscriber</a></h2>
 <pre><pre class="playground"><code class="language-rust">use rustecal::{Ecal, EcalComponents, TypedSubscriber};
 use rustecal_types_string::StringMessage;
 
-fn main() {
-    Ecal::initialize(Some("string subscriber"), EcalComponents::DEFAULT).unwrap();
+fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    Ecal::initialize(Some("string subscriber"), EcalComponents::DEFAULT)?;
 
-    let mut sub = TypedSubscriber::&lt;StringMessage&gt;::new("hello").unwrap();
+    let mut sub = TypedSubscriber::&lt;StringMessage&gt;::new("hello")?;
     sub.set_callback(|msg| println!("Received: {}", msg.msg.0));
 
     while Ecal::ok() {
