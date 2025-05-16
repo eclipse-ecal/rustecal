@@ -19,6 +19,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     Ecal::finalize();
+    Ok(())
 }
 ```
 
@@ -28,10 +29,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 use rustecal::{Ecal, EcalComponents, TypedSubscriber};
 use rustecal_types_string::StringMessage;
 
-fn main() {
-    Ecal::initialize(Some("string subscriber"), EcalComponents::DEFAULT).unwrap();
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    Ecal::initialize(Some("string subscriber"), EcalComponents::DEFAULT)?;
 
-    let mut sub = TypedSubscriber::<StringMessage>::new("hello").unwrap();
+    let mut sub = TypedSubscriber::<StringMessage>::new("hello")?;
     sub.set_callback(|msg| println!("Received: {}", msg.msg.0));
 
     while Ecal::ok() {

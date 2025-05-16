@@ -19,23 +19,27 @@ Rust bindings for the high-performance [eCAL](https://github.com/eclipse-ecal/ec
 ### Publisher
 
 ```rust
+use std::time::Duration;
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_string::StringMessage;
 
 fn main() {
-    Ecal::initialize(Some("hello publisher"), EcalComponents::DEFAULT)
-        .expect("eCAL initialization failed");
+    // eCAL init
+    Ecal::initialize(Some("hello publisher"), EcalComponents::DEFAULT).unwrap();
 
-    let publisher: TypedPublisher<StringMessage> = TypedPublisher::<StringMessage>::new("chatter")
-        .expect("Failed to create publisher");
+    // create a string publisher on "hello"
+    let publisher = TypedPublisher::<StringMessage>::new("hello").unwrap();
 
+    // prepare the message to send
+    let message = StringMessage("Hello from Rust!".to_string());
+
+    // publish until eCAL shuts down
     while Ecal::ok() {
-        let wrapped = StringMessage("Hello from Rust!".to_string());
-        publisher.send(&wrapped);
-
-        std::thread::sleep(std::time::Duration::from_millis(500));
+        publisher.send(&message);
+        std::thread::sleep(Duration::from_millis(500));
     }
 
+    // clean up and finalize eCAL
     Ecal::finalize();
 }
 ```
@@ -50,20 +54,24 @@ use rustecal_types_string::StringMessage;
 use rustecal::pubsub::typed_subscriber::Received;
 
 fn main() {
-    Ecal::initialize(Some("hello subscriber"), EcalComponents::DEFAULT)
-        .expect("eCAL initialization failed");
+    // eCAL init
+    Ecal::initialize(Some("hello subscriber"), EcalComponents::DEFAULT).unwrap();
 
-    let mut subscriber = TypedSubscriber::<StringMessage>::new("chatter")
-        .expect("Failed to create subscriber");
+    // create a string subscriber on “hello”
+    let mut subscriber = TypedSubscriber::<StringMessage>::new("hello").unwrap();
 
+    // print each incoming message
     subscriber.set_callback(|msg: Received<StringMessage>| {
-        println!("Received : {}", msg.msg.0);
+        let StringMessage(text) = msg.msg;
+        println!("Received: {}", text);
     });
 
+    // keep the thread alive so callbacks can run
     while Ecal::ok() {
         std::thread::sleep(std::time::Duration::from_millis(100));
     }
 
+    // clean up and finalize eCAL
     Ecal::finalize();
 }
 ```
@@ -73,27 +81,36 @@ fn main() {
 ### Service Server
 
 ```rust
+use std::time::Duration;
 use rustecal::{Ecal, EcalComponents};
 use rustecal::service::server::ServiceServer;
 use rustecal::service::types::MethodInfo;
 
 fn main() {
-    Ecal::initialize(Some("mirror server"), EcalComponents::DEFAULT)
-        .expect("eCAL initialization failed");
+    // eCAL init
+    Ecal::initialize(Some("mirror server"), EcalComponents::DEFAULT).unwrap();
 
-    let mut server = ServiceServer::new("mirror")
-        .expect("Failed to create server");
+    // create a service server for "mirror"
+    let mut server = ServiceServer::new("mirror").unwrap();
 
-    server.add_method("reverse", Box::new(|_info: MethodInfo, req: &[u8]| {
-        let mut reversed = req.to_vec();
-        reversed.reverse();
-        reversed
-    })).unwrap();
+    // register the "reverse" method
+    server
+        .add_method(
+            "reverse",
+            Box::new(|_info: MethodInfo, req: &[u8]| {
+                let mut reversed = req.to_vec();
+                reversed.reverse();
+                reversed
+            }),
+        )
+        .unwrap();
 
+    // keep the server alive to handle incoming calls
     while Ecal::ok() {
-        std::thread::sleep(std::time::Duration::from_millis(100));
+        std::thread::sleep(Duration::from_millis(100));
     }
 
+    // clean up and finalize eCAL
     Ecal::finalize();
 }
 ```
@@ -103,31 +120,37 @@ fn main() {
 ### Service Client
 
 ```rust
+use std::time::Duration;
 use rustecal::{Ecal, EcalComponents};
 use rustecal::service::client::ServiceClient;
 use rustecal::service::types::ServiceRequest;
 
 fn main() {
-    Ecal::initialize(Some("mirror client"), EcalComponents::DEFAULT)
-        .expect("eCAL initialization failed");
+    // eCAL init
+    Ecal::initialize(Some("mirror client"), EcalComponents::DEFAULT).unwrap();
 
-    let client = ServiceClient::new("mirror")
-        .expect("Failed to create client");
+    // create a service client for "mirror"
+    let client = ServiceClient::new("mirror").unwrap();
 
+    // call the "reverse" service until eCAL shuts down
     while Ecal::ok() {
+        // prepare the request payload
         let request = ServiceRequest {
             payload: b"stressed".to_vec(),
         };
 
+        // send the request and print the response if any
         if let Some(response) = client.call("reverse", request, Some(1000)) {
             println!("Reversed: {}", String::from_utf8_lossy(&response.payload));
         } else {
             println!("No response received.");
         }
 
-        std::thread::sleep(std::time::Duration::from_secs(1));
+        // throttle the request rate
+        std::thread::sleep(Duration::from_secs(1));
     }
 
+    // clean up and finalize eCAL
     Ecal::finalize();
 }
 ```

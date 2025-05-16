@@ -5,9 +5,12 @@
 ```rust
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_protobuf::{ProtobufMessage, IsProtobufType};
-mod person { include!(concat!(env!("OUT_DIR"), "/pb.people.rs")); }
-use person::Person;
 
+mod people      { include!(concat!(env!("OUT_DIR"), "/pb.people.rs")); }
+mod animal      { include!(concat!(env!("OUT_DIR"), "/pb.animal.rs")); }
+mod environment { include!(concat!(env!("OUT_DIR"), "/pb.environment.rs")); }
+
+use people::Person;
 impl IsProtobufType for Person {}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -31,9 +34,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ```rust
 use rustecal::{Ecal, EcalComponents, TypedSubscriber};
-use rustecal_types_protobuf::ProtobufMessage;
-mod person { include!(concat!(env!("OUT_DIR"), "/pb.people.rs")); }
-use person::Person;
+use rustecal_types_protobuf::{ProtobufMessage, IsProtobufType};
+
+mod people      { include!(concat!(env!("OUT_DIR"), "/pb.people.rs")); }
+mod animal      { include!(concat!(env!("OUT_DIR"), "/pb.animal.rs")); }
+mod environment { include!(concat!(env!("OUT_DIR"), "/pb.environment.rs")); }
+
+use people::Person;
+impl IsProtobufType for Person {}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ecal::initialize(Some("protobuf subscriber"), EcalComponents::DEFAULT)?;

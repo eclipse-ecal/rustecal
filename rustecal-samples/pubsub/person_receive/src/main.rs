@@ -1,19 +1,12 @@
-mod people {
-    include!(concat!(env!("OUT_DIR"), "/pb.people.rs"));
-}
-mod animal {
-    include!(concat!(env!("OUT_DIR"), "/pb.animal.rs"));
-}
-mod environment {
-    include!(concat!(env!("OUT_DIR"), "/pb.environment.rs"));
-}
-
 use rustecal::{Ecal, EcalComponents, TypedSubscriber};
 use rustecal::pubsub::typed_subscriber::Received;
 use rustecal_types_protobuf::{ProtobufMessage, IsProtobufType};
 
-use people::Person;
+mod people { include!(concat!(env!("OUT_DIR"), "/pb.people.rs")); }
+mod animal { include!(concat!(env!("OUT_DIR"), "/pb.animal.rs")); }
+mod environment { include!(concat!(env!("OUT_DIR"), "/pb.environment.rs")); }
 
+use people::Person;
 impl IsProtobufType for Person {}
 
 fn main() {
