@@ -10,8 +10,7 @@ use rustecal::Ecal;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ecal::initialize(Some("my ecal app"), EcalComponents::DEFAULT)?;
 
-// use publishers, subscribers, clients, server
-
+    // use publishers, subscribers, clients, server
 
     Ecal::finalize();
     Ok(())
