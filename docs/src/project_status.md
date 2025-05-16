@@ -7,5 +7,5 @@
 - [x] Modular type crates (string, bytes, protobuf)
 - [x] Binary server/client API
 - [x] Examples for all publish/subscribe and client/server
+- [x] Monitoring and logging support
 - [ ] Protobuf descriptor introspection
-- [ ] Monitoring and logging support
