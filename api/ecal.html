@@ -163,8 +163,7 @@
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     Ecal::initialize(Some("my ecal app"), EcalComponents::DEFAULT)?;
 
-// use publishers, subscribers, clients, server
-
+    // use publishers, subscribers, clients, server
 
     Ecal::finalize();
     Ok(())

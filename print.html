@@ -542,8 +542,7 @@ pub.send("Hello from Rust!")?;
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     Ecal::initialize(Some("my ecal app"), EcalComponents::DEFAULT)?;
 
-// use publishers, subscribers, clients, server
-
+    // use publishers, subscribers, clients, server
 
     Ecal::finalize();
     Ok(())
@@ -686,10 +685,10 @@ Modular type crates (string, bytes, protobuf)</li>
 Binary server/client API</li>
 <li><input disabled="" type="checkbox" checked=""/>
 Examples for all publish/subscribe and client/server</li>
+<li><input disabled="" type="checkbox" checked=""/>
+Monitoring and logging support</li>
 <li><input disabled="" type="checkbox"/>
 Protobuf descriptor introspection</li>
-<li><input disabled="" type="checkbox"/>
-Monitoring and logging support</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="about"><a class="header" href="#about">About</a></h1>
 <p>Created by Rex Schilasky<br />
