@@ -246,7 +246,7 @@
 <ul>
 <li><code>BytesMessage</code> – Arbitrary binary data</li>
 <li><code>StringMessage</code> – UTF-8 encoded strings</li>
-<li><code>ProtobufMessage&lt;T&gt;</code> – Protobuf messages (via <code>prost</code>)</li>
+<li><code>ProtobufMessage&lt;T&gt;</code> – Protobuf messages</li>
 </ul>
 <p>Each type is provided via a dedicated crate to avoid pulling unnecessary dependencies.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="examples"><a class="header" href="#examples">Examples</a></h1>
@@ -272,7 +272,8 @@
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="binary-message-example"><a class="header" href="#binary-message-example">Binary Message Example</a></h1>
 <h2 id="publisher"><a class="header" href="#publisher">Publisher</a></h2>
-<pre><pre class="playground"><code class="language-rust">use rustecal::{Ecal, EcalComponents, TypedPublisher};
+<pre><pre class="playground"><code class="language-rust">use std::sync::Arc;
+use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_bytes::BytesMessage;
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
@@ -283,9 +284,9 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     let mut counter = 0u8;
     while Ecal::ok() {
         let buf = vec![counter; 1024];
+        counter = counter.wrapping_add(1);
         publisher.send(&amp;BytesMessage(Arc::from(buf)));
 
-        counter = counter.wrapping_add(1);
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
 
@@ -301,7 +302,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 
     let mut subscriber = TypedSubscriber::&lt;BytesMessage&gt;::new("blob")?;
     subscriber.set_callback(|msg| {
-        println!("Received blob of {} bytes", msg.msg.0.len());
+        println!("Received blob of {} bytes", msg.payload.data.len());
     });
 
     while Ecal::ok() {
@@ -339,7 +340,9 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     Ecal::initialize(Some("string subscriber"), EcalComponents::DEFAULT)?;
 
     let mut subscriber = TypedSubscriber::&lt;StringMessage&gt;::new("hello")?;
-    subscriber.set_callback(|msg| println!("Received: {}", msg.msg.0));
+    subscriber.set_callback(|msg| {
+        println!("Received: {}", msg.payload.data)
+    });
 
     while Ecal::ok() {
         std::thread::sleep(std::time::Duration::from_millis(500));
@@ -391,7 +394,9 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     Ecal::initialize(Some("protobuf subscriber"), EcalComponents::DEFAULT)?;
 
     let mut subscriber = TypedSubscriber::&lt;ProtobufMessage&lt;Person&gt;&gt;::new("person")?;
-    subscriber.set_callback(|msg| println!("Received person: {}", msg.msg.0.name));
+    subscriber.set_callback(|msg| {
+        println!("Received person: {}", msg.payload.data.name)
+    });
 
     while Ecal::ok() {
         std::thread::sleep(std::time::Duration::from_millis(500));
@@ -436,7 +441,6 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     Ecal::initialize(Some("mirror_client"), EcalComponents::DEFAULT)?;
-    println!("mirror_client initialized. Sending requests…");
 
     let client = ServiceClient::new("mirror_service")?;
 
@@ -563,10 +567,10 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use rustecal::pubsub::Publisher;
-use rustecal::types::StringMessage;
+use rustecal_types::StringMessage;
 
-let pub = Publisher::&lt;StringMessage&gt;::builder("my_topic").create()?;
-pub.send("Rust rocks!")?;
+let publisher = Publisher::&lt;StringMessage&gt;::builder("my_topic").create()?;
+publisher.send("Rust rocks!")?;
 <span class="boring">}</span></code></pre></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="typed-subscriber"><a class="header" href="#typed-subscriber">Typed Subscriber</a></h1>
 <p>The <code>Subscriber&lt;T&gt;</code> enables you to subscribe to messages of type <code>T</code> on a topic.</p>
@@ -574,10 +578,10 @@ pub.send("Rust rocks!")?;
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use rustecal::pubsub::Subscriber;
-use rustecal::types::StringMessage;
+use rustecal_types::StringMessage;
 
-let sub = Subscriber::&lt;StringMessage&gt;::builder("my_topic").create()?;
-sub.set_callback(|msg| {
+let subscriber = Subscriber::&lt;StringMessage&gt;::builder("my_topic").create()?;
+subscriber.set_callback(|msg| {
     println!("Received: {}", msg.data());
 });
 <span class="boring">}</span></code></pre></pre>
@@ -591,10 +595,10 @@ sub.set_callback(|msg| {
 <p>Supports publishing/receiving of Protobuf types that implement <code>Message</code> and <code>Default</code>.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use rustecal::types::ProtobufMessage;
+</span>use rustecal_types_protobuf::ProtobufMessage;
 use my_proto::MyProto;
 
-let pub = Publisher::&lt;ProtobufMessage&lt;MyProto&gt;&gt;::builder("proto_topic").create()?;
+let publisher = Publisher::&lt;ProtobufMessage&lt;MyProto&gt;&gt;::builder("proto_topic").create()?;
 <span class="boring">}</span></code></pre></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="service-server"><a class="header" href="#service-server">Service Server</a></h1>
 <p>The <code>ServiceServer</code> API allows Rust applications to act as eCAL service providers using a simple, callback-based interface that mirrors the C++ and C APIs.</p>
@@ -634,7 +638,7 @@ Request  : stressed
 Response : desserts
 </code></pre>
 <h2 id="runtime-compatibility"><a class="header" href="#runtime-compatibility">Runtime Compatibility</a></h2>
-<p>This API is fully compatible with the C++ <code>mirror_server.cpp</code> and C <code>mirror_server.c</code> examples.</p>
+<p>This API is fully compatible with the C++ <code>mirror_server.cpp</code> and C <code>mirror_server_c.c</code> examples.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="service-client"><a class="header" href="#service-client">Service Client</a></h1>
 <p>The <code>ServiceClient</code> API allows a Rust application to call eCAL services, either generically or per-instance.</p>
 <h2 id="connecting-to-a-service"><a class="header" href="#connecting-to-a-service">Connecting to a Service</a></h2>
@@ -678,7 +682,7 @@ let response = client.call("echo", request, Some(1000));
 }
 <span class="boring">}</span></code></pre></pre>
 <h2 id="runtime-compatibility-1"><a class="header" href="#runtime-compatibility-1">Runtime Compatibility</a></h2>
-<p>This API matches the usage and behavior of <code>mirror_client.cpp</code> in the eCAL C++ samples.</p>
+<p>This API is fully compatible with the C++ <code>mirror_client.cpp</code> and C <code>mirror_client_c.c</code> examples.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="roadmap"><a class="header" href="#roadmap">Roadmap</a></h1>
 <ul>
 <li><input disabled="" type="checkbox" checked=""/>

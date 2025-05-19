@@ -183,7 +183,9 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     Ecal::initialize(Some("string subscriber"), EcalComponents::DEFAULT)?;
 
     let mut subscriber = TypedSubscriber::&lt;StringMessage&gt;::new("hello")?;
-    subscriber.set_callback(|msg| println!("Received: {}", msg.msg.0));
+    subscriber.set_callback(|msg| {
+        println!("Received: {}", msg.payload.data)
+    });
 
     while Ecal::ok() {
         std::thread::sleep(std::time::Duration::from_millis(500));

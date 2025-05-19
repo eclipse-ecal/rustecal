@@ -165,10 +165,10 @@
 <p>Supports publishing/receiving of Protobuf types that implement <code>Message</code> and <code>Default</code>.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use rustecal::types::ProtobufMessage;
+</span>use rustecal_types_protobuf::ProtobufMessage;
 use my_proto::MyProto;
 
-let pub = Publisher::&lt;ProtobufMessage&lt;MyProto&gt;&gt;::builder("proto_topic").create()?;
+let publisher = Publisher::&lt;ProtobufMessage&lt;MyProto&gt;&gt;::builder("proto_topic").create()?;
 <span class="boring">}</span></code></pre></pre>
 
                     </main>

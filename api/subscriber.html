@@ -161,10 +161,10 @@
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use rustecal::pubsub::Subscriber;
-use rustecal::types::StringMessage;
+use rustecal_types::StringMessage;
 
-let sub = Subscriber::&lt;StringMessage&gt;::builder("my_topic").create()?;
-sub.set_callback(|msg| {
+let subscriber = Subscriber::&lt;StringMessage&gt;::builder("my_topic").create()?;
+subscriber.set_callback(|msg| {
     println!("Received: {}", msg.data());
 });
 <span class="boring">}</span></code></pre></pre>

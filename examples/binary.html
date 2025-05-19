@@ -157,7 +157,8 @@
                     <main>
                         <h1 id="binary-message-example"><a class="header" href="#binary-message-example">Binary Message Example</a></h1>
 <h2 id="publisher"><a class="header" href="#publisher">Publisher</a></h2>
-<pre><pre class="playground"><code class="language-rust">use rustecal::{Ecal, EcalComponents, TypedPublisher};
+<pre><pre class="playground"><code class="language-rust">use std::sync::Arc;
+use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_bytes::BytesMessage;
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
@@ -168,9 +169,9 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     let mut counter = 0u8;
     while Ecal::ok() {
         let buf = vec![counter; 1024];
+        counter = counter.wrapping_add(1);
         publisher.send(&amp;BytesMessage(Arc::from(buf)));
 
-        counter = counter.wrapping_add(1);
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
 
@@ -186,7 +187,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 
     let mut subscriber = TypedSubscriber::&lt;BytesMessage&gt;::new("blob")?;
     subscriber.set_callback(|msg| {
-        println!("Received blob of {} bytes", msg.msg.0.len());
+        println!("Received blob of {} bytes", msg.payload.data.len());
     });
 
     while Ecal::ok() {

@@ -162,7 +162,6 @@
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     Ecal::initialize(Some("mirror_client"), EcalComponents::DEFAULT)?;
-    println!("mirror_client initialized. Sending requests…");
 
     let client = ServiceClient::new("mirror_service")?;
 

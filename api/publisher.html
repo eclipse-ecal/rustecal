@@ -161,10 +161,10 @@
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use rustecal::pubsub::Publisher;
-use rustecal::types::StringMessage;
+use rustecal_types::StringMessage;
 
-let pub = Publisher::&lt;StringMessage&gt;::builder("my_topic").create()?;
-pub.send("Rust rocks!")?;
+let publisher = Publisher::&lt;StringMessage&gt;::builder("my_topic").create()?;
+publisher.send("Rust rocks!")?;
 <span class="boring">}</span></code></pre></pre>
 
                     </main>
