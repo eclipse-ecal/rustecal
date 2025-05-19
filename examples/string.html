@@ -166,7 +166,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     let publisher = TypedPublisher::&lt;StringMessage&gt;::new("hello")?;
 
     while Ecal::ok() {
-        let msg = StringMessage(format!("Hello from Rust"));
+        let msg = StringMessage(Arc::from("Hello from Rust"));
         publisher.send(&amp;msg);
 
         std::thread::sleep(std::time::Duration::from_millis(500));

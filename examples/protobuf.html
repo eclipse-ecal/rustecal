@@ -157,7 +157,8 @@
                     <main>
                         <h1 id="protobuf-message-example"><a class="header" href="#protobuf-message-example">Protobuf Message Example</a></h1>
 <h2 id="publisher"><a class="header" href="#publisher">Publisher</a></h2>
-<pre><pre class="playground"><code class="language-rust">use rustecal::{Ecal, EcalComponents, TypedPublisher};
+<pre><pre class="playground"><code class="language-rust">use std::sync::Arc;
+use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_protobuf::{ProtobufMessage, IsProtobufType};
 
 mod people      { include!(concat!(env!("OUT_DIR"), "/pb.people.rs")); }
@@ -174,7 +175,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 
     while Ecal::ok() {
         let person = Person { id: 1, name: "Alice".into(), ..Default::default() };
-        pub_.send(&amp;ProtobufMessage(person));
+        pub_.send(&amp;ProtobufMessage(Arc::from(person)));
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
