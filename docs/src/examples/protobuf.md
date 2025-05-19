@@ -48,7 +48,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ecal::initialize(Some("protobuf subscriber"), EcalComponents::DEFAULT)?;
 
     let mut subscriber = TypedSubscriber::<ProtobufMessage<Person>>::new("person")?;
-    subscriber.set_callback(|msg| println!("Received person: {}", msg.msg.0.name));
+    subscriber.set_callback(|msg| {
+        println!("Received person: {}", msg.payload.data.name)
+    });
 
     while Ecal::ok() {
         std::thread::sleep(std::time::Duration::from_millis(500));

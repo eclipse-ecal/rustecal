@@ -18,7 +18,9 @@ use rustecal_pubsub::typed_subscriber::SubscriberMessage;
 ///
 /// This type allows sending and receiving raw binary payloads through the
 /// `TypedPublisher` and `TypedSubscriber` APIs.
-pub struct BytesMessage(pub Arc<[u8]>);
+pub struct BytesMessage {
+    pub data: Arc<[u8]>,
+}
 
 impl SubscriberMessage for BytesMessage {
     /// Returns metadata describing the message encoding and type.
@@ -34,7 +36,7 @@ impl SubscriberMessage for BytesMessage {
 
     /// Creates a `BytesMessage` from a raw byte slice.
     fn from_bytes(bytes: Arc<[u8]>) -> Option<Self> {
-        Some(BytesMessage(Arc::from(bytes)))
+        Some(BytesMessage { data: Arc::from(bytes) })
     }
 }
 
@@ -46,6 +48,6 @@ impl PublisherMessage for BytesMessage {
 
     /// Returns the internal binary data as an Arc<[u8]> for zero-copy transmission.
     fn to_bytes(&self) -> Arc<[u8]> {
-        self.0.clone()
+        self.data.clone()
     }
 }

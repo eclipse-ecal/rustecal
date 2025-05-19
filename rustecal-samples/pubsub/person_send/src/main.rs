@@ -43,7 +43,7 @@ fn main() {
         println!();
 
         // Wrap the person struct in ProtobufMessage
-        let wrapped = ProtobufMessage(Arc::from(person));
+        let wrapped = ProtobufMessage { data: Arc::from(person) };
         publisher.send(&wrapped);
 
         std::thread::sleep(std::time::Duration::from_millis(500));

@@ -16,7 +16,7 @@ fn main() {
         let buffer = vec![counter; 1024];
         counter = counter.wrapping_add(1);
 
-        let wrapped = BytesMessage(Arc::from(buffer));
+        let wrapped = BytesMessage { data: Arc::from(buffer) };
         publisher.send(&wrapped);
 
         println!("Sent buffer filled with {}", counter);

@@ -6,10 +6,10 @@ The `Subscriber<T>` enables you to subscribe to messages of type `T` on a topic.
 
 ```rust
 use rustecal::pubsub::Subscriber;
-use rustecal::types::StringMessage;
+use rustecal_types::StringMessage;
 
-let sub = Subscriber::<StringMessage>::builder("my_topic").create()?;
-sub.set_callback(|msg| {
+let subscriber = Subscriber::<StringMessage>::builder("my_topic").create()?;
+subscriber.set_callback(|msg| {
     println!("Received: {}", msg.data());
 });
 ```

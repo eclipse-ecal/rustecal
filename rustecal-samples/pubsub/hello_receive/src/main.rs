@@ -21,7 +21,7 @@ fn main() {
         println!("------------------------------------------");
         println!(" CONTENT ");
         println!("------------------------------------------");
-        println!("message      : {}", msg.msg.0);
+        println!("message      : {}", msg.payload.data);
         println!("------------------------------------------\n");
     });
 

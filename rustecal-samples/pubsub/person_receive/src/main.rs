@@ -17,7 +17,7 @@ fn main() {
         .expect("Failed to create subscriber");
 
     subscriber.set_callback(|msg: Received<ProtobufMessage<Person>>| {
-        let person = msg.msg.0;
+        let person = msg.payload.data;
 
         println!("------------------------------------------");
         println!(" HEAD ");

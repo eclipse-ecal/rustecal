@@ -14,10 +14,10 @@ fn main() {
         cnt += 1;
         let msg = format!("HELLO WORLD FROM RUST ({})", cnt);
 
-        let wrapped = StringMessage(Arc::from(msg));
+        let wrapped = StringMessage{ data: Arc::<str>::from(msg) };
         publisher.send(&wrapped);
 
-        println!("Sent: {}", wrapped.0);
+        println!("Sent: {}", wrapped.data);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }

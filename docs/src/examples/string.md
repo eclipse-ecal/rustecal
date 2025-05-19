@@ -33,7 +33,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ecal::initialize(Some("string subscriber"), EcalComponents::DEFAULT)?;
 
     let mut subscriber = TypedSubscriber::<StringMessage>::new("hello")?;
-    subscriber.set_callback(|msg| println!("Received: {}", msg.msg.0));
+    subscriber.set_callback(|msg| {
+        println!("Received: {}", msg.payload.data)
+    });
 
     while Ecal::ok() {
         std::thread::sleep(std::time::Duration::from_millis(500));

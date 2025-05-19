@@ -9,7 +9,6 @@ use rustecal::{Ecal, EcalComponents, ServiceClient, ServiceRequest};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ecal::initialize(Some("mirror_client"), EcalComponents::DEFAULT)?;
-    println!("mirror_client initialized. Sending requests…");
 
     let client = ServiceClient::new("mirror_service")?;
 

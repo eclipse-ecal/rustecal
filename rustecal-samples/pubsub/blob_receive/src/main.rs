@@ -10,7 +10,7 @@ fn main() {
         .expect("Failed to create subscriber");
 
     subscriber.set_callback(|msg: Received<BytesMessage>| {
-        let buffer = &msg.msg.0;
+        let buffer = &msg.payload.data;
         if buffer.is_empty() {
             return;
         }

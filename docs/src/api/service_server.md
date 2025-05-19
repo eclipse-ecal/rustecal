@@ -47,4 +47,4 @@ Response : desserts
 
 ## Runtime Compatibility
 
-This API is fully compatible with the C++ `mirror_server.cpp` and C `mirror_server.c` examples.
+This API is fully compatible with the C++ `mirror_server.cpp` and C `mirror_server_c.c` examples.

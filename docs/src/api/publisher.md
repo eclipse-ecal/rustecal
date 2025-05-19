@@ -6,8 +6,8 @@ The `Publisher<T>` allows you to publish messages of type `T` on a topic.
 
 ```rust
 use rustecal::pubsub::Publisher;
-use rustecal::types::StringMessage;
+use rustecal_types::StringMessage;
 
-let pub = Publisher::<StringMessage>::builder("my_topic").create()?;
-pub.send("Rust rocks!")?;
+let publisher = Publisher::<StringMessage>::builder("my_topic").create()?;
+publisher.send("Rust rocks!")?;
 ```

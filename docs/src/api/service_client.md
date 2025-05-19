@@ -48,4 +48,4 @@ match response {
 
 ## Runtime Compatibility
 
-This API matches the usage and behavior of `mirror_client.cpp` in the eCAL C++ samples.
+This API is fully compatible with the C++ `mirror_client.cpp` and C `mirror_client_c.c` examples.

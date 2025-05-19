@@ -19,7 +19,9 @@ use rustecal_pubsub::typed_subscriber::SubscriberMessage;
 ///
 /// This type allows sending and receiving strings through the
 /// `TypedPublisher` and `TypedSubscriber` APIs.
-pub struct StringMessage(pub Arc<str>);
+pub struct StringMessage {
+    pub data: Arc<str>,
+}
 
 impl SubscriberMessage for StringMessage {
     /// Returns metadata describing this message type (`utf-8` encoded string).
@@ -35,7 +37,7 @@ impl SubscriberMessage for StringMessage {
     fn from_bytes(bytes: Arc<[u8]>) -> Option<Self> {
         str::from_utf8(bytes.as_ref())
             .ok()
-            .map(|s| StringMessage(Arc::<str>::from(s)))
+            .map(|s| StringMessage{ data: Arc::<str>::from(s) })
     }
 }
 
@@ -47,6 +49,6 @@ impl PublisherMessage for StringMessage {
 
     /// Serializes the string into a byte buffer.
     fn to_bytes(&self) -> Arc<[u8]> {
-        Arc::from(self.0.as_bytes())
+        Arc::from(self.data.as_bytes())
     }
 }

@@ -30,7 +30,9 @@ pub trait IsProtobufType {}
 /// This type allows sending and receiving protobuf messages through the
 /// `TypedPublisher` and `TypedSubscriber` APIs.
 #[derive(Debug, Clone)]
-pub struct ProtobufMessage<T>(pub Arc<T>);
+pub struct ProtobufMessage<T> {
+    pub data: Arc<T>,
+}
 
 impl<T> SubscriberMessage for ProtobufMessage<T>
 where
@@ -56,7 +58,9 @@ where
     /// - `Some(ProtobufMessage<T>)` on success
     /// - `None` if decoding fails
     fn from_bytes(bytes: Arc<[u8]>) -> Option<Self> {
-        T::decode(bytes.as_ref()).ok().map(|msg| ProtobufMessage(Arc::new(msg)))
+        T::decode(bytes.as_ref()).ok().map(|msg| ProtobufMessage {
+            data: Arc::new(msg),
+        })
     }
 }
 
@@ -74,8 +78,8 @@ where
     /// # Panics
     /// Will panic if `prost::Message::encode` fails (should never panic for valid messages).
     fn to_bytes(&self) -> Arc<[u8]> {
-        let mut buf = Vec::with_capacity(self.0.encoded_len());
-        self.0
+        let mut buf = Vec::with_capacity(self.data.encoded_len());
+        self.data
             .encode(&mut buf)
             .expect("Failed to encode protobuf message");
         Arc::from(buf)

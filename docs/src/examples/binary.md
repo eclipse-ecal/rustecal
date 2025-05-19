@@ -3,6 +3,7 @@
 ## Publisher
 
 ```rust
+use std::sync::Arc;
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_bytes::BytesMessage;
 
@@ -14,9 +15,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut counter = 0u8;
     while Ecal::ok() {
         let buf = vec![counter; 1024];
+        counter = counter.wrapping_add(1);
         publisher.send(&BytesMessage(Arc::from(buf)));
 
-        counter = counter.wrapping_add(1);
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
 
@@ -36,7 +37,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut subscriber = TypedSubscriber::<BytesMessage>::new("blob")?;
     subscriber.set_callback(|msg| {
-        println!("Received blob of {} bytes", msg.msg.0.len());
+        println!("Received blob of {} bytes", msg.payload.data.len());
     });
 
     while Ecal::ok() {

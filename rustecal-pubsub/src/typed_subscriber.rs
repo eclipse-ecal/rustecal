@@ -23,7 +23,7 @@ pub trait SubscriberMessage: Sized {
 /// This includes the deserialized message and eCAL metadata such as timestamp and topic information.
 pub struct Received<T> {
     /// The decoded message of type `T`.
-    pub msg: T,
+    pub payload: T,
 
     /// The name of the topic this message was received on.
     pub topic_name: String,
@@ -201,7 +201,7 @@ extern "C" fn trampoline<T: SubscriberMessage>(
             let type_name = CStr::from_ptr((*data_type_info).name).to_string_lossy().into_owned();
 
             let metadata = Received {
-                msg: decoded,
+                payload: decoded,
                 topic_name,
                 encoding,
                 type_name,
