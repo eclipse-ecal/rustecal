@@ -171,11 +171,11 @@ impl IsProtobufType for Person {}
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     Ecal::initialize(Some("protobuf publisher"), EcalComponents::DEFAULT)?;
 
-    let pub_ = TypedPublisher::&lt;ProtobufMessage&lt;Person&gt;&gt;::new("person")?;
+    let publisher = TypedPublisher::&lt;ProtobufMessage&lt;Person&gt;&gt;::new("person")?;
 
     while Ecal::ok() {
         let person = Person { id: 1, name: "Alice".into(), ..Default::default() };
-        pub_.send(&amp;ProtobufMessage(Arc::from(person)));
+        publisher.send(&amp;ProtobufMessage(Arc::from(person)));
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
@@ -197,8 +197,8 @@ impl IsProtobufType for Person {}
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     Ecal::initialize(Some("protobuf subscriber"), EcalComponents::DEFAULT)?;
 
-    let mut sub = TypedSubscriber::&lt;ProtobufMessage&lt;Person&gt;&gt;::new("person")?;
-    sub.set_callback(|msg| println!("Received person: {}", msg.msg.0.name));
+    let mut subscriber = TypedSubscriber::&lt;ProtobufMessage&lt;Person&gt;&gt;::new("person")?;
+    subscriber.set_callback(|msg| println!("Received person: {}", msg.msg.0.name));
 
     while Ecal::ok() {
         std::thread::sleep(std::time::Duration::from_millis(500));
