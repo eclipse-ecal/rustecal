@@ -32,8 +32,8 @@ use rustecal_types_string::StringMessage;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ecal::initialize(Some("string subscriber"), EcalComponents::DEFAULT)?;
 
-    let mut sub = TypedSubscriber::<StringMessage>::new("hello")?;
-    sub.set_callback(|msg| println!("Received: {}", msg.msg.0));
+    let mut subscriber = TypedSubscriber::<StringMessage>::new("hello")?;
+    subscriber.set_callback(|msg| println!("Received: {}", msg.msg.0));
 
     while Ecal::ok() {
         std::thread::sleep(std::time::Duration::from_millis(500));

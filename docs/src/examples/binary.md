@@ -9,12 +9,12 @@ use rustecal_types_bytes::BytesMessage;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ecal::initialize(Some("blob publisher"), EcalComponents::DEFAULT)?;
 
-    let pub_ = TypedPublisher::<BytesMessage>::new("blob")?;
+    let publisher = TypedPublisher::<BytesMessage>::new("blob")?;
 
     let mut counter = 0u8;
     while Ecal::ok() {
         let buf = vec![counter; 1024];
-        pub_.send(&BytesMessage(Arc::from(buf)));
+        publisher.send(&BytesMessage(Arc::from(buf)));
 
         counter = counter.wrapping_add(1);
         std::thread::sleep(std::time::Duration::from_millis(500));
@@ -34,8 +34,8 @@ use rustecal_types_bytes::BytesMessage;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ecal::initialize(Some("blob subscriber"), EcalComponents::DEFAULT)?;
 
-    let mut sub = TypedSubscriber::<BytesMessage>::new("blob")?;
-    sub.set_callback(|msg| {
+    let mut subscriber = TypedSubscriber::<BytesMessage>::new("blob")?;
+    subscriber.set_callback(|msg| {
         println!("Received blob of {} bytes", msg.msg.0.len());
     });
 
