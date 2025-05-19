@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_bytes::BytesMessage;
 
@@ -15,7 +16,8 @@ fn main() {
         let buffer = vec![counter; 1024];
         counter = counter.wrapping_add(1);
 
-        publisher.send(&BytesMessage(buffer));
+        let wrapped = BytesMessage(Arc::from(buffer));
+        publisher.send(&wrapped);
 
         println!("Sent buffer filled with {}", counter);
 

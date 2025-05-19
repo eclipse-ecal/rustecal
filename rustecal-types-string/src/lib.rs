@@ -4,20 +4,22 @@
 //!
 //! ## Example
 //! ```rust
+//! use std::sync::Arc;
 //! use rustecal_types_string::StringMessage;
-//! let msg = StringMessage("Hello World".into());
+//! let msg = StringMessage(Arc::from("Hello World"));
 //! ```
 
+use std::str;
+use std::sync::Arc;
 use rustecal_core::types::DataTypeInfo;
 use rustecal_pubsub::typed_publisher::PublisherMessage;
 use rustecal_pubsub::typed_subscriber::SubscriberMessage;
-use std::str;
 
 /// A wrapper for UTF-8 string messages used with typed eCAL pub/sub.
 ///
 /// This type allows sending and receiving strings through the
-/// `TypedPublisher<StringMessage>` and `TypedSubscriber<StringMessage>` APIs.
-pub struct StringMessage(pub String);
+/// `TypedPublisher` and `TypedSubscriber` APIs.
+pub struct StringMessage(pub Arc<str>);
 
 impl SubscriberMessage for StringMessage {
     /// Returns metadata describing this message type (`utf-8` encoded string).
@@ -30,8 +32,10 @@ impl SubscriberMessage for StringMessage {
     }
 
     /// Attempts to decode a UTF-8 string from a byte buffer.
-    fn from_bytes(bytes: &[u8]) -> Option<Self> {
-        str::from_utf8(bytes).ok().map(|s| StringMessage(s.to_string()))
+    fn from_bytes(bytes: Arc<[u8]>) -> Option<Self> {
+        str::from_utf8(bytes.as_ref())
+            .ok()
+            .map(|s| StringMessage(Arc::<str>::from(s)))
     }
 }
 
@@ -42,7 +46,7 @@ impl PublisherMessage for StringMessage {
     }
 
     /// Serializes the string into a byte buffer.
-    fn to_bytes(&self) -> Vec<u8> {
-        self.0.as_bytes().to_vec()
+    fn to_bytes(&self) -> Arc<[u8]> {
+        Arc::from(self.0.as_bytes())
     }
 }

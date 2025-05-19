@@ -9,9 +9,10 @@
 //! ## Example
 //! ```rust
 //! use rustecal_types_protobuf::ProtobufMessage;
-//! let msg = ProtobufMessage(MyProstType { ... });
+//! let msg = ProtobufMessage(Arc::new(my_proto::MyMessage::default()));
 //! ```
 
+use std::sync::Arc;
 use prost::Message;
 use rustecal_core::types::DataTypeInfo;
 use rustecal_pubsub::typed_publisher::PublisherMessage;
@@ -24,21 +25,12 @@ use rustecal_pubsub::typed_subscriber::SubscriberMessage;
 /// to ensure users are aware of what's being exposed to eCAL.
 pub trait IsProtobufType {}
 
-/// Wrapper around a `prost::Message` type to enable typed publishing and subscription.
+/// A wrapper for protobuf messages used with typed eCAL pub/sub.
 ///
-/// This is the type that should be used with `TypedPublisher` and `TypedSubscriber`
-/// for Protobuf messages.
-///
-/// ```rust
-/// use rustecal_types_protobuf::{ProtobufMessage, IsProtobufType};
-/// use my_proto::MyMessage;
-///
-/// impl IsProtobufType for MyMessage {}
-///
-/// let wrapped = ProtobufMessage(MyMessage::default());
-/// ```
+/// This type allows sending and receiving protobuf messages through the
+/// `TypedPublisher` and `TypedSubscriber` APIs.
 #[derive(Debug, Clone)]
-pub struct ProtobufMessage<T>(pub T);
+pub struct ProtobufMessage<T>(pub Arc<T>);
 
 impl<T> SubscriberMessage for ProtobufMessage<T>
 where
@@ -63,8 +55,8 @@ where
     /// # Returns
     /// - `Some(ProtobufMessage<T>)` on success
     /// - `None` if decoding fails
-    fn from_bytes(bytes: &[u8]) -> Option<Self> {
-        T::decode(bytes).ok().map(ProtobufMessage)
+    fn from_bytes(bytes: Arc<[u8]>) -> Option<Self> {
+        T::decode(bytes.as_ref()).ok().map(|msg| ProtobufMessage(Arc::new(msg)))
     }
 }
 
@@ -81,11 +73,11 @@ where
     ///
     /// # Panics
     /// Will panic if `prost::Message::encode` fails (should never panic for valid messages).
-    fn to_bytes(&self) -> Vec<u8> {
+    fn to_bytes(&self) -> Arc<[u8]> {
         let mut buf = Vec::with_capacity(self.0.encoded_len());
         self.0
             .encode(&mut buf)
             .expect("Failed to encode protobuf message");
-        buf
+        Arc::from(buf)
     }
 }

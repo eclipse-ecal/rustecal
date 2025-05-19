@@ -3,6 +3,7 @@ use rustecal_core::types::DataTypeInfo;
 use crate::types::TopicId;
 use rustecal_sys::{eCAL_SDataTypeInformation, eCAL_SReceiveCallbackData, eCAL_STopicId};
 use std::ffi::{c_void, CStr};
+use std::sync::Arc;
 use std::marker::PhantomData;
 use std::slice;
 
@@ -14,7 +15,7 @@ pub trait SubscriberMessage: Sized {
     fn datatype() -> DataTypeInfo;
 
     /// Constructs an instance of the message type from a byte slice.
-    fn from_bytes(bytes: &[u8]) -> Option<Self>;
+    fn from_bytes(bytes: Arc<[u8]>) -> Option<Self>;
 }
 
 /// Represents a received message with associated metadata.
@@ -190,8 +191,9 @@ extern "C" fn trampoline<T: SubscriberMessage>(
         }
 
         let msg_slice = slice::from_raw_parts((*data).buffer as *const u8, (*data).buffer_size);
+        let msg_arc = Arc::from(msg_slice);
 
-        if let Some(decoded) = T::from_bytes(msg_slice) {
+        if let Some(decoded) = T::from_bytes(msg_arc) {
             let cb_wrapper = &*(user_data as *const CallbackWrapper<T>);
 
             let topic_name = CStr::from_ptr((*topic_id).topic_name).to_string_lossy().into_owned();

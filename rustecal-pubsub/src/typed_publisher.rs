@@ -1,6 +1,7 @@
 use crate::publisher::Publisher;
 use rustecal_core::types::DataTypeInfo;
 use crate::types::TopicId;
+use std::sync::Arc;
 use std::marker::PhantomData;
 
 /// Trait for types that can be published via [`TypedPublisher`].
@@ -18,7 +19,7 @@ pub trait PublisherMessage {
     fn datatype() -> DataTypeInfo;
 
     /// Serializes the message into a byte buffer for transmission.
-    fn to_bytes(&self) -> Vec<u8>;
+    fn to_bytes(&self) -> Arc<[u8]>;
 }
 
 /// Type-safe, high-level wrapper around an eCAL publisher for messages of type `T`.
@@ -33,8 +34,8 @@ pub trait PublisherMessage {
 /// use rustecal::TypedPublisher;
 /// use rustecal_types_string::StringMessage;
 ///
-/// let pub_ = TypedPublisher::<StringMessage>::new("example").unwrap();
-/// pub_.send(&StringMessage("Hello World!".into()));
+/// let pub_ = TypedPublisher::<StringMessage>::new("hello").unwrap();
+/// pub_.send(&StringMessage(Arc::from("Hello World!")));
 /// ```
 pub struct TypedPublisher<T: PublisherMessage> {
     publisher: Publisher,

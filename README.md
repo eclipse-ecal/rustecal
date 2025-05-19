@@ -19,6 +19,7 @@ Rust bindings for the high-performance [eCAL](https://github.com/eclipse-ecal/ec
 ### Publisher
 
 ```rust
+use std::sync::Arc;
 use std::time::Duration;
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_string::StringMessage;
@@ -31,7 +32,7 @@ fn main() {
     let publisher = TypedPublisher::<StringMessage>::new("hello").unwrap();
 
     // prepare the message to send
-    let message = StringMessage("Hello from Rust!".to_string());
+    let message = StringMessage(Arc::from("Hello from Rust!"));
 
     // publish until eCAL shuts down
     while Ecal::ok() {

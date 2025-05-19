@@ -3,6 +3,7 @@
 ## Publisher
 
 ```rust
+use std::sync::Arc;
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_protobuf::{ProtobufMessage, IsProtobufType};
 
@@ -20,7 +21,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     while Ecal::ok() {
         let person = Person { id: 1, name: "Alice".into(), ..Default::default() };
-        pub_.send(&ProtobufMessage(person));
+        pub_.send(&ProtobufMessage(Arc::from(person)));
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }

@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_protobuf::{ProtobufMessage, IsProtobufType};
 
@@ -33,10 +34,6 @@ fn main() {
             }),
         };
 
-        // Wrap the person struct in ProtobufMessage
-        let wrapped = ProtobufMessage(person.clone());
-        publisher.send(&wrapped);
-
         println!("person id    : {}", person.id);
         println!("person name  : {}", person.name);
         println!("person stype : {}", person.stype);
@@ -44,6 +41,10 @@ fn main() {
         println!("dog.name     : {}", person.dog.as_ref().map_or("", |d| &d.name));
         println!("house.rooms  : {}", person.house.as_ref().map_or(0, |h| h.rooms));
         println!();
+
+        // Wrap the person struct in ProtobufMessage
+        let wrapped = ProtobufMessage(Arc::from(person));
+        publisher.send(&wrapped);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }

@@ -4,22 +4,21 @@
 //!
 //! ## Example
 //! ```rust
+//! use std::sync::Arc;
 //! use rustecal_types_bytes::BytesMessage;
-//! let msg = BytesMessage(vec![1, 2, 3, 4]);
+//! let msg = BytesMessage(Arc::from([1, 2, 3, 4]));
 //! ```
 
+use std::sync::Arc;
 use rustecal_core::types::DataTypeInfo;
 use rustecal_pubsub::typed_publisher::PublisherMessage;
 use rustecal_pubsub::typed_subscriber::SubscriberMessage;
 
-/// A wrapper for raw binary data transmitted via eCAL.
+/// A wrapper for raw binary messages used with typed eCAL pub/sub.
 ///
-/// This message type is ideal for non-structured byte payloads such as images,
-/// serialized custom formats, or arbitrary buffers.
-///
-/// Implements both [`PublisherMessage`] and [`SubscriberMessage`] to support
-/// bidirectional pub/sub use.
-pub struct BytesMessage(pub Vec<u8>);
+/// This type allows sending and receiving raw binary payloads through the
+/// `TypedPublisher` and `TypedSubscriber` APIs.
+pub struct BytesMessage(pub Arc<[u8]>);
 
 impl SubscriberMessage for BytesMessage {
     /// Returns metadata describing the message encoding and type.
@@ -34,8 +33,8 @@ impl SubscriberMessage for BytesMessage {
     }
 
     /// Creates a `BytesMessage` from a raw byte slice.
-    fn from_bytes(bytes: &[u8]) -> Option<Self> {
-        Some(BytesMessage(bytes.to_vec()))
+    fn from_bytes(bytes: Arc<[u8]>) -> Option<Self> {
+        Some(BytesMessage(Arc::from(bytes)))
     }
 }
 
@@ -45,8 +44,8 @@ impl PublisherMessage for BytesMessage {
         <BytesMessage as SubscriberMessage>::datatype()
     }
 
-    /// Converts the internal byte vector into a byte slice for sending.
-    fn to_bytes(&self) -> Vec<u8> {
+    /// Returns the internal binary data as an Arc<[u8]> for zero-copy transmission.
+    fn to_bytes(&self) -> Arc<[u8]> {
         self.0.clone()
     }
 }

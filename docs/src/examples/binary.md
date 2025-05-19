@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut counter = 0u8;
     while Ecal::ok() {
         let buf = vec![counter; 1024];
-        pub_.send(&BytesMessage(buf));
+        pub_.send(&BytesMessage(Arc::from(buf)));
 
         counter = counter.wrapping_add(1);
         std::thread::sleep(std::time::Duration::from_millis(500));
