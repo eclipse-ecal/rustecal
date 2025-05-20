@@ -9,12 +9,12 @@ mod environment { include!(concat!(env!("OUT_DIR"), "/pb.environment.rs")); }
 use people::Person;
 impl IsProtobufType for Person {}
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Initialize eCAL
     Ecal::initialize(Some("person send rust"), EcalComponents::DEFAULT)
         .expect("eCAL initialization failed");
 
-    let publisher = TypedPublisher::<ProtobufMessage<Person>>::new("person")
-        .expect("Failed to create publisher");
+    let publisher = TypedPublisher::<ProtobufMessage<Person>>::new("person")?;
 
     let mut cnt = 0;
     while Ecal::ok() {
@@ -49,5 +49,7 @@ fn main() {
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
 
+    // clean up and finalize eCAL
     Ecal::finalize();
+    Ok(())
 }

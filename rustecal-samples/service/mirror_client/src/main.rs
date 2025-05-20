@@ -62,5 +62,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         thread::sleep(Duration::from_secs(1));
     }
 
+    // clean up and finalize eCAL
+    Ecal::finalize();
     Ok(())
 }

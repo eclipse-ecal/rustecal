@@ -21,7 +21,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     while Ecal::ok() {
         let person = Person { id: 1, name: "Alice".into(), ..Default::default() };
-        publisher.send(&ProtobufMessage(Arc::from(person)));
+
+        let message = ProtobufMessage { data : Arc::from(person) };
+        publisher.send(&message);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
@@ -48,8 +50,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ecal::initialize(Some("protobuf subscriber"), EcalComponents::DEFAULT)?;
 
     let mut subscriber = TypedSubscriber::<ProtobufMessage<Person>>::new("person")?;
-    subscriber.set_callback(|msg| {
-        println!("Received person: {}", msg.payload.data.name)
+    subscriber.set_callback(|message| {
+        println!("Received person: {}", message.payload.data.name)
     });
 
     while Ecal::ok() {

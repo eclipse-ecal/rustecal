@@ -3,7 +3,7 @@ use rustecal_core::monitoring::Monitoring;
 use std::{thread, time::Duration};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Initialize only the monitoring component
+    // Initialize eCAL (only the monitoring component)
     Ecal::initialize(Some("monitoring receive sample"), EcalComponents::MONITORING)?;
     println!("eCAL initialized. Entering monitoring loop…");
 
@@ -22,7 +22,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         thread::sleep(Duration::from_secs(1));
     }
 
-    // Clean shutdown
+    // clean up and finalize eCAL
     Ecal::finalize();
     Ok(())
 }

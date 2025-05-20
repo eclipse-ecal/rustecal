@@ -2,12 +2,12 @@ use rustecal::{Ecal, EcalComponents, TypedSubscriber};
 use rustecal::pubsub::typed_subscriber::Received;
 use rustecal_types_string::StringMessage;
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Initialize eCAL
     Ecal::initialize(Some("hello receive rust"), EcalComponents::DEFAULT)
         .expect("eCAL initialization failed");
 
-    let mut subscriber = TypedSubscriber::<StringMessage>::new("hello")
-        .expect("Failed to create subscriber");
+    let mut subscriber = TypedSubscriber::<StringMessage>::new("hello")?;
 
     subscriber.set_callback(|msg: Received<StringMessage>| {
         println!("------------------------------------------");
@@ -27,9 +27,12 @@ fn main() {
 
     println!("Waiting for messages on topic 'hello'...");
 
+    // keep the thread alive so callbacks can run
     while Ecal::ok() {
         std::thread::sleep(std::time::Duration::from_millis(100));
     }
 
+    // clean up and finalize eCAL
     Ecal::finalize();
+    Ok(())
 }

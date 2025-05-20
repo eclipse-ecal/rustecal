@@ -9,12 +9,12 @@ mod environment { include!(concat!(env!("OUT_DIR"), "/pb.environment.rs")); }
 use people::Person;
 impl IsProtobufType for Person {}
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Initialize eCAL
     Ecal::initialize(Some("person receive rust"), EcalComponents::DEFAULT)
         .expect("eCAL initialization failed");
 
-    let mut subscriber = TypedSubscriber::<ProtobufMessage<Person>>::new("person")
-        .expect("Failed to create subscriber");
+    let mut subscriber = TypedSubscriber::<ProtobufMessage<Person>>::new("person")?;
 
     subscriber.set_callback(|msg: Received<ProtobufMessage<Person>>| {
         let person = msg.payload.data;
@@ -39,11 +39,14 @@ fn main() {
         println!("------------------------------------------\n");
     });
 
-    println!("Waiting for person messages...");
+    println!("Waiting for messages on topic 'person'...");
 
+    // keep the thread alive so callbacks can run
     while Ecal::ok() {
         std::thread::sleep(std::time::Duration::from_millis(100));
     }
 
+    // clean up and finalize eCAL
     Ecal::finalize();
+    Ok(())
 }

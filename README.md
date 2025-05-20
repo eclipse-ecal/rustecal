@@ -25,14 +25,14 @@ use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_string::StringMessage;
 
 fn main() {
-    // eCAL init
+    // Initialize eCAL
     Ecal::initialize(Some("hello publisher"), EcalComponents::DEFAULT).unwrap();
 
     // create a string publisher on "hello"
     let publisher = TypedPublisher::<StringMessage>::new("hello").unwrap();
 
     // prepare the message to send
-    let message = StringMessage(Arc::from("Hello from Rust!"));
+    let message = StringMessage { data: Arc::from("Hello from Rust") };
 
     // publish until eCAL shuts down
     while Ecal::ok() {
@@ -52,19 +52,17 @@ fn main() {
 ```rust
 use rustecal::{Ecal, EcalComponents, TypedSubscriber};
 use rustecal_types_string::StringMessage;
-use rustecal::pubsub::typed_subscriber::Received;
 
 fn main() {
-    // eCAL init
+    // Initialize eCAL
     Ecal::initialize(Some("hello subscriber"), EcalComponents::DEFAULT).unwrap();
 
     // create a string subscriber on “hello”
     let mut subscriber = TypedSubscriber::<StringMessage>::new("hello").unwrap();
 
     // print each incoming message
-    subscriber.set_callback(|msg: Received<StringMessage>| {
-        let StringMessage(text) = msg.msg;
-        println!("Received: {}", text);
+    subscriber.set_callback(|message| {
+        println!("Received: {}", message.payload.data)
     });
 
     // keep the thread alive so callbacks can run
@@ -88,7 +86,7 @@ use rustecal::service::server::ServiceServer;
 use rustecal::service::types::MethodInfo;
 
 fn main() {
-    // eCAL init
+    // Initialize eCAL
     Ecal::initialize(Some("mirror server"), EcalComponents::DEFAULT).unwrap();
 
     // create a service server for "mirror"
@@ -127,7 +125,7 @@ use rustecal::service::client::ServiceClient;
 use rustecal::service::types::ServiceRequest;
 
 fn main() {
-    // eCAL init
+    // Initialize eCAL
     Ecal::initialize(Some("mirror client"), EcalComponents::DEFAULT).unwrap();
 
     // create a service client for "mirror"

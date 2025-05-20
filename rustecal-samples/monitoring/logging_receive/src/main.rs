@@ -3,7 +3,7 @@ use rustecal_core::log::Log;
 use std::{thread, time::Duration};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Initialize only the logging component
+    // Initialize eCAL (only the logging component)
     Ecal::initialize(Some("logging receive sample"), EcalComponents::LOGGING)?;
     println!("eCAL initialized. Entering logging loop…");
 
@@ -18,7 +18,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         thread::sleep(Duration::from_secs(1));
     }
 
-    // Clean shutdown
+    // clean up and finalize eCAL
     Ecal::finalize();
     Ok(())
 }

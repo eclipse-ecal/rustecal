@@ -18,11 +18,15 @@ use rustecal::service::types::ServiceRequest;
 let request = ServiceRequest {
     payload: b"stressed".to_vec(),
 };
-
-let response = client.call("echo", request, Some(1000));
 ```
 
-To call all connected instances:
+To broadcast call all connected instances:
+
+```rust
+let responses = client.call("echo", request, Some(1000));
+```
+
+To call (and filter) all connected instances separately:
 
 ```rust
 for instance in client.get_client_instances() {
@@ -48,4 +52,4 @@ match response {
 
 ## Runtime Compatibility
 
-This API is fully compatible with the C++ `mirror_client.cpp` and C `mirror_client_c.c` examples.
+This API is fully compatible with the C++ `mirror_client.cpp`, the C `mirror_client_c.c` and the C# `mirror_client_csharp.cs` example.

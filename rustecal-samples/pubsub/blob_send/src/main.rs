@@ -2,15 +2,14 @@ use std::sync::Arc;
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_bytes::BytesMessage;
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Initialize eCAL
     Ecal::initialize(Some("blob send rust"), EcalComponents::DEFAULT)
         .expect("eCAL initialization failed");
 
-    let publisher = TypedPublisher::<BytesMessage>::new("blob")
-        .expect("Failed to create publisher");
+    let publisher = TypedPublisher::<BytesMessage>::new("blob")?;
 
     let mut counter: u8 = 0;
-
     while Ecal::ok() {
         // Fill 1024-byte buffer with the current counter value
         let buffer = vec![counter; 1024];
@@ -24,5 +23,7 @@ fn main() {
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
 
+    // clean up and finalize eCAL
     Ecal::finalize();
+    Ok(())
 }

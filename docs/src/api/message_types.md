@@ -15,8 +15,10 @@ Used for binary `Vec<u8>` payloads.
 Supports publishing/receiving of Protobuf types that implement `Message` and `Default`.
 
 ```rust
-use rustecal_types_protobuf::ProtobufMessage;
-use my_proto::MyProto;
+use rustecal_types_protobuf::{ProtobufMessage, IsProtobufType};
 
-let publisher = Publisher::<ProtobufMessage<MyProto>>::builder("proto_topic").create()?;
+use people::Person;
+impl IsProtobufType for Person {}
+
+let publisher = TypedPublisher::<ProtobufMessage<Person>>::new("person").unwrap();
 ```

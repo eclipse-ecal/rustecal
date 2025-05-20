@@ -16,7 +16,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     while Ecal::ok() {
         let buf = vec![counter; 1024];
         counter = counter.wrapping_add(1);
-        publisher.send(&BytesMessage(Arc::from(buf)));
+
+        let message = BytesMessage { data: Arc::from(buf) };
+        publisher.send(&message);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
@@ -36,8 +38,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ecal::initialize(Some("blob subscriber"), EcalComponents::DEFAULT)?;
 
     let mut subscriber = TypedSubscriber::<BytesMessage>::new("blob")?;
-    subscriber.set_callback(|msg| {
-        println!("Received blob of {} bytes", msg.payload.data.len());
+    subscriber.set_callback(|message| {
+        println!("Received blob of {} bytes", message.payload.data.len());
     });
 
     while Ecal::ok() {

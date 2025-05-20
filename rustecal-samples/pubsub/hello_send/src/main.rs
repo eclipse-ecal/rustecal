@@ -2,12 +2,12 @@ use std::sync::Arc;
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_string::StringMessage;
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Initialize eCAL
     Ecal::initialize(Some("hello send rust"), EcalComponents::DEFAULT)
         .expect("eCAL initialization failed");
 
-    let publisher: TypedPublisher<StringMessage> = TypedPublisher::<StringMessage>::new("hello")
-        .expect("Failed to create publisher");
+    let publisher: TypedPublisher<StringMessage> = TypedPublisher::<StringMessage>::new("hello")?;
 
     let mut cnt = 0;
     while Ecal::ok() {
@@ -22,5 +22,7 @@ fn main() {
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
 
+    // clean up and finalize eCAL
     Ecal::finalize();
+    Ok(())
 }
