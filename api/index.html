@@ -157,35 +157,14 @@
                     <main>
                         <h1 id="api-documentation"><a class="header" href="#api-documentation">API Documentation</a></h1>
 <p>Welcome to the <code>rustecal</code> API documentation. This section provides an overview of the main types and traits used to interact with the eCAL communication system through safe and idiomatic Rust APIs.</p>
-<h2 id="modules-overview"><a class="header" href="#modules-overview">Modules Overview</a></h2>
-<ul>
-<li><a href="./ecal.html"><code>Ecal</code></a> — Lifecycle manager for eCAL initialization and finalization.</li>
-<li><a href="./publisher.html"><code>Publisher&lt;T&gt;</code></a> — Generic typed publisher used to send messages on a topic.</li>
-<li><a href="./subscriber.html"><code>Subscriber&lt;T&gt;</code></a> — Generic typed subscriber used to receive messages.</li>
-<li><a href="./message_types.html"><code>MessageType</code></a> — Trait for enabling custom serialization of types.</li>
-<li>Message Wrappers:
-<ul>
-<li><a href="./message_types.html#stringmessage"><code>StringMessage</code></a></li>
-<li><a href="./message_types.html#bytesmessage"><code>BytesMessage</code></a></li>
-<li><a href="./message_types.html#protobufmessaget"><code>ProtobufMessage&lt;T&gt;</code></a></li>
-</ul>
-</li>
-</ul>
-<p>Each module has its own documentation page with examples.</p>
-<h2 id="usage-highlights"><a class="header" href="#usage-highlights">Usage Highlights</a></h2>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let _ecal = Ecal::initialize("my_app")?;
-let pub = Publisher::&lt;StringMessage&gt;::builder("my_topic").create()?;
-pub.send("Hello from Rust!")?;
-<span class="boring">}</span></code></pre></pre>
-<hr />
 <p>Explore the individual components in detail:</p>
 <ul>
 <li><a href="./ecal.html">Ecal Lifecycle</a></li>
+<li><a href="./message_types.html">Supported Message Types</a></li>
 <li><a href="./publisher.html">Typed Publisher</a></li>
 <li><a href="./subscriber.html">Typed Subscriber</a></li>
-<li><a href="./message_types.html">Supported Message Types</a></li>
+<li><a href="./service_server.html">Service Server</a></li>
+<li><a href="./service_client.html">Service Client</a></li>
 </ul>
 
                     </main>
