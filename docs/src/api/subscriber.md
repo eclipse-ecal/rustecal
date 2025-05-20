@@ -11,5 +11,4 @@ use rustecal_types_string::StringMessage;
 let mut subscriber = TypedSubscriber::<StringMessage>::new("hello")?;
 subscriber.set_callback(|message| {
     println!("Received: {}", message.payload.data)
-});
 ```
