@@ -158,7 +158,7 @@
                         <h1 id="ecal-lifecycle"><a class="header" href="#ecal-lifecycle">Ecal Lifecycle</a></h1>
 <p>The <code>Ecal</code> struct manages initialization and finalization of the eCAL system.</p>
 <h2 id="example"><a class="header" href="#example">Example</a></h2>
-<pre><pre class="playground"><code class="language-rust">use rustecal::Ecal;
+<pre><pre class="playground"><code class="language-rust">use rustecal::{Ecal, EcalComponents};
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     Ecal::initialize(Some("my ecal app"), EcalComponents::DEFAULT)?;

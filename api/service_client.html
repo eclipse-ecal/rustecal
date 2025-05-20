@@ -172,10 +172,13 @@ let client = ServiceClient::new("mirror")?;
 let request = ServiceRequest {
     payload: b"stressed".to_vec(),
 };
-
-let response = client.call("echo", request, Some(1000));
 <span class="boring">}</span></code></pre></pre>
-<p>To call all connected instances:</p>
+<p>To broadcast call all connected instances:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let responses = client.call("echo", request, Some(1000));
+<span class="boring">}</span></code></pre></pre>
+<p>To call (and filter) all connected instances separately:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>for instance in client.get_client_instances() {
@@ -198,7 +201,7 @@ let response = client.call("echo", request, Some(1000));
 }
 <span class="boring">}</span></code></pre></pre>
 <h2 id="runtime-compatibility"><a class="header" href="#runtime-compatibility">Runtime Compatibility</a></h2>
-<p>This API is fully compatible with the C++ <code>mirror_client.cpp</code> and C <code>mirror_client_c.c</code> examples.</p>
+<p>This API is fully compatible with the C++ <code>mirror_client.cpp</code>, the C <code>mirror_client_c.c</code> and the C# <code>mirror_client_csharp.cs</code> example.</p>
 
                     </main>
 
