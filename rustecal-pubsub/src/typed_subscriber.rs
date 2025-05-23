@@ -1,4 +1,5 @@
 use crate::subscriber::Subscriber;
+use crate::types::TopicId;
 use rustecal_core::types::DataTypeInfo;
 use rustecal_sys::{eCAL_SDataTypeInformation, eCAL_SReceiveCallbackData, eCAL_STopicId};
 use std::ffi::{c_void, CStr};

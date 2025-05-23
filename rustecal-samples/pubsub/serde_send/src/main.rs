@@ -1,5 +1,5 @@
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
-use rustecal_types_serde::SerdeMessage;
+use rustecal_types_serde::JsonMessage;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 struct SimpleMessage {
@@ -13,7 +13,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .expect("eCAL initialization failed");
 
     // Create a typed publisher for topic "simple_message"
-    let publisher: TypedPublisher<SerdeMessage<SimpleMessage>> =
+    let publisher: TypedPublisher<JsonMessage<SimpleMessage>> =
         TypedPublisher::new("simple_message")?;
 
     let mut count = 0u64;
@@ -23,7 +23,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             count,
             message: "HELLO WORLD FROM RUST".into(),
         };
-        let wrapped = SerdeMessage::new(payload.clone());
+        let wrapped = JsonMessage::new(payload.clone());
 
         // Send over eCAL pub/sub
         publisher.send(&wrapped);
