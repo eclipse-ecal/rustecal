@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Server - rustecal Documentation</title>
+        <title>JSON - rustecal Documentation</title>
 
 
         <!-- Custom HTML head -->
@@ -155,27 +155,52 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="service-server-example"><a class="header" href="#service-server-example">Service Server Example</a></h1>
-<p>This example shows how to implement a basic <strong>Mirror Service Server</strong> using <code>rustecal</code>.</p>
-<p>The server receives a request, logs it, and sends it back as a response.</p>
-<h2 id="example-code"><a class="header" href="#example-code">Example Code</a></h2>
-<pre><pre class="playground"><code class="language-rust">use rustecal::{Ecal, EcalComponents, ServiceServer};
-use rustecal::service::types::MethodInfo;
+                        <h1 id="json-message-example"><a class="header" href="#json-message-example">JSON Message Example</a></h1>
+<h2 id="publisher"><a class="header" href="#publisher">Publisher</a></h2>
+<pre><pre class="playground"><code class="language-rust">use std::sync::Arc;
+use serde::{Serialize, Deserialize};
+use rustecal::{Ecal, EcalComponents, TypedPublisher};
+use rustecal_types_serde::JsonMessage;
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+struct MyData {
+    msg: String,
+}
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    Ecal::initialize(Some("mirror_server"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("json publisher"), EcalComponents::DEFAULT)?;
 
-    let mut server = ServiceServer::new("mirror_service")?;
+    let publisher = TypedPublisher::&lt;JsonMessage&lt;MyData&gt;&gt;::new("hello_json")?;
 
-    server.add_method("mirror", Box::new(|method: MethodInfo, req: &amp;[u8]| {
-        let request_str = String::from_utf8_lossy(req);
-        println!("Received [{}] request: {}", method.method_name, request_str);
+    while Ecal::ok() {
+        let payload = MyData { msg: "Hello from Rust".into() };
+        let message = JsonMessage::new(payload);
+        publisher.send(&amp;message);
 
-        // Echo (mirror) the same bytes back
-        req.to_vec()
-    }))?;
+        std::thread::sleep(std::time::Duration::from_millis(500));
+    }
 
-    println!("mirror_service is running…");
+    Ecal::finalize();
+    Ok(())
+}</code></pre></pre>
+<h2 id="subscriber"><a class="header" href="#subscriber">Subscriber</a></h2>
+<pre><pre class="playground"><code class="language-rust">use std::sync::Arc;
+use serde::{Serialize, Deserialize};
+use rustecal::{Ecal, EcalComponents, TypedSubscriber};
+use rustecal_types_serde::JsonMessage;
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+struct MyData {
+    msg: String,
+}
+
+fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    Ecal::initialize(Some("json subscriber"), EcalComponents::DEFAULT)?;
+
+    let mut subscriber = TypedSubscriber::&lt;JsonMessage&lt;MyData&gt;&gt;::new("hello_json")?;
+    subscriber.set_callback(|message| {
+        println!("Received: {}", message.payload.data.msg);
+    });
 
     while Ecal::ok() {
         std::thread::sleep(std::time::Duration::from_millis(500));
@@ -189,11 +214,11 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../examples/json.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../examples/protobuf.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../examples/service_client.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../examples/service_server.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -203,11 +228,11 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../examples/json.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../examples/protobuf.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../examples/service_client.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../examples/service_server.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

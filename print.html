@@ -416,6 +416,60 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     Ecal::finalize();
     Ok(())
 }</code></pre></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="json-message-example"><a class="header" href="#json-message-example">JSON Message Example</a></h1>
+<h2 id="publisher-3"><a class="header" href="#publisher-3">Publisher</a></h2>
+<pre><pre class="playground"><code class="language-rust">use std::sync::Arc;
+use serde::{Serialize, Deserialize};
+use rustecal::{Ecal, EcalComponents, TypedPublisher};
+use rustecal_types_serde::JsonMessage;
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+struct MyData {
+    msg: String,
+}
+
+fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    Ecal::initialize(Some("json publisher"), EcalComponents::DEFAULT)?;
+
+    let publisher = TypedPublisher::&lt;JsonMessage&lt;MyData&gt;&gt;::new("hello_json")?;
+
+    while Ecal::ok() {
+        let payload = MyData { msg: "Hello from Rust".into() };
+        let message = JsonMessage::new(payload);
+        publisher.send(&amp;message);
+
+        std::thread::sleep(std::time::Duration::from_millis(500));
+    }
+
+    Ecal::finalize();
+    Ok(())
+}</code></pre></pre>
+<h2 id="subscriber-3"><a class="header" href="#subscriber-3">Subscriber</a></h2>
+<pre><pre class="playground"><code class="language-rust">use std::sync::Arc;
+use serde::{Serialize, Deserialize};
+use rustecal::{Ecal, EcalComponents, TypedSubscriber};
+use rustecal_types_serde::JsonMessage;
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+struct MyData {
+    msg: String,
+}
+
+fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    Ecal::initialize(Some("json subscriber"), EcalComponents::DEFAULT)?;
+
+    let mut subscriber = TypedSubscriber::&lt;JsonMessage&lt;MyData&gt;&gt;::new("hello_json")?;
+    subscriber.set_callback(|message| {
+        println!("Received: {}", message.payload.data.msg);
+    });
+
+    while Ecal::ok() {
+        std::thread::sleep(std::time::Duration::from_millis(500));
+    }
+
+    Ecal::finalize();
+    Ok(())
+}</code></pre></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="service-server-example"><a class="header" href="#service-server-example">Service Server Example</a></h1>
 <p>This example shows how to implement a basic <strong>Mirror Service Server</strong> using <code>rustecal</code>.</p>
 <p>The server receives a request, logs it, and sends it back as a response.</p>
