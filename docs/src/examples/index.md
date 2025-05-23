@@ -7,6 +7,7 @@ Code samples for using rustecal.
 - [String Messages](string.md)
 - [Binary Messages](binary.md)
 - [Protobuf Messages](protobuf.md)
+- [JSON Messages](json.md)
 
 ## Service Client / Server
 

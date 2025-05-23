@@ -4,7 +4,7 @@
 - [x] Safe API for initialization, shutdown
 - [x] Binary publish/subscribe API
 - [x] Typed publish/subscribe API
-- [x] Modular type crates (string, bytes, protobuf)
+- [x] Modular type crates (string, bytes, protobuf, serde (json/cbor/msgpack))
 - [x] Binary server/client API
 - [x] Examples for all publish/subscribe and client/server
 - [x] Monitoring and logging support
