@@ -9,6 +9,7 @@
   - [Binary](examples/binary.md)
   - [String](examples/string.md)
   - [Protobuf](examples/protobuf.md)
+  - [JSON](examples/json.md)
   - [Server](examples/service_server.md)
   - [Client](examples/service_client.md)
   - [Monitoring](examples/monitoring.md)
