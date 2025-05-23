@@ -35,7 +35,7 @@ impl SubscriberMessage for BytesMessage {
     }
 
     /// Creates a `BytesMessage` from a raw byte slice.
-    fn from_bytes(bytes: Arc<[u8]>) -> Option<Self> {
+    fn from_bytes(bytes: Arc<[u8]>, _data_type_info: &DataTypeInfo) -> Option<Self> {
         Some(BytesMessage { data: Arc::from(bytes) })
     }
 }

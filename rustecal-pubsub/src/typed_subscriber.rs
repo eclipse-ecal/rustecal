@@ -1,6 +1,5 @@
 use crate::subscriber::Subscriber;
 use rustecal_core::types::DataTypeInfo;
-use crate::types::TopicId;
 use rustecal_sys::{eCAL_SDataTypeInformation, eCAL_SReceiveCallbackData, eCAL_STopicId};
 use std::ffi::{c_void, CStr};
 use std::sync::Arc;
@@ -14,13 +13,11 @@ pub trait SubscriberMessage: Sized {
     /// Returns the metadata that describes this message type (encoding, name, optional descriptor).
     fn datatype() -> DataTypeInfo;
 
-    /// Constructs an instance of the message type from a byte slice.
-    fn from_bytes(bytes: Arc<[u8]>) -> Option<Self>;
+    /// Constructs an instance of the message type from a byte buffer and the accompanying DataTypeInfo.
+    fn from_bytes(bytes: Arc<[u8]>, data_type_info: &DataTypeInfo) -> Option<Self>;
 }
 
 /// Represents a received message with associated metadata.
-///
-/// This includes the deserialized message and eCAL metadata such as timestamp and topic information.
 pub struct Received<T> {
     /// The decoded message of type `T`.
     pub payload: T,
@@ -28,10 +25,10 @@ pub struct Received<T> {
     /// The name of the topic this message was received on.
     pub topic_name: String,
 
-    /// The declared encoding format (e.g. "proto", "string", "raw").
+    /// The declared encoding format (e.g. "proto", "string", "raw", "json").
     pub encoding: String,
 
-    /// The declared type name of the message (may match `std::any::type_name::<T>()`).
+    /// The declared type name of the message.
     pub type_name: String,
 
     /// The send timestamp provided by the publisher (microseconds since epoch).
@@ -189,26 +186,30 @@ extern "C" fn trampoline<T: SubscriberMessage>(
         if data.is_null() || user_data.is_null() {
             return;
         }
-
+        // Raw payload buffer
         let msg_slice = slice::from_raw_parts((*data).buffer as *const u8, (*data).buffer_size);
-        let msg_arc = Arc::from(msg_slice);
-
-        if let Some(decoded) = T::from_bytes(msg_arc) {
+        let msg_arc: Arc<[u8]> = Arc::from(msg_slice);
+        // Build Rust DataTypeInfo from eCAL metadata
+        let encoding = CStr::from_ptr((*data_type_info).encoding).to_string_lossy().into_owned();
+        let type_name = CStr::from_ptr((*data_type_info).name).to_string_lossy().into_owned();
+        let descriptor = if (*data_type_info).descriptor.is_null() || (*data_type_info).descriptor_length == 0 {
+            Vec::new()
+        } else {
+            slice::from_raw_parts((*data_type_info).descriptor as *const u8, (*data_type_info).descriptor_length as usize).to_vec()
+        };
+        let dt_info = DataTypeInfo { encoding, type_name, descriptor };
+        // Deserialize with access to datatype information
+        if let Some(decoded) = T::from_bytes(msg_arc.clone(), &dt_info) {
             let cb_wrapper = &*(user_data as *const CallbackWrapper<T>);
-
             let topic_name = CStr::from_ptr((*topic_id).topic_name).to_string_lossy().into_owned();
-            let encoding = CStr::from_ptr((*data_type_info).encoding).to_string_lossy().into_owned();
-            let type_name = CStr::from_ptr((*data_type_info).name).to_string_lossy().into_owned();
-
             let metadata = Received {
                 payload: decoded,
                 topic_name,
-                encoding,
-                type_name,
+                encoding: dt_info.encoding.clone(),
+                type_name: dt_info.type_name.clone(),
                 timestamp: (*data).send_timestamp,
                 clock: (*data).send_clock,
             };
-
             cb_wrapper.call(metadata);
         }
     }

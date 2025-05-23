@@ -1,5 +1,5 @@
 use rustecal::{Ecal, EcalComponents, TypedSubscriber};
-use rustecal_types_serde::JsonMessage;
+use rustecal_types_serde::SerdeMessage;
 use rustecal::pubsub::typed_subscriber::Received;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
@@ -14,10 +14,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .expect("eCAL initialization failed");
 
     // Create a typed subscriber for topic "simple_message"
-    let mut subscriber: TypedSubscriber<JsonMessage<SimpleMessage>> =
+    let mut subscriber: TypedSubscriber<SerdeMessage<SimpleMessage>> =
         TypedSubscriber::new("simple_message")?;
 
-    subscriber.set_callback(|msg: Received<JsonMessage<SimpleMessage>>| {
+    subscriber.set_callback(|msg: Received<SerdeMessage<SimpleMessage>>| {
         println!("------------------------------------------");
         println!(" MESSAGE HEAD ");
         println!("------------------------------------------");

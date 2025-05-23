@@ -57,7 +57,7 @@ where
     /// # Returns
     /// - `Some(ProtobufMessage<T>)` on success
     /// - `None` if decoding fails
-    fn from_bytes(bytes: Arc<[u8]>) -> Option<Self> {
+    fn from_bytes(bytes: Arc<[u8]>, _data_type_info: &DataTypeInfo) -> Option<Self> {
         T::decode(bytes.as_ref()).ok().map(|msg| ProtobufMessage {
             data: Arc::new(msg),
         })

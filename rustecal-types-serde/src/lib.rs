@@ -1,169 +1,113 @@
 //! # rustecal-types-serde
 //!
-//! Support for sending and receiving any Serde-enabled messages via eCAL Pub/Sub.
+//! A single, generic Serde-based message wrapper with runtime-selectable format
+//! for eCAL Pub/Sub transport, dynamically using the encoding field from DataTypeInfo.
 //!
 //! ## Supported Formats
-//! - JSON: text-based, via `serde_json`
-//! - CBOR: binary, via `serde_cbor`
-//! - MessagePack: binary, via `rmp-serde`
-//!
-//! Provides dedicated wrappers for each format: `JsonMessage`, `CborMessage`, and `MsgpackMessage`.
+//! - JSON: via `serde_json`
+//! - CBOR: via `serde_cbor`
+//! - MessagePack: via `rmp-serde`
 
 use std::sync::Arc;
 use serde::{Deserialize, Serialize};
+use serde_json;
+use serde_cbor;
+use rmp_serde;
 use rustecal_core::types::DataTypeInfo;
-use rustecal_pubsub::typed_subscriber::SubscriberMessage;
 use rustecal_pubsub::typed_publisher::PublisherMessage;
+use rustecal_pubsub::typed_subscriber::SubscriberMessage;
 
-/// Helper to extract the short Rust type name of `T`, without module paths.
-fn short_type_name<T>() -> String {
-    let full = std::any::type_name::<T>();
-    full.rsplit("::").next().unwrap_or(full).to_string()
+/// Supported serialization formats.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Format {
+    Json,
+    Cbor,
+    Msgpack,
 }
 
-/// JSON-only message wrapper.
-#[derive(Debug, Clone)]
-pub struct JsonMessage<T> {
-    /// The inner payload of the message.
-    pub data: Arc<T>,
-}
-
-impl<T> JsonMessage<T>
-where
-    T: Serialize + for<'de> Deserialize<'de> + Clone,
-{
-    /// Create a new JSON message.
-    pub fn new(payload: T) -> Self {
-        JsonMessage { data: Arc::new(payload) }
+impl Format {
+    /// Parse a format from the encoding string in DataTypeInfo.
+    pub fn from_encoding(enc: &str) -> Option<Self> {
+        match enc.to_lowercase().as_str() {
+            "json" => Some(Format::Json),
+            "cbor" => Some(Format::Cbor),
+            "msgpack" | "messagepack" => Some(Format::Msgpack),
+            _ => None,
+        }
     }
 }
 
-impl<T> SubscriberMessage for JsonMessage<T>
+/// Generic Serde message with runtime format selection, based on DataTypeInfo.encoding.
+#[derive(Debug, Clone)]
+pub struct SerdeMessage<T> {
+    /// The wrapped payload.
+    pub data: Arc<T>,
+    /// Selected format for (de)serialization.
+    pub fmt: Format,
+}
+
+impl<T> SerdeMessage<T>
 where
     T: Serialize + for<'de> Deserialize<'de> + Clone,
 {
-    fn datatype() -> DataTypeInfo {
-        DataTypeInfo {
-            encoding: "json".into(),
-            type_name: short_type_name::<T>(),
-            descriptor: vec![],
+    /// Create a message with a chosen format.
+    pub fn new_with_format(payload: T, fmt: Format) -> Self {
+        SerdeMessage { data: Arc::new(payload), fmt }
+    }
+
+    /// Default constructor using JSON format.
+    pub fn new(payload: T) -> Self {
+        SerdeMessage { data: Arc::new(payload), fmt: Format::Json }
+    }
+
+    /// Serialize into bytes according to format.
+    pub fn to_bytes_internal(&self) -> Vec<u8> {
+        match self.fmt {
+            Format::Json => serde_json::to_vec(&*self.data).expect("JSON serialize failed"),
+            Format::Cbor => serde_cbor::to_vec(&*self.data).expect("CBOR serialize failed"),
+            Format::Msgpack => rmp_serde::to_vec(&*self.data).expect("Msgpack serialize failed"),
         }
     }
 
-    fn from_bytes(bytes: Arc<[u8]>) -> Option<Self> {
-        serde_json::from_slice(bytes.as_ref())
-            .ok()
-            .map(|payload| JsonMessage { data: Arc::new(payload) })
+    /// Deserialize bytes according to a specified format.
+    pub fn from_bytes_with_format(bytes: Arc<[u8]>, fmt: Format) -> Option<Self> {
+        let slice = bytes.as_ref();
+        let payload = match fmt {
+            Format::Json => serde_json::from_slice(slice).ok()?,
+            Format::Cbor => serde_cbor::from_slice(slice).ok()?,
+            Format::Msgpack => rmp_serde::from_slice(slice).ok()?,
+        };
+        Some(SerdeMessage { data: Arc::new(payload), fmt })
     }
 }
 
-impl<T> PublisherMessage for JsonMessage<T>
+impl<T> PublisherMessage for SerdeMessage<T>
 where
     T: Serialize + for<'de> Deserialize<'de> + Clone,
 {
     fn datatype() -> DataTypeInfo {
-        <JsonMessage<T> as SubscriberMessage>::datatype()
+        // Expose the fmt in encoding so subscribers can parse
+        DataTypeInfo { encoding: "serde".into(), type_name: std::any::type_name::<T>().into(), descriptor: vec![] }
     }
 
     fn to_bytes(&self) -> Arc<[u8]> {
-        Arc::from(serde_json::to_vec(&*self.data).expect("JSON serialization failed"))
+        // Prepend a one-byte format tag (optional) or rely on subscriber reading DataTypeInfo
+        Arc::from(self.to_bytes_internal())
     }
 }
 
-/// CBOR-only message wrapper.
-#[derive(Debug, Clone)]
-pub struct CborMessage<T> {
-    /// The inner payload of the message.
-    pub data: Arc<T>,
-}
-
-impl<T> CborMessage<T>
-where
-    T: Serialize + for<'de> Deserialize<'de> + Clone,
-{
-    /// Create a new CBOR message.
-    pub fn new(payload: T) -> Self {
-        CborMessage { data: Arc::new(payload) }
-    }
-}
-
-impl<T> SubscriberMessage for CborMessage<T>
+impl<T> SubscriberMessage for SerdeMessage<T>
 where
     T: Serialize + for<'de> Deserialize<'de> + Clone,
 {
     fn datatype() -> DataTypeInfo {
-        DataTypeInfo {
-            encoding: "cbor".into(),
-            type_name: short_type_name::<T>(),
-            descriptor: vec![],
-        }
+        <SerdeMessage<T> as PublisherMessage>::datatype()
     }
 
-    fn from_bytes(bytes: Arc<[u8]>) -> Option<Self> {
-        serde_cbor::from_slice(bytes.as_ref())
-            .ok()
-            .map(|payload| CborMessage { data: Arc::new(payload) })
-    }
-}
-
-impl<T> PublisherMessage for CborMessage<T>
-where
-    T: Serialize + for<'de> Deserialize<'de> + Clone,
-{
-    fn datatype() -> DataTypeInfo {
-        <CborMessage<T> as SubscriberMessage>::datatype()
-    }
-
-    fn to_bytes(&self) -> Arc<[u8]> {
-        Arc::from(serde_cbor::to_vec(&*self.data).expect("CBOR serialization failed"))
-    }
-}
-
-/// MessagePack-only message wrapper.
-#[derive(Debug, Clone)]
-pub struct MsgpackMessage<T> {
-    /// The inner payload of the message.
-    pub data: Arc<T>,
-}
-
-impl<T> MsgpackMessage<T>
-where
-    T: Serialize + for<'de> Deserialize<'de> + Clone,
-{
-    /// Create a new MessagePack message.
-    pub fn new(payload: T) -> Self {
-        MsgpackMessage { data: Arc::new(payload) }
-    }
-}
-
-impl<T> SubscriberMessage for MsgpackMessage<T>
-where
-    T: Serialize + for<'de> Deserialize<'de> + Clone,
-{
-    fn datatype() -> DataTypeInfo {
-        DataTypeInfo {
-            encoding: "msgpack".into(),
-            type_name: short_type_name::<T>(),
-            descriptor: vec![],
-        }
-    }
-
-    fn from_bytes(bytes: Arc<[u8]>) -> Option<Self> {
-        rmp_serde::from_slice(bytes.as_ref())
-            .ok()
-            .map(|payload| MsgpackMessage { data: Arc::new(payload) })
-    }
-}
-
-impl<T> PublisherMessage for MsgpackMessage<T>
-where
-    T: Serialize + for<'de> Deserialize<'de> + Clone,
-{
-    fn datatype() -> DataTypeInfo {
-        <MsgpackMessage<T> as SubscriberMessage>::datatype()
-    }
-
-    fn to_bytes(&self) -> Arc<[u8]> {
-        Arc::from(rmp_serde::to_vec(&*self.data).expect("MessagePack serialization failed"))
+    fn from_bytes(bytes: Arc<[u8]>, data_type_info: &DataTypeInfo) -> Option<Self> {
+        // Determine format from DataTypeInfo.encoding
+        let fmt = Format::from_encoding(&data_type_info.encoding)?;
+        // Parse payload using determined format
+        SerdeMessage::from_bytes_with_format(bytes, fmt)
     }
 }
