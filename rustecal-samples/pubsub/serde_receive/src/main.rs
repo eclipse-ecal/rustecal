@@ -1,37 +1,40 @@
 use rustecal::{Ecal, EcalComponents, TypedSubscriber};
 use rustecal::pubsub::typed_subscriber::Received;
-use rustecal_types_bytes::BytesMessage;
+use rustecal_types_serde::SerdeMessage;
+
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
+struct SimpleMessage {
+    message: String,
+    count: u64,
+}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize eCAL
-    Ecal::initialize(Some("blob receive rust"), EcalComponents::DEFAULT)
+    Ecal::initialize(Some("serde receive rust"), EcalComponents::DEFAULT)
         .expect("eCAL initialization failed");
 
-    let mut subscriber = TypedSubscriber::<BytesMessage>::new("blob")?;
+    // Create a typed subscriber for topic "simple_message"
+    let mut subscriber: TypedSubscriber<SerdeMessage<SimpleMessage>> =
+        TypedSubscriber::new("simple_message")?;
 
-    subscriber.set_callback(|msg: Received<BytesMessage>| {
-        let buffer = &msg.payload.data;
-        if buffer.is_empty() {
-            return;
-        }
-
+    subscriber.set_callback(|msg: Received<SerdeMessage<SimpleMessage>>| {
         println!("------------------------------------------");
         println!(" MESSAGE HEAD ");
         println!("------------------------------------------");
         println!("topic name   : {}", msg.topic_name);
         println!("encoding     : {}", msg.encoding);
         println!("type name    : {}", msg.type_name);
-        println!("topic time   : {}", msg.timestamp);
-        println!("topic clock  : {}", msg.clock);
+        println!("timestamp    : {}", msg.timestamp);
+        println!("clock        : {}", msg.clock);
         println!("------------------------------------------");
         println!(" MESSAGE CONTENT ");
         println!("------------------------------------------");
-        println!("binary value : {}", buffer[0]);
-        println!("buffer size  : {}", buffer.len());
+        println!("message      : {}", msg.payload.data.message);
+        println!("count        : {}", msg.payload.data.count);
         println!("------------------------------------------\n");
     });
 
-    println!("Waiting for messages on topic 'blob'...");
+    println!("Waiting for messages on topic 'simple_message'...");
 
     // keep the thread alive so callbacks can run
     while Ecal::ok() {

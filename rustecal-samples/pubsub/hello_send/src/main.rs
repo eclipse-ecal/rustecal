@@ -9,10 +9,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let publisher: TypedPublisher<StringMessage> = TypedPublisher::<StringMessage>::new("hello")?;
 
-    let mut cnt = 0;
+    let mut count = 0;
     while Ecal::ok() {
-        cnt += 1;
-        let msg = format!("HELLO WORLD FROM RUST ({})", cnt);
+        count += 1;
+        let msg = format!("HELLO WORLD FROM RUST ({})", count);
 
         let wrapped = StringMessage{ data: Arc::<str>::from(msg) };
         publisher.send(&wrapped);

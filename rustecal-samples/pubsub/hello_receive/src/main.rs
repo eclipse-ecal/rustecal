@@ -11,7 +11,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     subscriber.set_callback(|msg: Received<StringMessage>| {
         println!("------------------------------------------");
-        println!(" HEAD ");
+        println!(" MESSAGE HEAD ");
         println!("------------------------------------------");
         println!("topic name   : {}", msg.topic_name);
         println!("encoding     : {}", msg.encoding);
@@ -19,7 +19,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("topic time   : {}", msg.timestamp);
         println!("topic clock  : {}", msg.clock);
         println!("------------------------------------------");
-        println!(" CONTENT ");
+        println!(" MESSAGE CONTENT ");
         println!("------------------------------------------");
         println!("message      : {}", msg.payload.data);
         println!("------------------------------------------\n");

@@ -7,6 +7,7 @@ members = [
     "rustecal-sys",
     "rustecal-types-bytes",
     "rustecal-types-protobuf",
+    "rustecal-types-serde",
     "rustecal-types-string",
     "rustecal-samples/monitoring/logging_receive",
     "rustecal-samples/monitoring/monitoring_receive",
@@ -16,6 +17,8 @@ members = [
     "rustecal-samples/pubsub/hello_receive",
     "rustecal-samples/pubsub/person_send",
     "rustecal-samples/pubsub/person_receive",
+    "rustecal-samples/pubsub/serde_send",
+    "rustecal-samples/pubsub/serde_receive",
     "rustecal-samples/service/mirror_client",
     "rustecal-samples/service/mirror_client_instances",
     "rustecal-samples/service/mirror_server"

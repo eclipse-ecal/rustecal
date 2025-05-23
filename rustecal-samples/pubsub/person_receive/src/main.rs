@@ -20,7 +20,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let person = msg.payload.data;
 
         println!("------------------------------------------");
-        println!(" HEAD ");
+        println!(" MESSAGE HEAD ");
         println!("------------------------------------------");
         println!("topic name   : {}", msg.topic_name);
         println!("encoding     : {}", msg.encoding);
@@ -28,7 +28,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("topic time   : {}", msg.timestamp);
         println!("topic clock  : {}", msg.clock);
         println!("------------------------------------------");
-        println!(" CONTENT ");
+        println!(" MESSAGE CONTENT ");
         println!("------------------------------------------");
         println!("person id    : {}", person.id);
         println!("person name  : {}", person.name);
