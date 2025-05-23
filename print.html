@@ -194,24 +194,25 @@
 <li><code>/usr/lib</code> or <code>/usr/local/lib</code></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="project-structure"><a class="header" href="#project-structure">Project Structure</a></h1>
-<p>This workspace is organized into several purpose‑specific crates to provide a modular, maintainable API for eCAL:</p>
+<p>This workspace is organized into several purpose-specific crates to provide a modular, maintainable API for eCAL:</p>
 <div class="table-wrapper"><table><thead><tr><th>Crate</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>rustecal</code></td><td><strong>Meta‑crate</strong>: re‑exports core, pub/sub, and service APIs via feature flags (<code>pubsub</code>, <code>service</code>)</td></tr>
+<tr><td><code>rustecal</code></td><td><strong>Meta-crate</strong>: re-exports core, pub/sub, and service APIs via feature flags (<code>pubsub</code>, <code>service</code>)</td></tr>
 <tr><td><code>rustecal-core</code></td><td>Core lifecycle management, logging, monitoring, error handling, and shared type definitions</td></tr>
 <tr><td><code>rustecal-pubsub</code></td><td>Typed and untyped Publisher/Subscriber API</td></tr>
-<tr><td><code>rustecal-service</code></td><td>RPC Service server &amp; client API</td></tr>
-<tr><td><code>rustecal-sys</code></td><td>Low‑level FFI bindings to the eCAL C API</td></tr>
-<tr><td><code>rustecal-types-string</code></td><td>Helper: UTF‑8 string message wrapper for typed pub/sub</td></tr>
+<tr><td><code>rustecal-service</code></td><td>RPC service server &amp; client API</td></tr>
+<tr><td><code>rustecal-sys</code></td><td>Low-level FFI bindings to the eCAL C API</td></tr>
+<tr><td><code>rustecal-types-string</code></td><td>Helper: UTF-8 string message wrapper for typed pub/sub</td></tr>
 <tr><td><code>rustecal-types-bytes</code></td><td>Helper: raw byte vector message wrapper</td></tr>
 <tr><td><code>rustecal-types-protobuf</code></td><td>Helper: Protobuf message wrapper (using <code>prost</code>)</td></tr>
+<tr><td><code>rustecal-types-serde</code></td><td>Helper: Serde JSON/CBOR/MessagePack message wrappers for typed pub/sub</td></tr>
 <tr><td><code>rustecal-samples</code></td><td>Example binaries demonstrating pub/sub, RPC, monitoring, and logging</td></tr>
 </tbody></table>
 </div>
 <h2 id="workspace-layout"><a class="header" href="#workspace-layout">Workspace Layout</a></h2>
 <pre><code class="language-text">your_workspace/
-├── Cargo.toml              # workspace manifest
-├── rustecal/               # meta‑crate
-├── rustecal-core/          # core init, logging, monitoring, error, shared types
+├── Cargo.toml                # workspace manifest
+├── rustecal/                 # meta-crate
+├── rustecal-core/            # core init, logging, monitoring, error, shared types
 │   └── src/
 │       ├── core.rs
 │       ├── error.rs
@@ -221,13 +222,14 @@
 │       └── core_types/
 │           ├── logging.rs
 │           └── monitoring.rs
-├── rustecal-pubsub/        # pub/sub API
-├── rustecal-service/       # service RPC API
-├── rustecal-sys/           # raw C bindings
-├── rustecal-types-string/
-├── rustecal-types-bytes/
-├── rustecal-types-protobuf/
-└── rustecal-samples/       # examples
+├── rustecal-pubsub/          # pub/sub API
+├── rustecal-service/         # service RPC API
+├── rustecal-sys/             # raw C bindings
+├── rustecal-types-string/    # UTF-8 string pub/sub
+├── rustecal-types-bytes/     # raw bytes pub/sub
+├── rustecal-types-protobuf/  # Protobuf pub/sub
+├── rustecal-types-serde/     # Serde JSON/CBOR/MsgPack pub/sub
+└── rustecal-samples/         # examples
     ├── pubsub/
     │   ├── hello_send/
     │   ├── hello_receive/
@@ -244,9 +246,12 @@
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="supported-message-types"><a class="header" href="#supported-message-types">Supported Message Types</a></h1>
 <ul>
-<li><code>BytesMessage</code> – Arbitrary binary data</li>
-<li><code>StringMessage</code> – UTF-8 encoded strings</li>
-<li><code>ProtobufMessage&lt;T&gt;</code> – Protobuf messages</li>
+<li><code>BytesMessage</code> – Arbitrary binary data (<code>rustecal-types-bytes</code>)</li>
+<li><code>StringMessage</code> – UTF-8 encoded strings (<code>rustecal-types-string</code>)</li>
+<li><code>ProtobufMessage&lt;T&gt;</code> – Protobuf messages (<code>rustecal-types-protobuf</code>)</li>
+<li><code>JsonMessage&lt;T&gt;</code> – JSON-serialized Serde types (<code>rustecal-types-serde</code>)</li>
+<li><code>CborMessage&lt;T&gt;</code> – CBOR-serialized Serde types (<code>rustecal-types-serde</code>)</li>
+<li><code>MsgpackMessage&lt;T&gt;</code> – MessagePack-serialized Serde types (<code>rustecal-types-serde</code>)</li>
 </ul>
 <p>Each type is provided via a dedicated crate to avoid pulling unnecessary dependencies.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="examples"><a class="header" href="#examples">Examples</a></h1>
@@ -256,6 +261,7 @@
 <li><a href="examples/string.html">String Messages</a></li>
 <li><a href="examples/binary.html">Binary Messages</a></li>
 <li><a href="examples/protobuf.html">Protobuf Messages</a></li>
+<li><a href="examples/json.html">JSON Messages</a></li>
 </ul>
 <h2 id="service-client--server"><a class="header" href="#service-client--server">Service Client / Server</a></h2>
 <ul>
@@ -683,7 +689,7 @@ Binary publish/subscribe API</li>
 <li><input disabled="" type="checkbox" checked=""/>
 Typed publish/subscribe API</li>
 <li><input disabled="" type="checkbox" checked=""/>
-Modular type crates (string, bytes, protobuf)</li>
+Modular type crates (string, bytes, protobuf, serde (json/cbor/msgpack))</li>
 <li><input disabled="" type="checkbox" checked=""/>
 Binary server/client API</li>
 <li><input disabled="" type="checkbox" checked=""/>

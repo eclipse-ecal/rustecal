@@ -157,9 +157,12 @@
                     <main>
                         <h1 id="supported-message-types"><a class="header" href="#supported-message-types">Supported Message Types</a></h1>
 <ul>
-<li><code>BytesMessage</code> – Arbitrary binary data</li>
-<li><code>StringMessage</code> – UTF-8 encoded strings</li>
-<li><code>ProtobufMessage&lt;T&gt;</code> – Protobuf messages</li>
+<li><code>BytesMessage</code> – Arbitrary binary data (<code>rustecal-types-bytes</code>)</li>
+<li><code>StringMessage</code> – UTF-8 encoded strings (<code>rustecal-types-string</code>)</li>
+<li><code>ProtobufMessage&lt;T&gt;</code> – Protobuf messages (<code>rustecal-types-protobuf</code>)</li>
+<li><code>JsonMessage&lt;T&gt;</code> – JSON-serialized Serde types (<code>rustecal-types-serde</code>)</li>
+<li><code>CborMessage&lt;T&gt;</code> – CBOR-serialized Serde types (<code>rustecal-types-serde</code>)</li>
+<li><code>MsgpackMessage&lt;T&gt;</code> – MessagePack-serialized Serde types (<code>rustecal-types-serde</code>)</li>
 </ul>
 <p>Each type is provided via a dedicated crate to avoid pulling unnecessary dependencies.</p>
 
