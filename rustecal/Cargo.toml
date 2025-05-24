@@ -11,9 +11,9 @@ keywords      = ["ecal", "ipc", "pubsub", "rpc", "middleware"]
 categories    = ["network-programming", "api-bindings"]
 
 [dependencies]
-rustecal-core    = { path = "../rustecal-core" }
-rustecal-pubsub  = { path = "../rustecal-pubsub", optional = true }
-rustecal-service = { path = "../rustecal-service", optional = true }
+rustecal-core    = { version = "0.1", path = "../rustecal-core" }
+rustecal-pubsub  = { version = "0.1", path = "../rustecal-pubsub", optional = true }
+rustecal-service = { version = "0.1", path = "../rustecal-service", optional = true }
 
 [features]
 default = ["pubsub", "service"]
