@@ -13,3 +13,7 @@
 
 #[cfg(not(docsrs))]
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+
+// stub out on docs.rs so include! never fails
+#[cfg(docsrs)]
+mod bindings {}

@@ -1,12 +1,11 @@
 [package]
 name = "rustecal-core"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Rex Schilasky"]
 edition = "2021"
 description = "Idiomatic Rust API for Eclipse eCAL - Core Functionality"
 license = "Apache-2.0"
 repository = "https://github.com/eclipse-ecal/rustecal"
-homepage = "https://github.com/eclipse-ecal/rustecal"
 documentation = "https://docs.rs/rustecal-core"
 readme = "README.md"
 keywords = ["ecal", "ipc", "pubsub", "server-client", "middleware"]

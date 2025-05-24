@@ -1,12 +1,11 @@
 [package]
 name = "rustecal-pubsub"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Rex Schilasky"]
 edition = "2021"
 description = "Publish/Subscribe API for Eclipse eCAL"
 license = "Apache-2.0"
 repository = "https://github.com/eclipse-ecal/rustecal"
-homepage = "https://github.com/eclipse-ecal/rustecal"
 documentation = "https://docs.rs/rustecal-pubsub"
 readme = "README.md"
 keywords = ["ecal", "ipc", "pubsub", "middleware"]
