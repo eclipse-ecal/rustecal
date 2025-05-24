@@ -9,6 +9,11 @@
 - **Support for arbitrary message types** implementing the `PublisherMessage` and `SubscriberMessage` traits
 - **Metadata propagation**: topics carry encoding, type name, and optional descriptor
 
+## Requirements
+
+- **Rust** 1.60 or later  
+- **eCAL** C/C++ library v6.0 or later installed and accessible on your system
+
 ## Installation
 
 Add to your `Cargo.toml`:
