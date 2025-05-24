@@ -5,7 +5,6 @@ authors = ["Rex Schilasky"]
 edition = "2021"
 description = "Idiomatic Rust API for Eclipse eCAL - Core Functionality"
 license = "Apache-2.0"
-license-file = "LICENSE"
 repository = "https://github.com/eclipse-ecal/rustecal"
 homepage = "https://github.com/eclipse-ecal/rustecal"
 documentation = "https://docs.rs/rustecal-core"

@@ -1,7 +1,16 @@
 [package]
 name = "rustecal-pubsub"
 version = "0.1.0"
+authors = ["Rex Schilasky"]
 edition = "2021"
+description = "Publish/Subscribe API for Eclipse eCAL"
+license = "Apache-2.0"
+repository = "https://github.com/eclipse-ecal/rustecal"
+homepage = "https://github.com/eclipse-ecal/rustecal"
+documentation = "https://docs.rs/rustecal-pubsub"
+readme = "README.md"
+keywords = ["ecal", "ipc", "pubsub", "middleware"]
+categories = ["network-programming", "api-bindings"]
 
 [dependencies]
 rustecal-sys  = { version = "0.1.0", path = "../rustecal-sys" }
