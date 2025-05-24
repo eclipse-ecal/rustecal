@@ -1,7 +1,6 @@
 [package]
 name          = "rustecal"
 version       = "0.1.0"
-authors       = ["Rex Schilasky"]
 edition       = "2021"
 description   = "Meta-crate for rustecal: re-exports core, pubsub and service APIs"
 license       = "Apache-2.0"
@@ -12,9 +11,9 @@ keywords      = ["ecal", "ipc", "pubsub", "rpc", "middleware"]
 categories    = ["network-programming", "api-bindings"]
 
 [dependencies]
-rustecal-core    = "0.1"
-rustecal-pubsub  = { version = "0.1", optional = true }
-rustecal-service = { version = "0.1", optional = true }
+rustecal-core    = { path = "../rustecal-core" }
+rustecal-pubsub  = { path = "../rustecal-pubsub", optional = true }
+rustecal-service = { path = "../rustecal-service", optional = true }
 
 [features]
 default = ["pubsub", "service"]
