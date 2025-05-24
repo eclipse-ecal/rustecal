@@ -3,15 +3,18 @@ name = "rustecal-core"
 version = "0.1.0"
 authors = ["Rex Schilasky"]
 edition = "2021"
-description = "Idiomatic Rust API for Eclipse eCAL"
+description = "Idiomatic Rust API for Eclipse eCAL - Core Functionality"
 license = "Apache-2.0"
+license-file = "LICENSE"
 repository = "https://github.com/eclipse-ecal/rustecal"
+homepage = "https://github.com/eclipse-ecal/rustecal"
+documentation = "https://docs.rs/rustecal-core"
 readme = "README.md"
 keywords = ["ecal", "ipc", "pubsub", "server-client", "middleware"]
 categories = ["network-programming", "api-bindings"]
 
 [dependencies]
-rustecal-sys = { path = "../rustecal-sys" }
+rustecal-sys = { version = "0.1.0", path = "../rustecal-sys" }
 once_cell     = "1.17"
 thiserror     = "1.0"
 bitflags      = "1.3"
