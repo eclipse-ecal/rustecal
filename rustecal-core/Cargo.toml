@@ -1,8 +1,14 @@
 [package]
 name = "rustecal-core"
 version = "0.1.0"
+authors = ["Rex Schilasky"]
 edition = "2021"
-publish = false
+description = "Idiomatic Rust API for Eclipse eCAL"
+license = "Apache-2.0"
+repository = "https://github.com/eclipse-ecal/rustecal"
+readme = "README.md"
+keywords = ["ecal", "ipc", "pubsub", "server-client", "middleware"]
+categories = ["network-programming", "api-bindings"]
 
 [dependencies]
 rustecal-sys = { path = "../rustecal-sys" }

@@ -1,10 +1,15 @@
 [package]
 name = "rustecal-sys"
 version = "0.1.0"
+authors = ["Rex Schilasky"]
 edition = "2021"
 build = "build.rs"
 description = "Raw FFI bindings to Eclipse eCAL C API"
 license = "Apache-2.0"
+repository = "https://github.com/eclipse-ecal/rustecal"
+readme = "README.md"
+keywords = ["ecal", "ipc", "pubsub", "server-client", "middleware"]
+categories = ["network-programming", "api-bindings"]
 
 [build-dependencies]
 bindgen = "0.71.0"
