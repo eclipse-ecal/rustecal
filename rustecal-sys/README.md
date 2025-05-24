@@ -1,8 +1,6 @@
 # rustecal-sys
 
-Low-level FFI bindings for the [eCAL](https://github.com/eclipse-ecal/ecal) C++ library, enabling Rust code to interface directly with eCAL’s core functionality.
-
----
+Low-level FFI bindings for the [Eclipse eCAL](https://github.com/eclipse-ecal/ecal) C++ library, enabling Rust code to interface directly with eCAL’s core functionality.
 
 ## Features
 
@@ -13,4 +11,4 @@ Low-level FFI bindings for the [eCAL](https://github.com/eclipse-ecal/ecal) C++ 
 ## Requirements
 
 - **Rust** 1.60 or later
-- **eCAL** C/C++ library v6.0 or later installed and accessible on your system
+- **Eclipse eCAL** C/C++ library v6.0 or later installed and accessible on your system

@@ -11,8 +11,8 @@
 
 ## Requirements
 
-- Rust 1.60 or later  
-- eCAL C/C++ library v6.0 or later installed on your system  
+- **Rust** 1.60 or later  
+- **Eclipse eCAL** C/C++ library v6.0 or later installed and accessible on your system
 
 ## Installation
 

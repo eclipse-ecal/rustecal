@@ -1,6 +1,6 @@
 [package]
 name          = "rustecal-service"
-version       = "0.1.0"
+version       = "0.1.1"
 authors       = ["Rex Schilasky"]
 edition       = "2021"
 description   = "Server/Client API for Eclipse eCAL"

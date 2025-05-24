@@ -1,6 +1,6 @@
 [package]
 name          = "rustecal"
-version       = "0.1.0"
+version       = "0.1.1"
 edition       = "2021"
 description   = "Meta-crate for rustecal: re-exports core, pubsub and service APIs"
 license       = "Apache-2.0"

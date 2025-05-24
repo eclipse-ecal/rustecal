@@ -16,6 +16,11 @@ via Cargo feature flags.
 | `pubsub`  | `rustecal-pubsub` (optional)   | (Typed) Publish/Subscribe API        |
 | `service` | `rustecal-service` (optional)  | RPC-style Server/Client API          |
 
+## Requirements
+
+- **Rust** 1.60 or later  
+- **Eclipse eCAL** C/C++ library v6.0 or later installed and accessible on your system
+
 ## Installation
 
 Add to your `Cargo.toml`:

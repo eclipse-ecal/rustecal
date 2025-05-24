@@ -1,10 +1,6 @@
 # rustecal-core
 
-**Idiomatic Rust API for Eclipse eCAL**
-
 `rustecal-core` provides high-level Rust abstractions for eCAL’s pub/sub and service/client patterns, built on top of the low-level FFI bindings in [`rustecal-sys`](https://crates.io/crates/rustecal-sys).
-
----
 
 ## Features
 
