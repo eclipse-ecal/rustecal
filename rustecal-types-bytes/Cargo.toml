@@ -1,16 +1,16 @@
 [package]
-name = "rustecal-types-bytes"
-version = "0.1.2"
-authors = ["Rex Schilasky"]
-edition = "2021"
-description = "Vec<u8> type support for rustecal TypedPublisher / TypedSubscriber"
-license = "Apache-2.0"
-repository = "https://github.com/eclipse-ecal/rustecal"
+name          = "rustecal-types-bytes"
+version       = "0.1.2"
+authors       = ["Rex Schilasky"]
+edition       = "2021"
+description   = "Vec<u8> type support for rustecal TypedPublisher/TypedSubscriber"
+license       = "Apache-2.0"
+repository    = "https://github.com/eclipse-ecal/rustecal"
 documentation = "https://docs.rs/rustecal-types-bytes"
-readme = "README.md"
-keywords = ["ecal", "ipc", "pubsub", "message-support", "middleware"]
-categories = ["network-programming", "api-bindings"]
+readme        = "README.md"
+keywords      = ["ecal", "ipc", "pubsub", "message-support", "middleware"]
+categories    = ["network-programming", "api-bindings"]
 
 [dependencies]
-rustecal-core   = { version = "0.1.0", path = "../rustecal-core" }
-rustecal-pubsub = { version = "0.1.0", path = "../rustecal-pubsub" }
+rustecal-core   = { version = "0.1", path = "../rustecal-core" }
+rustecal-pubsub = { version = "0.1", path = "../rustecal-pubsub" }

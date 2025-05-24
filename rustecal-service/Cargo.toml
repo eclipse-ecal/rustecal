@@ -1,15 +1,25 @@
 [package]
-name = "rustecal-service"
-version = "0.1.0"
-edition = "2021"
+name          = "rustecal-service"
+version       = "0.1.0"
+authors       = ["Rex Schilasky"]
+edition       = "2021"
+description   = "Server/Client API for Eclipse eCAL"
+license       = "Apache-2.0"
+repository    = "https://github.com/eclipse-ecal/rustecal"
+documentation = "https://docs.rs/rustecal-service"
+readme        = "README.md"
+keywords      = ["ecal", "ipc", "service", "server-client", "middleware"]
+categories    = ["network-programming", "api-bindings"]
 
 [dependencies]
-rustecal-sys = { path = "../rustecal-sys" }
-rustecal-core = { path = "../rustecal-core" }
-thiserror     = "1.0"
-tokio         = { version = "1", optional = true }
+rustecal-sys  = { version = "0.1", path = "../rustecal-sys", optional = true }
 
 [features]
-default = ["async"]
-async   = ["tokio"]
-sync    = []
+# Include sys bindings by default in local builds
+default = ["sys"]
+# Optional feature to enable the rustecal-sys dependency
+sys     = ["rustecal-sys"]
+
+[package.metadata.docs.rs]
+default-features = false
+features         = []

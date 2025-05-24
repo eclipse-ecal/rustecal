@@ -1,27 +1,24 @@
 [package]
-name = "rustecal-sys"
-version = "0.1.2"
-authors = ["Rex Schilasky"]
-edition = "2021"
-build = "build.rs"
-description = "Raw FFI bindings to Eclipse eCAL C API"
-license = "Apache-2.0"
-repository = "https://github.com/eclipse-ecal/rustecal"
+name          = "rustecal-sys"
+version       = "0.1.2"
+authors       = ["Rex Schilasky"]
+edition       = "2021"
+build         = "build.rs"
+description   = "Raw FFI bindings to Eclipse eCAL C API"
+license       = "Apache-2.0"
+repository    = "https://github.com/eclipse-ecal/rustecal"
 documentation = "https://docs.rs/rustecal-sys"
-readme = "README.md"
-keywords = ["ecal", "ipc", "pubsub", "server-client", "middleware"]
-categories = ["network-programming", "api-bindings"]
+readme        = "README.md"
+keywords      = ["ecal", "ipc", "pubsub", "server-client", "middleware"]
+categories    = ["network-programming", "api-bindings"]
 
 [build-dependencies]
-bindgen = "0.71.0"
-
-[dependencies]
-libc = "0.2"
+bindgen       = "0.71"
 
 [features]
 default = ["dynamic"]
 dynamic = []     # Link dynamically to libecal_c
-static = []      # Optional: Static linking (if you add support)
+static  = []     # Optional: Static linking (if you add support)
 
 [package.metadata.docs.rs]
 features = ["dynamic"]

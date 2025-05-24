@@ -25,7 +25,7 @@ rustecal-pubsub = "0.1"
 
 ## Quickstart
 
-### Typed Publisher
+### Typed Publisher Example
 
 ```rust
 use std::sync::Arc;
@@ -49,7 +49,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-### Typed Subscriber
+### Typed Subscriber Example
 
 ```rust
 use rustecal::{Ecal, EcalComponents, TypedSubscriber};
