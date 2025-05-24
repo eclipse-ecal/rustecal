@@ -4,11 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-rustecal-sys = { path = "../rustecal-sys" }
-rustecal-core = { path = "../rustecal-core" }
+rustecal-sys  = { version = "0.1.0", path = "../rustecal-sys" }
+rustecal-core = { version = "0.1.0", path = "../rustecal-core" }
 thiserror     = "1.0"
-serde         = { version = "1.0", optional = true }
 
 [features]
 default       = []
-serde-support = ["serde"]
