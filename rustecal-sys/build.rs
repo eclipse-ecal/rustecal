@@ -5,8 +5,9 @@ fn main() {
         println!("cargo:warning=Skipping bindgen during documentation");
         return;
     }
-    // Prepare bindgen builder
-    let mut builder = bindgen::Builder::default()
+    // Prepare bindgen builder, force all enums to 32-bit signed (MSVC ABI)
++    let mut builder = bindgen::Builder::default()
++       .clang_arg("-fms-compatibility")
         .header("wrapper.h")
         .allowlist_function("eCAL_.*")
         .allowlist_type("eCAL_.*")
