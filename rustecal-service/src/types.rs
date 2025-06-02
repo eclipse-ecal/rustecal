@@ -18,12 +18,18 @@ impl CallState {
 impl From<i32> for CallState {
     fn from(value: i32) -> Self {
         match value {
-            x if x == rustecal_sys::eCAL_eCallState_eCAL_eCallState_none => CallState::None,
-            x if x == rustecal_sys::eCAL_eCallState_eCAL_eCallState_executed => CallState::Executed,
-            x if x == rustecal_sys::eCAL_eCallState_eCAL_eCallState_timeouted => CallState::Timeout,
-            x if x == rustecal_sys::eCAL_eCallState_eCAL_eCallState_failed => CallState::Failed,
+            x if x == rustecal_sys::eCAL_eCallState_eCAL_eCallState_none as i32 => CallState::None,
+            x if x == rustecal_sys::eCAL_eCallState_eCAL_eCallState_executed as i32 => CallState::Executed,
+            x if x == rustecal_sys::eCAL_eCallState_eCAL_eCallState_timeouted as i32 => CallState::Timeout,
+            x if x == rustecal_sys::eCAL_eCallState_eCAL_eCallState_failed as i32 => CallState::Failed,
             other => CallState::Unknown(other),
         }
+    }
+}
+
+impl From<u32> for CallState {
+    fn from(value: u32) -> Self {
+        CallState::from(value as i32)
     }
 }
 

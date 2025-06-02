@@ -60,8 +60,20 @@ impl From<i32> for LogLevel {
     }
 }
 
+impl From<u32> for LogLevel {
+    fn from(value: u32) -> Self {
+        LogLevel::from(value as i32)
+    }
+}
+
 impl From<LogLevel> for i32 {
     fn from(level: LogLevel) -> Self {
         level as i32
+    }
+}
+
+impl From<LogLevel> for u32 {
+    fn from(level: LogLevel) -> Self {
+        level as u32
     }
 }

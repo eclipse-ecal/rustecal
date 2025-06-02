@@ -142,6 +142,12 @@ impl From<i32> for TransportLayerType {
     }
 }
 
+impl From<u32> for TransportLayerType {
+    fn from(value: u32) -> Self {
+        TransportLayerType::from(value as i32)
+    }
+}
+
 impl From<rustecal_sys::eCAL_Monitoring_STransportLayer> for TransportLayer {
     fn from(raw: rustecal_sys::eCAL_Monitoring_STransportLayer) -> Self {
         Self {
