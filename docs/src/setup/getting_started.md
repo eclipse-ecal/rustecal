@@ -10,7 +10,7 @@
 | Platform | Install |
 |----------|---------|
 | Windows  | `choco install llvm` or [LLVM releases](https://github.com/llvm/llvm-project/releases) |
-| Linux    | `sudo apt install llvm-dev clang` |
+| Linux    | `sudo apt install build-essential llvm-dev clang libclang-dev` |
 
 ### Environment Variable for Bindgen (Windows only)
 
