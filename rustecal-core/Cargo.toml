@@ -1,6 +1,6 @@
 [package]
 name          = "rustecal-core"
-version       = "0.1.3"
+version       = "0.1.4"
 authors       = ["Rex Schilasky"]
 edition       = "2021"
 description   = "Core API for Eclipse eCAL"
