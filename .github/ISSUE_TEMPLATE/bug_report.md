@@ -1,5 +1,5 @@
 ---
-name: 🐞 Bug Report
+name: Bug Report
 about: Report a bug or unexpected behavior in rustecal
 title: "[Bug] "
 labels: bug

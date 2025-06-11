@@ -1,5 +1,5 @@
 ---
-name: 💡 Feature Request
+name: Feature Request
 about: Suggest a new feature or improvement for rustecal
 title: "[Feature] "
 labels: enhancement
