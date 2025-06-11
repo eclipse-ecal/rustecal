@@ -120,8 +120,6 @@ impl Drop for ServiceServer {
     fn drop(&mut self) {
         unsafe {
             eCAL_ServiceServer_Delete(self.handle);
-            let ptr = Arc::as_ptr(&self.callbacks) as *const _;
-            let _ = Arc::from_raw(ptr);
         }
     }
 }
