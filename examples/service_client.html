@@ -172,7 +172,7 @@
 <pre><pre class="playground"><code class="language-rust">use rustecal::{Ecal, EcalComponents, ServiceClient, ServiceRequest};
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    Ecal::initialize(Some("mirror_client"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("mirror_client"), EcalComponents::DEFAULT, None)?;
 
     let client = ServiceClient::new("mirror_service")?;
 

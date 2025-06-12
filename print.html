@@ -218,44 +218,7 @@
 <tr><td><code>rustecal-types-serde</code></td><td>Helper: Serde JSON/CBOR/MessagePack message wrappers for typed pub/sub</td></tr>
 <tr><td><code>rustecal-samples</code></td><td>Example binaries demonstrating pub/sub, RPC, monitoring, and logging</td></tr>
 </tbody></table>
-</div>
-<h2 id="workspace-layout"><a class="header" href="#workspace-layout">Workspace Layout</a></h2>
-<pre><code class="language-text">your_workspace/
-├── Cargo.toml                # workspace manifest
-├── rustecal/                 # meta-crate
-├── rustecal-core/            # core init, logging, monitoring, error, shared types
-│   └── src/
-│       ├── core.rs
-│       ├── error.rs
-│       ├── log.rs
-│       ├── log_level.rs
-│       ├── monitoring.rs
-│       └── core_types/
-│           ├── logging.rs
-│           └── monitoring.rs
-├── rustecal-pubsub/          # pub/sub API
-├── rustecal-service/         # service RPC API
-├── rustecal-sys/             # raw C bindings
-├── rustecal-types-string/    # UTF-8 string pub/sub
-├── rustecal-types-bytes/     # raw bytes pub/sub
-├── rustecal-types-protobuf/  # Protobuf pub/sub
-├── rustecal-types-serde/     # Serde JSON/CBOR/MsgPack pub/sub
-└── rustecal-samples/         # examples
-    ├── pubsub/
-    │   ├── hello_send/
-    │   ├── hello_receive/
-    │   ├── blob_send/
-    │   ├── blob_receive/
-    │   ├── person_send/
-    │   └── person_receive/
-    ├── service/
-    │   ├── mirror_server/
-    │   ├── mirror_client/
-    │   └── mirror_client_instances/
-    ├── monitoring_receive/
-    └── logging_receive/
-</code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="supported-message-types"><a class="header" href="#supported-message-types">Supported Message Types</a></h1>
+</div><div style="break-before: page; page-break-before: always;"></div><h1 id="supported-message-types"><a class="header" href="#supported-message-types">Supported Message Types</a></h1>
 <ul>
 <li><code>BytesMessage</code> – Arbitrary binary data (<code>rustecal-types-bytes</code>)</li>
 <li><code>StringMessage</code> – UTF-8 encoded strings (<code>rustecal-types-string</code>)</li>
@@ -294,7 +257,7 @@ use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_bytes::BytesMessage;
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    Ecal::initialize(Some("blob publisher"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("blob publisher"), EcalComponents::DEFAULT, None)?;
 
     let publisher = TypedPublisher::&lt;BytesMessage&gt;::new("blob")?;
 
@@ -317,7 +280,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 use rustecal_types_bytes::BytesMessage;
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    Ecal::initialize(Some("blob subscriber"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("blob subscriber"), EcalComponents::DEFAULT, None)?;
 
     let mut subscriber = TypedSubscriber::&lt;BytesMessage&gt;::new("blob")?;
     subscriber.set_callback(|message| {
@@ -338,7 +301,7 @@ use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_string::StringMessage;
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    Ecal::initialize(Some("string publisher"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("string publisher"), EcalComponents::DEFAULT, None)?;
 
     let publisher = TypedPublisher::&lt;StringMessage&gt;::new("hello")?;
 
@@ -357,7 +320,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 use rustecal_types_string::StringMessage;
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    Ecal::initialize(Some("string subscriber"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("string subscriber"), EcalComponents::DEFAULT, None)?;
 
     let mut subscriber = TypedSubscriber::&lt;StringMessage&gt;::new("hello")?;
     subscriber.set_callback(|message| {
@@ -385,7 +348,7 @@ use people::Person;
 impl IsProtobufType for Person {}
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    Ecal::initialize(Some("protobuf publisher"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("protobuf publisher"), EcalComponents::DEFAULT, None)?;
 
     let publisher = TypedPublisher::&lt;ProtobufMessage&lt;Person&gt;&gt;::new("person")?;
 
@@ -413,7 +376,7 @@ use people::Person;
 impl IsProtobufType for Person {}
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    Ecal::initialize(Some("protobuf subscriber"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("protobuf subscriber"), EcalComponents::DEFAULT, None)?;
 
     let mut subscriber = TypedSubscriber::&lt;ProtobufMessage&lt;Person&gt;&gt;::new("person")?;
     subscriber.set_callback(|message| {
@@ -440,7 +403,7 @@ struct MyData {
 }
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    Ecal::initialize(Some("json publisher"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("json publisher"), EcalComponents::DEFAULT, None)?;
 
     let publisher = TypedPublisher::&lt;JsonMessage&lt;MyData&gt;&gt;::new("hello_json")?;
 
@@ -467,7 +430,7 @@ struct MyData {
 }
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    Ecal::initialize(Some("json subscriber"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("json subscriber"), EcalComponents::DEFAULT, None)?;
 
     let mut subscriber = TypedSubscriber::&lt;JsonMessage&lt;MyData&gt;&gt;::new("hello_json")?;
     subscriber.set_callback(|message| {
@@ -489,7 +452,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 use rustecal::service::types::MethodInfo;
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    Ecal::initialize(Some("mirror_server"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("mirror_server"), EcalComponents::DEFAULT, None)?;
 
     let mut server = ServiceServer::new("mirror_service")?;
 
@@ -516,7 +479,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 <pre><pre class="playground"><code class="language-rust">use rustecal::{Ecal, EcalComponents, ServiceClient, ServiceRequest};
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    Ecal::initialize(Some("mirror_client"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("mirror_client"), EcalComponents::DEFAULT, None)?;
 
     let client = ServiceClient::new("mirror_service")?;
 
@@ -551,7 +514,7 @@ use std::{thread, time::Duration};
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     // Initialize only the monitoring subsystem
-    Ecal::initialize(Some("monitoring_receive_sample"), EcalComponents::MONITORING)?;
+    Ecal::initialize(Some("monitoring_receive_sample"), EcalComponents::MONITORING, None)?;
 
     while Ecal::ok() {
         let snap = Monitoring::get_snapshot()?;
@@ -577,7 +540,7 @@ use std::{thread, time::Duration};
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     // Initialize only the logging subsystem
-    Ecal::initialize(Some("logging_receive_sample"), EcalComponents::LOGGING)?;
+    Ecal::initialize(Some("logging_receive_sample"), EcalComponents::LOGGING, None)?;
 
     while Ecal::ok() {
         let entries = Log::get_logging()?;
@@ -607,7 +570,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 <pre><pre class="playground"><code class="language-rust">use rustecal::{Ecal, EcalComponents};
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    Ecal::initialize(Some("my ecal app"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("my ecal app"), EcalComponents::DEFAULT, None)?;
 
     // use publishers, subscribers, clients, server
 

@@ -181,43 +181,6 @@
 <tr><td><code>rustecal-samples</code></td><td>Example binaries demonstrating pub/sub, RPC, monitoring, and logging</td></tr>
 </tbody></table>
 </div>
-<h2 id="workspace-layout"><a class="header" href="#workspace-layout">Workspace Layout</a></h2>
-<pre><code class="language-text">your_workspace/
-├── Cargo.toml                # workspace manifest
-├── rustecal/                 # meta-crate
-├── rustecal-core/            # core init, logging, monitoring, error, shared types
-│   └── src/
-│       ├── core.rs
-│       ├── error.rs
-│       ├── log.rs
-│       ├── log_level.rs
-│       ├── monitoring.rs
-│       └── core_types/
-│           ├── logging.rs
-│           └── monitoring.rs
-├── rustecal-pubsub/          # pub/sub API
-├── rustecal-service/         # service RPC API
-├── rustecal-sys/             # raw C bindings
-├── rustecal-types-string/    # UTF-8 string pub/sub
-├── rustecal-types-bytes/     # raw bytes pub/sub
-├── rustecal-types-protobuf/  # Protobuf pub/sub
-├── rustecal-types-serde/     # Serde JSON/CBOR/MsgPack pub/sub
-└── rustecal-samples/         # examples
-    ├── pubsub/
-    │   ├── hello_send/
-    │   ├── hello_receive/
-    │   ├── blob_send/
-    │   ├── blob_receive/
-    │   ├── person_send/
-    │   └── person_receive/
-    ├── service/
-    │   ├── mirror_server/
-    │   ├── mirror_client/
-    │   └── mirror_client_instances/
-    ├── monitoring_receive/
-    └── logging_receive/
-</code></pre>
-
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">

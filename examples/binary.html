@@ -173,7 +173,7 @@ use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_bytes::BytesMessage;
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    Ecal::initialize(Some("blob publisher"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("blob publisher"), EcalComponents::DEFAULT, None)?;
 
     let publisher = TypedPublisher::&lt;BytesMessage&gt;::new("blob")?;
 
@@ -196,7 +196,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 use rustecal_types_bytes::BytesMessage;
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    Ecal::initialize(Some("blob subscriber"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("blob subscriber"), EcalComponents::DEFAULT, None)?;
 
     let mut subscriber = TypedSubscriber::&lt;BytesMessage&gt;::new("blob")?;
     subscriber.set_callback(|message| {

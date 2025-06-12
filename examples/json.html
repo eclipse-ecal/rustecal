@@ -179,7 +179,7 @@ struct MyData {
 }
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    Ecal::initialize(Some("json publisher"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("json publisher"), EcalComponents::DEFAULT, None)?;
 
     let publisher = TypedPublisher::&lt;JsonMessage&lt;MyData&gt;&gt;::new("hello_json")?;
 
@@ -206,7 +206,7 @@ struct MyData {
 }
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    Ecal::initialize(Some("json subscriber"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("json subscriber"), EcalComponents::DEFAULT, None)?;
 
     let mut subscriber = TypedSubscriber::&lt;JsonMessage&lt;MyData&gt;&gt;::new("hello_json")?;
     subscriber.set_callback(|message| {

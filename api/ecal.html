@@ -172,7 +172,7 @@
 <pre><pre class="playground"><code class="language-rust">use rustecal::{Ecal, EcalComponents};
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
-    Ecal::initialize(Some("my ecal app"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("my ecal app"), EcalComponents::DEFAULT, None)?;
 
     // use publishers, subscribers, clients, server
 
