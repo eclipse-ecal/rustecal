@@ -17,6 +17,7 @@ use std::ffi::{CStr, CString};
 use std::ptr;
 
 use crate::components::EcalComponents;
+use crate::configuration::Configuration;
 use crate::error::{check, RustecalError};
 use crate::types::Version;
 
@@ -30,6 +31,7 @@ impl Ecal {
     ///
     /// * `unit_name` – Optional name to identify this process in eCAL.
     /// * `components` – Bitmask of which subsystems to enable.
+    /// * `config` – Optional eCAL Configuration to use for initialization.
     ///
     /// # Errors
     ///
@@ -38,9 +40,10 @@ impl Ecal {
     pub fn initialize(
         unit_name: Option<&str>,
         components: EcalComponents,
+        config: Option<&Configuration>,
     ) -> Result<(), RustecalError> {
         // Convert the unit name (if any), mapping CString errors
-        let (name_ptr, _): ( *const i8, Option<CString> ) = if let Some(name) = unit_name {
+        let (name_ptr, _): (*const i8, Option<CString>) = if let Some(name) = unit_name {
             let c = CString::new(name)
                 .map_err(|e| RustecalError::Internal(format!("invalid unit name: {}", e)))?;
             (c.as_ptr(), Some(c))
@@ -48,8 +51,15 @@ impl Ecal {
             (ptr::null(), None)
         };
 
+        // Determine pointer to eCAL_Configuration (or null)
+        let cfg_ptr = config
+            .map(|c| c.as_ptr() as *mut rustecal_sys::eCAL_Configuration)
+            .unwrap_or(ptr::null_mut());
+
         // Call the C API and map its return code
-        let ret = unsafe { rustecal_sys::eCAL_Initialize(name_ptr, &components.bits(), ptr::null()) };
+        let ret = unsafe {
+            rustecal_sys::eCAL_Initialize(name_ptr, &components.bits(), cfg_ptr)
+        };
         check(ret)
     }
 
@@ -57,9 +67,7 @@ impl Ecal {
     ///
     /// After calling this, all publishers, subscribers, and services are invalidated.
     pub fn finalize() {
-        unsafe {
-            rustecal_sys::eCAL_Finalize();
-        }
+        unsafe { rustecal_sys::eCAL_Finalize() };
     }
 
     /// Returns `true` if the eCAL system is currently operational.

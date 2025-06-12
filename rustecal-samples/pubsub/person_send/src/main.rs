@@ -11,7 +11,7 @@ impl IsProtobufType for Person {}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize eCAL
-    Ecal::initialize(Some("person send rust"), EcalComponents::DEFAULT)
+    Ecal::initialize(Some("person send rust"), EcalComponents::DEFAULT, None)
         .expect("eCAL initialization failed");
 
     let publisher = TypedPublisher::<ProtobufMessage<Person>>::new("person")?;

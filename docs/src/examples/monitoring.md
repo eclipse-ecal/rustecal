@@ -9,7 +9,7 @@ use std::{thread, time::Duration};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize only the monitoring subsystem
-    Ecal::initialize(Some("monitoring_receive_sample"), EcalComponents::MONITORING)?;
+    Ecal::initialize(Some("monitoring_receive_sample"), EcalComponents::MONITORING, None)?;
 
     while Ecal::ok() {
         let snap = Monitoring::get_snapshot()?;

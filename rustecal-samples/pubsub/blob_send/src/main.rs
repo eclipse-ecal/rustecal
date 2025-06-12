@@ -4,7 +4,7 @@ use rustecal_types_bytes::BytesMessage;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize eCAL
-    Ecal::initialize(Some("blob send rust"), EcalComponents::DEFAULT)
+    Ecal::initialize(Some("blob send rust"), EcalComponents::DEFAULT, None)
         .expect("eCAL initialization failed");
 
     let publisher = TypedPublisher::<BytesMessage>::new("blob")?;

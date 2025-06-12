@@ -11,6 +11,7 @@
 
 pub mod core;
 pub mod components;
+pub mod configuration;
 pub mod error;
 pub mod types;
 pub mod log;
@@ -21,6 +22,7 @@ pub mod monitoring;
 // Re‑exports for ergonomic access:
 pub use core::Ecal;
 pub use components::EcalComponents;
+pub use configuration::Configuration;
 pub use error::RustecalError;
 pub use log::Log;
 pub use log_level::LogLevel;

@@ -8,7 +8,7 @@ This example demonstrates how to call a **Mirror Service** using `rustecal`.
 use rustecal::{Ecal, EcalComponents, ServiceClient, ServiceRequest};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    Ecal::initialize(Some("mirror_client"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("mirror_client"), EcalComponents::DEFAULT, None)?;
 
     let client = ServiceClient::new("mirror_service")?;
 

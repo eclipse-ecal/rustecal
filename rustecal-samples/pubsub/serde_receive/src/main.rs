@@ -10,7 +10,7 @@ struct SimpleMessage {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize eCAL
-    Ecal::initialize(Some("serde receive rust"), EcalComponents::DEFAULT)
+    Ecal::initialize(Some("serde receive rust"), EcalComponents::DEFAULT, None)
         .expect("eCAL initialization failed");
 
     // Create a typed subscriber for topic "simple_message"

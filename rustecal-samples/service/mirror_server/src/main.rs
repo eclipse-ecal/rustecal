@@ -3,7 +3,7 @@ use rustecal::{ServiceServer, MethodInfo};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize eCAL
-    Ecal::initialize(Some("mirror server rust"), EcalComponents::DEFAULT)
+    Ecal::initialize(Some("mirror server rust"), EcalComponents::DEFAULT, None)
         .expect("eCAL initialization failed");
 
     // Create the service server named "mirror"

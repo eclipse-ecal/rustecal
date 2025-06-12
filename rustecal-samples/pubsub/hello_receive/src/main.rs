@@ -4,7 +4,7 @@ use rustecal_types_string::StringMessage;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize eCAL
-    Ecal::initialize(Some("hello receive rust"), EcalComponents::DEFAULT)
+    Ecal::initialize(Some("hello receive rust"), EcalComponents::DEFAULT, None)
         .expect("eCAL initialization failed");
 
     let mut subscriber = TypedSubscriber::<StringMessage>::new("hello")?;

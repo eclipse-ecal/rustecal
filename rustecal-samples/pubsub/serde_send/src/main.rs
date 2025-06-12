@@ -9,7 +9,7 @@ struct SimpleMessage {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize eCAL
-    Ecal::initialize(Some("serde send rust"), EcalComponents::DEFAULT)
+    Ecal::initialize(Some("serde send rust"), EcalComponents::DEFAULT, None)
         .expect("eCAL initialization failed");
 
     // Create a typed publisher for topic "simple_message"

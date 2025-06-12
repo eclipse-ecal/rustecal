@@ -15,7 +15,7 @@ use people::Person;
 impl IsProtobufType for Person {}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    Ecal::initialize(Some("protobuf publisher"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("protobuf publisher"), EcalComponents::DEFAULT, None)?;
 
     let publisher = TypedPublisher::<ProtobufMessage<Person>>::new("person")?;
 
@@ -47,7 +47,7 @@ use people::Person;
 impl IsProtobufType for Person {}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    Ecal::initialize(Some("protobuf subscriber"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("protobuf subscriber"), EcalComponents::DEFAULT, None)?;
 
     let mut subscriber = TypedSubscriber::<ProtobufMessage<Person>>::new("person")?;
     subscriber.set_callback(|message| {

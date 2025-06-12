@@ -11,7 +11,7 @@ use rustecal::{Ecal, EcalComponents, ServiceServer};
 use rustecal::service::types::MethodInfo;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    Ecal::initialize(Some("mirror_server"), EcalComponents::DEFAULT)?;
+    Ecal::initialize(Some("mirror_server"), EcalComponents::DEFAULT, None)?;
 
     let mut server = ServiceServer::new("mirror_service")?;
 

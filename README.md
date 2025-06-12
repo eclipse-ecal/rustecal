@@ -38,7 +38,7 @@ use rustecal_types_string::StringMessage;
 
 fn main() {
     // Initialize eCAL
-    Ecal::initialize(Some("hello publisher"), EcalComponents::DEFAULT).unwrap();
+    Ecal::initialize(Some("hello publisher"), EcalComponents::DEFAULT, None).unwrap();
 
     // create a string publisher on "hello"
     let publisher = TypedPublisher::<StringMessage>::new("hello").unwrap();
@@ -67,7 +67,7 @@ use rustecal_types_string::StringMessage;
 
 fn main() {
     // Initialize eCAL
-    Ecal::initialize(Some("hello subscriber"), EcalComponents::DEFAULT).unwrap();
+    Ecal::initialize(Some("hello subscriber"), EcalComponents::DEFAULT, None).unwrap();
 
     // create a string subscriber on “hello”
     let mut subscriber = TypedSubscriber::<StringMessage>::new("hello").unwrap();
@@ -99,7 +99,7 @@ use rustecal::service::types::MethodInfo;
 
 fn main() {
     // Initialize eCAL
-    Ecal::initialize(Some("mirror server"), EcalComponents::DEFAULT).unwrap();
+    Ecal::initialize(Some("mirror server"), EcalComponents::DEFAULT, None).unwrap();
 
     // create a service server for "mirror"
     let mut server = ServiceServer::new("mirror").unwrap();
@@ -138,7 +138,7 @@ use rustecal::service::types::ServiceRequest;
 
 fn main() {
     // Initialize eCAL
-    Ecal::initialize(Some("mirror client"), EcalComponents::DEFAULT).unwrap();
+    Ecal::initialize(Some("mirror client"), EcalComponents::DEFAULT, None).unwrap();
 
     // create a service client for "mirror"
     let client = ServiceClient::new("mirror").unwrap();

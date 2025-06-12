@@ -9,7 +9,7 @@ use std::{thread, time::Duration};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize only the logging subsystem
-    Ecal::initialize(Some("logging_receive_sample"), EcalComponents::LOGGING)?;
+    Ecal::initialize(Some("logging_receive_sample"), EcalComponents::LOGGING, None)?;
 
     while Ecal::ok() {
         let entries = Log::get_logging()?;

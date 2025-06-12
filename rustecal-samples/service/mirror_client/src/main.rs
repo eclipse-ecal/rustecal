@@ -5,7 +5,7 @@ use std::time::Duration;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize eCAL
-    Ecal::initialize(Some("mirror client rust"), EcalComponents::DEFAULT)
+    Ecal::initialize(Some("mirror client rust"), EcalComponents::DEFAULT, None)
         .expect("eCAL initialization failed");
 
     let client = ServiceClient::new("mirror")?;
