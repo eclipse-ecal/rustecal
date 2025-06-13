@@ -9,6 +9,8 @@ members = [
     "rustecal-types-protobuf",
     "rustecal-types-serde",
     "rustecal-types-string",
+    "rustecal-samples/benchmarks/performance_receive",
+    "rustecal-samples/benchmarks/performance_send",
     "rustecal-samples/monitoring/logging_receive",
     "rustecal-samples/monitoring/monitoring_receive",
     "rustecal-samples/pubsub/blob_send",
