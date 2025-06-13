@@ -26,10 +26,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // log performance settings
-    println!("Zero copy mode: {}", ZERO_COPY);
-    println!("Number of write buffers: {}", BUFFER_COUNT);
-    println!("Acknowledge timeout: {} ms", ACKNOWLEDGE_TIMEOUT_MS);
-    println!("Payload size: {} bytes", payload_size);
+    println!("Zero copy mode          : {}", ZERO_COPY);
+    println!("Number of write buffers : {}", BUFFER_COUNT);
+    println!("Acknowledge timeout     : {} ms", ACKNOWLEDGE_TIMEOUT_MS);
+    println!("Payload size            : {} bytes", payload_size);
     println!();
 
     // prepare and tweak eCAL Configuration
@@ -39,12 +39,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     cfg.publisher.layer.shm.acknowledge_timeout_ms = ACKNOWLEDGE_TIMEOUT_MS as u32;
 
     // initialize eCAL with custom config
-    Ecal::initialize(
-        Some("performance send rust"),
-        EcalComponents::DEFAULT,
-        Some(&cfg),
-    )
-    .expect("eCAL initialization failed");
+    Ecal::initialize(Some("performance send rust"), EcalComponents::DEFAULT, Some(&cfg))
+        .expect("eCAL initialization failed");
 
     // create payload buffer and publisher
     let payload_vec: Vec<u8> = vec![0u8; payload_size];
@@ -62,6 +58,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("Waiting for performance receive to start ...");
         std::thread::sleep(Duration::from_millis(1000));
     }
+    println!();
 
     // send loop
     while Ecal::ok() {
@@ -75,7 +72,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let wrapped = BytesMessage { data: payload.clone() };
         publisher.send(&wrapped);
 
-        msgs_sent += 1;
+        msgs_sent  += 1;
         bytes_sent += payload_size as u64;
         iterations += 1;
 
@@ -90,12 +87,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let msg_s      = (msgs_sent as f64) / secs;
                 let latency_us = (secs * 1e6) / (msgs_sent as f64);
 
-                println!("Payload size      : {} kB", payload_size / 1024);
-                println!("Throughput (kB/s) : {:.0}", kbyte_s);
-                println!("Throughput (MB/s) : {:.2}", mbyte_s);
-                println!("Throughput (GB/s) : {:.3}", gbyte_s);
-                println!("Messages/s        : {:.0}", msg_s);
-                println!("Latency (µs)      : {:.2}", latency_us);
+                println!("Payload size (kB)   : {:.0}", payload_size / 1024);
+                println!("Throughput   (kB/s) : {:.0}", kbyte_s);
+                println!("Throughput   (MB/s) : {:.2}", mbyte_s);
+                println!("Throughput   (GB/s) : {:.2}", gbyte_s);
+                println!("Messages     (1/s)  : {:.0}", msg_s);
+                println!("Latency      (µs)   : {:.2}", latency_us);
                 println!();
 
                 msgs_sent  = 0;

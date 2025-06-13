@@ -8,7 +8,8 @@ use rustecal_types_bytes::BytesMessage;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // initialize eCAL
-    Ecal::initialize(Some("performance receive rust"), EcalComponents::DEFAULT, None)?;
+    Ecal::initialize(Some("performance receive rust"), EcalComponents::DEFAULT, None)
+        .expect("eCAL initialization failed");
 
     // create a typed subscriber for raw bytes
     let mut subscriber: TypedSubscriber<BytesMessage> = TypedSubscriber::new("Performance")?;
@@ -18,7 +19,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let bytes = Arc::new(std::sync::atomic::AtomicU64::new(0));
     let start = Arc::new(Mutex::new(Instant::now()));
 
-    // register the receive‐callback
+    // register the receive-callback
     {
         let msgs  = Arc::clone(&msgs);
         let bytes = Arc::clone(&bytes);
@@ -49,12 +50,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let msg_s      = (m as f64) / secs;
                 let latency_us = (secs * 1e6) / (m as f64);
 
-                println!("Payload size      : {} kB", buffer.len() / 1024);
-                println!("Throughput (kB/s) : {:.0}", kbyte_s);
-                println!("Throughput (MB/s) : {:.2}", mbyte_s);
-                println!("Throughput (GB/s) : {:.3}", gbyte_s);
-                println!("Messages/s        : {:.0}", msg_s);
-                println!("Latency (µs)      : {:.2}", latency_us);
+                println!("Payload size (kB)   : {:.0}", buffer.len() / 1024);
+                println!("Throughput   (kB/s) : {:.0}", kbyte_s);
+                println!("Throughput   (MB/s) : {:.2}", mbyte_s);
+                println!("Throughput   (GB/s) : {:.2}", gbyte_s);
+                println!("Messages     (1/s)  : {:.0}", msg_s);
+                println!("Latency      (µs)   : {:.2}", latency_us);
                 println!();
 
                 // reset the timer
