@@ -2,14 +2,14 @@ use rustecal::{Ecal, EcalComponents};
 use rustecal::{ServiceServer, MethodInfo};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Initialize eCAL
+    // initialize eCAL
     Ecal::initialize(Some("mirror server rust"), EcalComponents::DEFAULT, None)
         .expect("eCAL initialization failed");
 
-    // Create the service server named "mirror"
+    // create the service server named "mirror"
     let mut server = ServiceServer::new("mirror")?;
 
-    // Register "echo" method: respond with request unchanged
+    // register "echo" method: respond with request unchanged
     server.add_method("echo", Box::new(|info: MethodInfo, req: &[u8]| {
         println!("Method   : '{}' called", info.method_name);
         println!("Request  : {}", String::from_utf8_lossy(req));
@@ -17,7 +17,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         req.to_vec()
     }))?;
 
-    // Register "reverse" method: respond with request reversed
+    // register "reverse" method: respond with request reversed
     server.add_method("reverse", Box::new(|info: MethodInfo, req: &[u8]| {
         let mut reversed = req.to_vec();
         reversed.reverse();

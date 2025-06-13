@@ -4,7 +4,7 @@ use std::thread;
 use std::time::Duration;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Initialize eCAL
+    // initialize eCAL
     Ecal::initialize(Some("mirror client instances rust"), EcalComponents::DEFAULT, None)
         .expect("eCAL initialization failed");
 

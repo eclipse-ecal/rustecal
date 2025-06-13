@@ -10,7 +10,7 @@ use people::Person;
 impl IsProtobufType for Person {}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Initialize eCAL
+    // initialize eCAL
     Ecal::initialize(Some("person send rust"), EcalComponents::DEFAULT, None)
         .expect("eCAL initialization failed");
 
@@ -42,7 +42,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("house.rooms  : {}", person.house.as_ref().map_or(0, |h| h.rooms));
         println!();
 
-        // Wrap the person struct in ProtobufMessage
+        // wrap the person struct in ProtobufMessage
         let wrapped = ProtobufMessage { data: Arc::from(person) };
         publisher.send(&wrapped);
 

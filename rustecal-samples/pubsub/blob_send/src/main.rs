@@ -3,7 +3,7 @@ use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_bytes::BytesMessage;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Initialize eCAL
+    // initialize eCAL
     Ecal::initialize(Some("blob send rust"), EcalComponents::DEFAULT, None)
         .expect("eCAL initialization failed");
 
@@ -11,7 +11,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut counter: u8 = 0;
     while Ecal::ok() {
-        // Fill 1024-byte buffer with the current counter value
+        // fill 1024-byte buffer with the current counter value
         let buffer = vec![counter; 1024];
         counter = counter.wrapping_add(1);
 

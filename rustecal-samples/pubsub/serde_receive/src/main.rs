@@ -9,11 +9,11 @@ struct SimpleMessage {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Initialize eCAL
+    // initialize eCAL
     Ecal::initialize(Some("serde receive rust"), EcalComponents::DEFAULT, None)
         .expect("eCAL initialization failed");
 
-    // Create a typed subscriber for topic "simple_message"
+    // create a typed subscriber for topic "simple_message"
     let mut subscriber: TypedSubscriber<JsonMessage<SimpleMessage>> =
         TypedSubscriber::new("simple_message")?;
 

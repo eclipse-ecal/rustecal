@@ -10,7 +10,7 @@ use people::Person;
 impl IsProtobufType for Person {}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Initialize eCAL
+    // initialize eCAL
     Ecal::initialize(Some("person receive rust"), EcalComponents::DEFAULT, None)
         .expect("eCAL initialization failed");
 

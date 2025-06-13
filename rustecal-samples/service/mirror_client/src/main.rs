@@ -4,13 +4,13 @@ use std::thread;
 use std::time::Duration;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Initialize eCAL
+    // initialize eCAL
     Ecal::initialize(Some("mirror client rust"), EcalComponents::DEFAULT, None)
         .expect("eCAL initialization failed");
 
     let client = ServiceClient::new("mirror")?;
 
-    // Wait until connected
+    // wait until connected
     while client.get_client_instances().is_empty() {
         println!("Waiting for a service ..");
         thread::sleep(Duration::from_secs(1));

@@ -8,11 +8,11 @@ struct SimpleMessage {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Initialize eCAL
+    // initialize eCAL
     Ecal::initialize(Some("serde send rust"), EcalComponents::DEFAULT, None)
         .expect("eCAL initialization failed");
 
-    // Create a typed publisher for topic "simple_message"
+    // create a typed publisher for topic "simple_message"
     let publisher: TypedPublisher<JsonMessage<SimpleMessage>> =
         TypedPublisher::new("simple_message")?;
 
@@ -25,7 +25,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         };
         let wrapped = JsonMessage::new(payload.clone());
 
-        // Send over eCAL pub/sub
+        // send over eCAL pub/sub
         publisher.send(&wrapped);
         println!(
             "Sent: message = {}, count = {}",
@@ -35,7 +35,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
 
-    // Clean up and finalize eCAL
+    // clean up and finalize eCAL
     Ecal::finalize();
     Ok(())
 }

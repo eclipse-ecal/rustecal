@@ -3,7 +3,7 @@ use rustecal::pubsub::typed_subscriber::Received;
 use rustecal_types_string::StringMessage;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Initialize eCAL
+    // initialize eCAL
     Ecal::initialize(Some("hello receive rust"), EcalComponents::DEFAULT, None)
         .expect("eCAL initialization failed");
 
