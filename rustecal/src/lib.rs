@@ -24,7 +24,7 @@
 
 // —————————————————————————————————————————————————————————————————————————————
 // Core initialization & types (always available)
-pub use rustecal_core::{Ecal, EcalComponents};
+pub use rustecal_core::{Ecal, EcalComponents, Configuration};
 
 // —————————————————————————————————————————————————————————————————————————————
 // Pub/Sub API (requires the `pubsub` feature)

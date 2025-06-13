@@ -1,13 +1,13 @@
 //! configuration.rs
 //!
-//! Provides a safe Rust wrapper around the eCAL C Configuration API
+//! Provides a safe Rust wrapper around the eCAL C Configuration API.
 //!
 //! This module exposes a `Configuration` struct that manages an
 //! `eCAL_Configuration` instance via FFI. It supports initializing
 //! default settings or loading from a YAML file, and automatically
 //! frees the underlying C object on drop.
 
-use std::{ffi::{CStr, CString}, path::Path};
+use std::{ffi::{CStr, CString}, path::Path, ops::{Deref, DerefMut}};
 use thiserror::Error;
 use rustecal_sys as sys;
 
@@ -31,33 +31,25 @@ unsafe impl Sync for Configuration {}
 impl Configuration {
   /// Creates a new Configuration with default values loaded via eCAL_Configuration_InitFromConfig
   pub fn new() -> Result<Self, ConfigError> {
-    // Allocate new eCAL_Configuration
     let cfg = unsafe { sys::eCAL_Configuration_New() };
     if cfg.is_null() {
       return Err(ConfigError::NullPointer);
     }
-    // Initialize configuration with default settings
     unsafe { sys::eCAL_Configuration_InitFromConfig(cfg) };
     Ok(Configuration { inner: cfg })
   }
 
   /// Loads a Configuration from a YAML file at the given path
   pub fn from_file(path: &str) -> Result<Self, ConfigError> {
-    // Check that the file exists
     if !Path::new(path).exists() {
       return Err(ConfigError::InvalidPath(path.to_string()));
     }
-    // Convert Rust &str to CString
     let c_path = CString::new(path).map_err(|_| ConfigError::InvalidPath(path.to_string()))?;
-
-    // Allocate new eCAL_Configuration
     let cfg = unsafe { sys::eCAL_Configuration_New() };
     if cfg.is_null() {
       return Err(ConfigError::NullPointer);
     }
-    // Load configuration from file (void return type)
     unsafe { sys::eCAL_Configuration_InitFromFile(cfg, c_path.as_ptr()) };
-
     Ok(Configuration { inner: cfg })
   }
 
@@ -76,6 +68,21 @@ impl Configuration {
   /// Returns a raw pointer to the underlying eCAL_Configuration for FFI calls
   pub(crate) fn as_ptr(&self) -> *const sys::eCAL_Configuration {
     self.inner as *const _
+  }
+}
+
+/// Allow transparent access to the underlying C struct
+impl Deref for Configuration {
+  type Target = sys::eCAL_Configuration;
+  fn deref(&self) -> &Self::Target {
+    unsafe { &*self.inner }
+  }
+}
+
+/// Allow mutable access to the underlying C struct
+impl DerefMut for Configuration {
+  fn deref_mut(&mut self) -> &mut Self::Target {
+    unsafe { &mut *self.inner }
   }
 }
 
