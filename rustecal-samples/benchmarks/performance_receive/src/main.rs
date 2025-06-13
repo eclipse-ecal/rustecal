@@ -1,11 +1,7 @@
 //! A performance benchmark subscriber in Rust, modeled on the eCAL C++ sample.
 //!
 
-use std::{
-    sync::{Arc, Mutex, atomic::{AtomicU64, Ordering}},
-    thread,
-    time::{Duration, Instant},
-};
+use std::{sync::{Arc, Mutex, atomic::Ordering}, thread, time::{Duration, Instant}};
 use rustecal::{Ecal, EcalComponents, TypedSubscriber};
 use rustecal::pubsub::typed_subscriber::Received;
 use rustecal_types_bytes::BytesMessage;
