@@ -16,7 +16,7 @@ Rust bindings for the high-performance [eCAL](https://github.com/eclipse-ecal/ec
 
 ## System Requirements
 
-This crate requires a native installation of the [Eclipse eCAL](https://github.com/eclipse-ecal/ecal) C/C++ runtime, version 6.0 or newer. General instructions for installation can be found [here](https://eclipse-ecal.github.io/ecal/stable/getting_started/setup.html), the crate will fail to compile if the native libraries are not found.
+This crate requires a native installation of the [Eclipse eCAL](https://github.com/eclipse-ecal/ecal) C/C++ runtime, version 6.0 or newer. General instructions for installation can be found [here](https://eclipse-ecal.github.io/ecal/stable/getting_started/setup.html). The crate will fail to compile if the native libraries are not found.
 
 ## Examples
 
