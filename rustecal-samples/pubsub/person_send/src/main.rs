@@ -44,7 +44,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         // wrap the person struct in ProtobufMessage
         let wrapped = ProtobufMessage { data: Arc::from(person) };
-        publisher.send(&wrapped);
+        publisher.send(&wrapped, None);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }

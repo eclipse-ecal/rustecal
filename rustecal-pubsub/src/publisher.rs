@@ -67,43 +67,25 @@ impl Publisher {
     /// # Arguments
     ///
     /// * `data` - A byte buffer containing the serialized message payload.
+    /// * `timestamp` - Optional timestamp in microseconds (use `None` to let eCAL determine the time).
     ///
     /// # Returns
     ///
     /// `true` on success, `false` on failure.
-    pub fn send(&self, data: &[u8]) -> bool {
+    pub fn send(&self, data: &[u8], timestamp: Option<i64>) -> bool {
+        let ts_ptr = timestamp
+            .as_ref()
+            .map(|t| t as *const i64)
+            .unwrap_or(ptr::null());
         let ret = unsafe {
             eCAL_Publisher_Send(
                 self.handle,
                 data.as_ptr() as *const _,
                 data.len(),
-                ptr::null(),
+                ts_ptr,
             )
         };
-        // note: eCAL returns 0 on success, non-zero on failure
-        ret == 0
-    }
-
-    /// Sends a serialized message with a custom timestamp.
-    ///
-    /// # Arguments
-    ///
-    /// * `data` - A byte buffer containing the message.
-    /// * `timestamp` - Timestamp in microseconds (use `-1` to let eCAL determine the time).
-    ///
-    /// # Returns
-    ///
-    /// `true` on success, `false` on failure.
-    pub fn send_with_timestamp(&self, data: &[u8], timestamp: i64) -> bool {
-        let ret = unsafe {
-            eCAL_Publisher_Send(
-                self.handle,
-                data.as_ptr() as *const _,
-                data.len(),
-                &timestamp as *const _ as *const _,
-            )
-        };
-        // note: eCAL returns 0 on success, non-zero on failure
+        // eCAL returns 0 on success
         ret == 0
     }
 
@@ -117,7 +99,7 @@ impl Publisher {
     /// # Returns
     ///
     /// `true` on success, `false` on failure.
-    pub fn send_payload_writer<W: PayloadWriter + 'static>(
+    pub fn send_payload_writer<W: PayloadWriter>(
         &self,
         writer: &mut W,
         timestamp: Option<i64>,
@@ -143,7 +125,7 @@ impl Publisher {
 
         // call into the FFI
         let result = unsafe {
-            rustecal_sys::eCAL_Publisher_SendPayloadWriter(
+            eCAL_Publisher_SendPayloadWriter(
                 self.handle,
                 &c_writer as *const _,
                 ts_ptr,
@@ -159,7 +141,7 @@ impl Publisher {
         result == 0
     }
     
-    /// Returns the number of currently connected subscribers.
+    /// Retrieves the number of currently connected subscribers.
     pub fn get_subscriber_count(&self) -> usize {
         unsafe { eCAL_Publisher_GetSubscriberCount(self.handle) }
     }

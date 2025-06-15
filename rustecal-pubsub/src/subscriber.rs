@@ -96,7 +96,7 @@ impl Subscriber {
         self.handle
     }
 
-    /// Returns the number of currently connected publishers.
+    /// Retrieves the number of currently connected publishers.
     pub fn get_publisher_count(&self) -> usize {
         unsafe { eCAL_Subscriber_GetPublisherCount(self.handle) }
     }

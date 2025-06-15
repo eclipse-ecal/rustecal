@@ -26,7 +26,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let wrapped = JsonMessage::new(payload.clone());
 
         // send over eCAL pub/sub
-        publisher.send(&wrapped);
+        publisher.send(&wrapped, None);
         println!(
             "Sent: message = {}, count = {}",
             wrapped.data.message, wrapped.data.count

@@ -7,39 +7,44 @@ use std::sync::Arc;
 use std::marker::PhantomData;
 use std::slice;
 
-/// Trait that must be implemented for any type used with [`TypedSubscriber`].
+/// A trait for message types that can be deserialized by [`TypedSubscriber`].
 ///
-/// Provides metadata and deserialization logic for a specific message type.
+/// Implement this trait for any type `T` that needs to be reconstructed
+/// from raw bytes plus metadata in a typed subscriber.
 pub trait SubscriberMessage: Sized {
-    /// Returns the metadata that describes this message type (encoding, name, optional descriptor).
+    /// Returns metadata (encoding, type name, descriptor) for this message type.
     fn datatype() -> DataTypeInfo;
 
-    /// Constructs an instance of the message type from a byte buffer and the accompanying DataTypeInfo.
+    /// Deserializes a message instance from a byte buffer and its metadata.
+    ///
+    /// # Arguments
+    ///
+    /// * `bytes` — A shared byte buffer containing the payload.
+    /// * `data_type_info` — The corresponding `DataTypeInfo` describing the payload format.
+    ///
+    /// # Returns
+    ///
+    /// `Some(T)` on success, or `None` on failure.
     fn from_bytes(bytes: Arc<[u8]>, data_type_info: &DataTypeInfo) -> Option<Self>;
 }
 
-/// Represents a received message with associated metadata.
+/// A received message, with payload and metadata.
 pub struct Received<T> {
-    /// The decoded message of type `T`.
-    pub payload: T,
-
-    /// The name of the topic this message was received on.
+    /// The deserialized payload of type `T`.
+    pub payload:    T,
+    /// The topic name this message was received on.
     pub topic_name: String,
-
-    /// The declared encoding format (e.g. "proto", "string", "raw", "json").
-    pub encoding: String,
-
-    /// The declared type name of the message.
-    pub type_name: String,
-
-    /// The send timestamp provided by the publisher (microseconds since epoch).
-    pub timestamp: i64,
-
-    /// The logical clock value at which the message was sent.
-    pub clock: i64,
+    /// The declared encoding format (e.g. "proto", "raw").
+    pub encoding:   String,
+    /// The declared type name for the message.
+    pub type_name:  String,
+    /// The publisher's send timestamp (microseconds since epoch).
+    pub timestamp:  i64,
+    /// The publisher's logical clock at send time.
+    pub clock:      i64,
 }
 
-/// Internal trampoline wrapper that stores a type-erased callback for dispatching typed messages.
+/// Wrapper to store a boxed callback for `Received<T>`
 struct CallbackWrapper<T: SubscriberMessage> {
     callback: Box<dyn Fn(Received<T>) + Send + Sync>,
 }
@@ -59,17 +64,19 @@ impl<T: SubscriberMessage> CallbackWrapper<T> {
     }
 }
 
-/// A high-level, type-safe subscriber for a specific message type `T`.
+/// A type-safe, high-level subscriber for messages of type `T`.
 ///
-/// Wraps the lower-level [`Subscriber`] to provide automatic deserialization and typed callbacks.
+/// Wraps a lower-level [`Subscriber`] and provides automatic deserialization
+/// plus typed callbacks.
 ///
-/// # Example
+/// # Examples
+///
 /// ```no_run
 /// use rustecal::TypedSubscriber;
 /// use rustecal_types_string::StringMessage;
 ///
-/// let mut sub = TypedSubscriber::<StringMessage>::new("hello").unwrap();
-/// sub.set_callback(|msg| println!("Received: {}", msg.msg.0));
+/// let mut sub = TypedSubscriber::<StringMessage>::new("topic").unwrap();
+/// sub.set_callback(|msg| println!("Got: {}", msg.payload.0));
 /// ```
 pub struct TypedSubscriber<T: SubscriberMessage> {
     subscriber: Subscriber,
@@ -105,8 +112,6 @@ impl<T: SubscriberMessage> TypedSubscriber<T> {
 
     /// Registers a user callback that receives a deserialized message with metadata.
     ///
-    /// This replaces any previously set callback and transfers ownership of the closure.
-    ///
     /// # Arguments
     ///
     /// * `callback` - A closure accepting a [`Received<T>`] message.
@@ -131,10 +136,7 @@ impl<T: SubscriberMessage> TypedSubscriber<T> {
         }
     }
 
-    /// Returns the number of currently connected publishers to this topic.
-    ///
-    /// This can be used for diagnostics or to implement optional behavior based
-    /// on whether any publisher is present.
+    /// Returns the number of currently connected publishers.
     pub fn get_publisher_count(&self) -> usize {
         self.subscriber.get_publisher_count()
     }
@@ -146,9 +148,7 @@ impl<T: SubscriberMessage> TypedSubscriber<T> {
         self.subscriber.get_topic_name()
     }
 
-    /// Returns the unique topic ID used internally by eCAL.
-    ///
-    /// This can be useful for introspection or advanced matching logic across nodes.
+    /// Returns the topic ID assigned by eCAL.
     pub fn get_topic_id(&self) -> Option<TopicId> {
         self.subscriber.get_topic_id()
     }

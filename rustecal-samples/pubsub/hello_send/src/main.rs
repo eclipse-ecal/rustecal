@@ -15,7 +15,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let msg = format!("HELLO WORLD FROM RUST ({})", count);
 
         let wrapped = StringMessage{ data: Arc::<str>::from(msg) };
-        publisher.send(&wrapped);
+        publisher.send(&wrapped, None);
 
         println!("Sent: {}", wrapped.data);
 

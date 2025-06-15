@@ -1,34 +1,25 @@
-use crate::publisher::Publisher;
+use crate::{publisher::Publisher, payload_writer::PayloadWriter, types::TopicId};
 use rustecal_core::types::DataTypeInfo;
-use crate::types::TopicId;
-use std::sync::Arc;
-use std::marker::PhantomData;
+use std::{marker::PhantomData, sync::Arc};
 
-/// Trait for types that can be published via [`TypedPublisher`].
+/// A trait for message types that can be published via [`TypedPublisher`].
 ///
-/// Implement this trait for any message type `T` that should be serialized and sent
-/// through eCAL's typed publisher API.
-///
-/// # Required Methods
-///
-/// - [`datatype()`]: Returns metadata describing the encoding, type name,
-///   and optional descriptor (e.g., Protobuf schema).
-/// - [`to_bytes()`]: Serializes the message into a binary buffer.
+/// Implement this trait for any type `T` that needs to be serialized
+/// and sent through eCAL's typed publisher API.
 pub trait PublisherMessage {
-    /// Returns topic metadata for this message type.
+    /// Returns metadata (encoding, type name, descriptor) for this message type.
     fn datatype() -> DataTypeInfo;
 
-    /// Serializes the message into a byte buffer for transmission.
+    /// Serializes the message into a shared, reference-counted byte buffer.
     fn to_bytes(&self) -> Arc<[u8]>;
 }
 
-/// Type-safe, high-level wrapper around an eCAL publisher for messages of type `T`.
+/// A type-safe, high-level wrapper over an eCAL publisher for messages of type `T`.
 ///
-/// This struct wraps an untyped [`Publisher`] and ensures that only compatible messages
-/// are published. It automatically serializes values of type `T` using the
-/// [`PublisherMessage`] trait implementation.
+/// Wraps an untyped [`Publisher`] and enforces that only compatible messages
+/// (implementing [`PublisherMessage`]) are published.
 ///
-/// # Example
+/// # Examples
 ///
 /// ```no_run
 /// use rustecal::TypedPublisher;
@@ -39,50 +30,63 @@ pub trait PublisherMessage {
 /// ```
 pub struct TypedPublisher<T: PublisherMessage> {
     publisher: Publisher,
-    _phantom: PhantomData<T>,
+    _phantom:  PhantomData<T>,
 }
 
 impl<T: PublisherMessage> TypedPublisher<T> {
-    /// Creates a new typed publisher for the specified topic.
+    /// Creates a new typed publisher for the given topic.
     ///
     /// # Arguments
     ///
-    /// * `topic_name` - The topic name to publish to.
+    /// * `topic_name` — The topic name to publish to.
     ///
     /// # Errors
     ///
-    /// Returns a `String` if the underlying eCAL publisher could not be created.
+    /// Returns an `Err(String)` if the underlying eCAL publisher could not be created.
     pub fn new(topic_name: &str) -> Result<Self, String> {
-        let datatype = T::datatype();
+        let datatype  = T::datatype();
         let publisher = Publisher::new(topic_name, datatype)?;
 
-        Ok(Self {
-            publisher,
-            _phantom: PhantomData,
-        })
+        Ok(Self { publisher, _phantom: PhantomData })
     }
 
     /// Sends a message of type `T` to all connected subscribers.
     ///
-    /// The message is serialized using [`PublisherMessage::to_bytes()`].
+    /// Serializes the message via [`PublisherMessage::to_bytes()`], and
+    /// optionally specifies a timestamp in microseconds.
     ///
     /// # Arguments
     ///
-    /// * `message` - The typed message to send.
-    pub fn send(&self, message: &T) {
+    /// * `message` — The typed message to send.
+    /// * `timestamp` — Optional timestamp in microseconds (use `None` to let eCAL auto-timestamp).
+    ///
+    /// # Returns
+    ///
+    /// `true` on success, `false` on failure.
+    pub fn send(&self, message: &T, timestamp: Option<i64>) -> bool {
         let bytes = message.to_bytes();
-        self.publisher.send(&bytes);
+        self.publisher.send(&bytes, timestamp)
     }
 
-    /// Sends a message of type `T` with a custom timestamp (in microseconds).
+    /// Performs a zero-copy send using a [`PayloadWriter`].
+    ///
+    /// Bypasses an intermediate buffer for types (like `BytesMessage`)
+    /// that implement `PayloadWriter`.
     ///
     /// # Arguments
     ///
-    /// * `message` - The message to send.
-    /// * `timestamp` - Custom timestamp to associate with the message.
-    pub fn send_with_timestamp(&self, message: &T, timestamp: i64) {
-        let bytes = message.to_bytes();
-        self.publisher.send_with_timestamp(&bytes, timestamp);
+    /// * `writer` — A mutable reference to a `PayloadWriter`.
+    /// * `timestamp` — Optional timestamp in microseconds (use `None` to let eCAL auto-timestamp).
+    ///
+    /// # Returns
+    ///
+    /// `true` on success, `false` on failure.
+    pub fn send_payload_writer<W: PayloadWriter>(
+        &self,
+        writer: &mut W,
+        timestamp: Option<i64>,
+    ) -> bool {
+        self.publisher.send_payload_writer(writer, timestamp)
     }
 
     /// Returns the number of currently connected subscribers.
@@ -95,12 +99,17 @@ impl<T: PublisherMessage> TypedPublisher<T> {
         self.publisher.get_topic_name()
     }
 
-    /// Returns the topic ID as seen by the eCAL system.
+    /// Returns the topic ID assigned by eCAL.
     pub fn get_topic_id(&self) -> Option<TopicId> {
         self.publisher.get_topic_id()
     }
 
-    /// Returns the declared message type metadata.
+    /// Returns the declared data type metadata for this topic.
+    ///
+    /// Includes:
+    /// - `encoding` (e.g. `"proto"`, `"string"`, `"raw"`)
+    /// - `type_name` (e.g. Protobuf type or Rust type)
+    /// - `descriptor` (optional descriptor bytes, e.g. protobuf schema)
     pub fn get_data_type_information(&self) -> Option<DataTypeInfo> {
         self.publisher.get_data_type_information()
     }

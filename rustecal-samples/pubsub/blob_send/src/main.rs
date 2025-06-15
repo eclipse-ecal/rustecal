@@ -16,7 +16,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         counter = counter.wrapping_add(1);
 
         let wrapped = BytesMessage { data: Arc::from(buffer) };
-        publisher.send(&wrapped);
+        publisher.send(&wrapped, None);
 
         println!("Sent buffer filled with {}", counter);
 
