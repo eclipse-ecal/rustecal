@@ -1,6 +1,7 @@
 use rustecal_sys::*;
 use rustecal_core::types::DataTypeInfo;
 use crate::types::TopicId;
+use crate::payload_writer::{PayloadWriter, CURRENT_WRITER, write_full_cb, write_mod_cb, get_size_cb};
 use std::ffi::{CStr, CString};
 use std::ptr;
 
@@ -69,16 +70,18 @@ impl Publisher {
     ///
     /// # Returns
     ///
-    /// `1` on success, `0` on failure.
-    pub fn send(&self, data: &[u8]) -> i32 {
-        unsafe {
+    /// `true` on success, `false` on failure.
+    pub fn send(&self, data: &[u8]) -> bool {
+        let ret = unsafe {
             eCAL_Publisher_Send(
                 self.handle,
                 data.as_ptr() as *const _,
                 data.len(),
                 ptr::null(),
             )
-        }
+        };
+        // note: eCAL returns 0 on success, non-zero on failure
+        ret == 0
     }
 
     /// Sends a serialized message with a custom timestamp.
@@ -90,18 +93,72 @@ impl Publisher {
     ///
     /// # Returns
     ///
-    /// `1` on success, `0` on failure.
-    pub fn send_with_timestamp(&self, data: &[u8], timestamp: i64) -> i32 {
-        unsafe {
+    /// `true` on success, `false` on failure.
+    pub fn send_with_timestamp(&self, data: &[u8], timestamp: i64) -> bool {
+        let ret = unsafe {
             eCAL_Publisher_Send(
                 self.handle,
                 data.as_ptr() as *const _,
                 data.len(),
                 &timestamp as *const _ as *const _,
             )
-        }
+        };
+        // note: eCAL returns 0 on success, non-zero on failure
+        ret == 0
     }
 
+    /// Sends a zero-copy payload using a `PayloadWriter`.
+    ///
+    /// # Arguments
+    ///
+    /// * `writer` - A mutable reference to a `PayloadWriter` implementation.
+    /// * `timestamp` - Optional timestamp in microseconds (use `None` to let eCAL determine the time).
+    ///
+    /// # Returns
+    ///
+    /// `true` on success, `false` on failure.
+    pub fn send_payload_writer<W: PayloadWriter + 'static>(
+        &self,
+        writer: &mut W,
+        timestamp: Option<i64>,
+    ) -> bool {
+        // stash the writer pointer in TLS
+        let ptr = writer as *mut W as *mut dyn PayloadWriter;
+        CURRENT_WRITER.with(|cell| {
+            *cell.borrow_mut() = Some(ptr);
+        });
+
+        // build the C payload writer struct
+        let c_writer = eCAL_PayloadWriter {
+            WriteFull:     Some(write_full_cb),
+            WriteModified: Some(write_mod_cb),
+            GetSize:       Some(get_size_cb),
+        };
+
+        // prepare timestamp pointer
+        let ts_ptr = timestamp
+            .as_ref()
+            .map(|t| t as *const i64)
+            .unwrap_or(ptr::null());
+
+        // call into the FFI
+        let result = unsafe {
+            rustecal_sys::eCAL_Publisher_SendPayloadWriter(
+                self.handle,
+                &c_writer as *const _,
+                ts_ptr,
+            )
+        };
+
+        // clear the slot
+        CURRENT_WRITER.with(|cell| {
+            cell.borrow_mut().take();
+        });
+
+        // eCAL returns 0 on success
+        result == 0
+    }
+    
     /// Returns the number of currently connected subscribers.
     pub fn get_subscriber_count(&self) -> usize {
         unsafe { eCAL_Publisher_GetSubscriberCount(self.handle) }

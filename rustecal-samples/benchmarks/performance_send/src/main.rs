@@ -3,15 +3,19 @@
 //! This will send messages of the given size in a tight loop, logging
 //! throughput every second.
 
-use std::{env, sync::Arc, time::{Duration, Instant}};
-use rustecal::{Ecal, EcalComponents, Configuration, TypedPublisher};
-use rustecal_types_bytes::BytesMessage;
+use std::{env, time::{Duration, Instant}};
+use rustecal::{Ecal, EcalComponents, Configuration, Publisher};
+use rustecal_core::types::DataTypeInfo;
+use std::thread::sleep;
+
+mod binary_payload_writer;
+use binary_payload_writer::BinaryPayload;
 
 // performance settings
-const ZERO_COPY:               bool  = true;
-const BUFFER_COUNT:            u32   = 1;
-const ACKNOWLEDGE_TIMEOUT_MS:  i32   = 50;
-const PAYLOAD_SIZE_DEFAULT:    usize = 8 * 1024 * 1024;
+const ZERO_COPY:              bool  = true;
+const BUFFER_COUNT:           u32   = 1;
+const ACKNOWLEDGE_TIMEOUT_MS: i32   = 50;
+const PAYLOAD_SIZE_DEFAULT:   usize = 8 * 1024 * 1024;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // parse payload size from CLI (or use default)
@@ -32,51 +36,53 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Payload size            : {} bytes", payload_size);
     println!();
 
-    // prepare and tweak eCAL Configuration
+    // configure eCAL
     let mut cfg = Configuration::new()?;
     cfg.publisher.layer.shm.zero_copy_mode         = ZERO_COPY as i32;
     cfg.publisher.layer.shm.memfile_buffer_count   = BUFFER_COUNT;
     cfg.publisher.layer.shm.acknowledge_timeout_ms = ACKNOWLEDGE_TIMEOUT_MS as u32;
 
-    // initialize eCAL with custom config
-    Ecal::initialize(Some("performance send rust"), EcalComponents::DEFAULT, Some(&cfg))
-        .expect("eCAL initialization failed");
+    // initialize
+    Ecal::initialize(
+        Some("performance_send_rust"),
+        EcalComponents::DEFAULT,
+        Some(&cfg),
+    )?;
 
-    // create payload buffer and publisher
-    let payload_vec: Vec<u8> = vec![0u8; payload_size];
-    let mut payload: Arc<[u8]> = Arc::from(payload_vec);
-    let publisher: TypedPublisher<BytesMessage> = TypedPublisher::new("Performance")?;
+    // create an untyped publisher
+    let data_type_info = DataTypeInfo {
+        encoding: "raw".into(),
+        type_name: "bytes".into(),
+        descriptor: Vec::new()
+    };
+    let publisher = Publisher::new("Performance", data_type_info)?;
 
-    // benchmark loop
+    // prepare our zero-copy payload
+    let mut payload = BinaryPayload::new(payload_size);
+
+    // counters
     let mut msgs_sent  = 0u64;
     let mut bytes_sent = 0u64;
     let mut iterations = 0u64;
     let mut last_log   = Instant::now();
 
-    // wait for at least one subscriber to be ready
+    // wait for subscriber
     while publisher.get_subscriber_count() == 0 {
-        println!("Waiting for performance receive to start ...");
-        std::thread::sleep(Duration::from_millis(1000));
+        println!("Waiting for receiver …");
+        sleep(Duration::from_secs(1));
     }
     println!();
 
     // send loop
     while Ecal::ok() {
-        // modify the payload for each message
-        {
-            let buf: &mut [u8] = Arc::make_mut(&mut payload);
-            let chr = (msgs_sent % 9 + 48) as u8;
-            buf[0..16].fill(chr);
-        }
-
-        let wrapped = BytesMessage { data: payload.clone() };
-        publisher.send(&wrapped);
+        // send via zero-copy writer
+        publisher.send_payload_writer(& mut payload, None);
 
         msgs_sent  += 1;
         bytes_sent += payload_size as u64;
         iterations += 1;
 
-        // every second, print statistics
+        // every ~2000 msgs, log if 1s has passed
         if iterations % 2000 == 0 {
             let elapsed = last_log.elapsed();
             if elapsed >= Duration::from_secs(1) {
@@ -95,6 +101,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 println!("Latency      (µs)   : {:.2}", latency_us);
                 println!();
 
+                // reset counters
                 msgs_sent  = 0;
                 bytes_sent = 0;
                 last_log   = Instant::now();

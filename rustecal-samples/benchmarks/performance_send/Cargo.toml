@@ -5,4 +5,5 @@ edition = "2021"
 
 [dependencies]
 rustecal = { path = "../../../rustecal", features = ["pubsub"] }
-rustecal-types-bytes = { path = "../../../rustecal-types-bytes" }
+rustecal-core = { path = "../../../rustecal-core" }
+rustecal-pubsub = { path = "../../../rustecal-pubsub" }
