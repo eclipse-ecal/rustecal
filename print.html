@@ -252,8 +252,7 @@
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="binary-message-example"><a class="header" href="#binary-message-example">Binary Message Example</a></h1>
 <h2 id="publisher"><a class="header" href="#publisher">Publisher</a></h2>
-<pre><pre class="playground"><code class="language-rust">use std::sync::Arc;
-use rustecal::{Ecal, EcalComponents, TypedPublisher};
+<pre><pre class="playground"><code class="language-rust">use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_bytes::BytesMessage;
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
@@ -266,8 +265,8 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
         let buf = vec![counter; 1024];
         counter = counter.wrapping_add(1);
 
-        let message = BytesMessage { data: Arc::from(buf) };
-        publisher.send(&amp;message);
+        let message = BytesMessage { data: buf.into() };
+        publisher.send(&amp;message, Timestamp::Auto);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
@@ -296,8 +295,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 }</code></pre></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="string-message-example"><a class="header" href="#string-message-example">String Message Example</a></h1>
 <h2 id="publisher-1"><a class="header" href="#publisher-1">Publisher</a></h2>
-<pre><pre class="playground"><code class="language-rust">use std::sync::Arc;
-use rustecal::{Ecal, EcalComponents, TypedPublisher};
+<pre><pre class="playground"><code class="language-rust">use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_string::StringMessage;
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
@@ -306,8 +304,8 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     let publisher = TypedPublisher::&lt;StringMessage&gt;::new("hello")?;
 
     while Ecal::ok() {
-        let message = StringMessage { data: Arc::from("Hello from Rust") };
-        publisher.send(&amp;message);
+        let message = StringMessage { data: "Hello from Rust".into() };
+        publisher.send(&amp;message, Timestamp::Auto);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
@@ -356,7 +354,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
         let person = Person { id: 1, name: "Alice".into(), ..Default::default() };
 
         let message = ProtobufMessage { data : Arc::from(person) };
-        publisher.send(&amp;message);
+        publisher.send(&amp;message, Timestamp::Auto);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
@@ -392,8 +390,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 }</code></pre></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="json-message-example"><a class="header" href="#json-message-example">JSON Message Example</a></h1>
 <h2 id="publisher-3"><a class="header" href="#publisher-3">Publisher</a></h2>
-<pre><pre class="playground"><code class="language-rust">use std::sync::Arc;
-use serde::{Serialize, Deserialize};
+<pre><pre class="playground"><code class="language-rust">use serde::{Serialize, Deserialize};
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_serde::JsonMessage;
 
@@ -410,7 +407,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     while Ecal::ok() {
         let payload = MyData { msg: "Hello from Rust".into() };
         let message = JsonMessage::new(payload);
-        publisher.send(&amp;message);
+        publisher.send(&amp;message, Timestamp::Auto);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
@@ -419,8 +416,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     Ok(())
 }</code></pre></pre>
 <h2 id="subscriber-3"><a class="header" href="#subscriber-3">Subscriber</a></h2>
-<pre><pre class="playground"><code class="language-rust">use std::sync::Arc;
-use serde::{Serialize, Deserialize};
+<pre><pre class="playground"><code class="language-rust">use serde::{Serialize, Deserialize};
 use rustecal::{Ecal, EcalComponents, TypedSubscriber};
 use rustecal_types_serde::JsonMessage;
 
@@ -582,14 +578,13 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 <h2 id="example-1"><a class="header" href="#example-1">Example</a></h2>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use std::sync::Arc;
-use rustecal::{Ecal, EcalComponents, TypedPublisher};
+</span>use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_string::StringMessage;
 
 let publisher = TypedPublisher::&lt;StringMessage&gt;::new("hello").unwrap();
 
-let message = StringMessage { data: Arc::from("Hello from Rust") };
-publisher.send(&amp;message);
+let message = StringMessage { data: "Hello from Rust".into() }
+publisher.send(&amp;message, Timestamp::Auto);
 <span class="boring">}</span></code></pre></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="typed-subscriber"><a class="header" href="#typed-subscriber">Typed Subscriber</a></h1>
 <p>The <code>Subscriber&lt;T&gt;</code> enables you to subscribe to messages of type <code>T</code> on a topic.</p>

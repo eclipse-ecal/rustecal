@@ -188,7 +188,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
         let person = Person { id: 1, name: "Alice".into(), ..Default::default() };
 
         let message = ProtobufMessage { data : Arc::from(person) };
-        publisher.send(&amp;message);
+        publisher.send(&amp;message, Timestamp::Auto);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }

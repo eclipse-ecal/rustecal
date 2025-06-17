@@ -168,8 +168,7 @@
                     <main>
                         <h1 id="json-message-example"><a class="header" href="#json-message-example">JSON Message Example</a></h1>
 <h2 id="publisher"><a class="header" href="#publisher">Publisher</a></h2>
-<pre><pre class="playground"><code class="language-rust">use std::sync::Arc;
-use serde::{Serialize, Deserialize};
+<pre><pre class="playground"><code class="language-rust">use serde::{Serialize, Deserialize};
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_serde::JsonMessage;
 
@@ -186,7 +185,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     while Ecal::ok() {
         let payload = MyData { msg: "Hello from Rust".into() };
         let message = JsonMessage::new(payload);
-        publisher.send(&amp;message);
+        publisher.send(&amp;message, Timestamp::Auto);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
@@ -195,8 +194,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     Ok(())
 }</code></pre></pre>
 <h2 id="subscriber"><a class="header" href="#subscriber">Subscriber</a></h2>
-<pre><pre class="playground"><code class="language-rust">use std::sync::Arc;
-use serde::{Serialize, Deserialize};
+<pre><pre class="playground"><code class="language-rust">use serde::{Serialize, Deserialize};
 use rustecal::{Ecal, EcalComponents, TypedSubscriber};
 use rustecal_types_serde::JsonMessage;
 
