@@ -1,4 +1,4 @@
-use crate::{publisher::Publisher, payload_writer::PayloadWriter, types::TopicId};
+use crate::{publisher::{Publisher, Timestamp}, payload_writer::PayloadWriter, types::TopicId};
 use rustecal_core::types::DataTypeInfo;
 use std::{marker::PhantomData, sync::Arc};
 
@@ -25,8 +25,8 @@ pub trait PublisherMessage {
 /// use rustecal::TypedPublisher;
 /// use rustecal_types_string::StringMessage;
 ///
-/// let pub_ = TypedPublisher::<StringMessage>::new("hello").unwrap();
-/// pub_.send(&StringMessage(Arc::from("Hello World!")));
+/// let pub_ = TypedPublisher::<StringMessage>::new("hello topic").unwrap();
+/// pub_.send(&StringMessage{data: "Hello!".into()}, Timestamp::Auto);
 /// ```
 pub struct TypedPublisher<T: PublisherMessage> {
     publisher: Publisher,
@@ -53,17 +53,17 @@ impl<T: PublisherMessage> TypedPublisher<T> {
     /// Sends a message of type `T` to all connected subscribers.
     ///
     /// Serializes the message via [`PublisherMessage::to_bytes()`], and
-    /// optionally specifies a timestamp in microseconds.
+    /// specifies when to timestamp (auto or custom).
     ///
     /// # Arguments
     ///
     /// * `message` — The typed message to send.
-    /// * `timestamp` — Optional timestamp in microseconds (use `None` to let eCAL auto-timestamp).
+    /// * `timestamp` — When to timestamp the message.
     ///
     /// # Returns
     ///
     /// `true` on success, `false` on failure.
-    pub fn send(&self, message: &T, timestamp: Option<i64>) -> bool {
+    pub fn send(&self, message: &T, timestamp: Timestamp) -> bool {
         let bytes = message.to_bytes();
         self.publisher.send(&bytes, timestamp)
     }
@@ -76,7 +76,7 @@ impl<T: PublisherMessage> TypedPublisher<T> {
     /// # Arguments
     ///
     /// * `writer` — A mutable reference to a `PayloadWriter`.
-    /// * `timestamp` — Optional timestamp in microseconds (use `None` to let eCAL auto-timestamp).
+    /// * `timestamp` — When to timestamp the message.
     ///
     /// # Returns
     ///
@@ -84,7 +84,7 @@ impl<T: PublisherMessage> TypedPublisher<T> {
     pub fn send_payload_writer<W: PayloadWriter>(
         &self,
         writer: &mut W,
-        timestamp: Option<i64>,
+        timestamp: Timestamp,
     ) -> bool {
         self.publisher.send_payload_writer(writer, timestamp)
     }

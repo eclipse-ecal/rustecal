@@ -10,6 +10,7 @@ use rustecal_types_bytes::BytesMessage;
 
 mod binary_payload_writer;
 use binary_payload_writer::BinaryPayload;
+use rustecal_pubsub::publisher::Timestamp;
 
 // performance settings
 const ZERO_COPY:              bool  = true;
@@ -68,7 +69,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // send loop
     while Ecal::ok() {
         // zero-copy send via PayloadWriter
-        typed_pub.send_payload_writer(&mut payload, None);
+        typed_pub.send_payload_writer(&mut payload, Timestamp::Auto);
 
         msgs_sent  += 1;
         bytes_sent += payload_size as u64;

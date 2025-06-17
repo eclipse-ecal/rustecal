@@ -1,4 +1,5 @@
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
+use rustecal::pubsub::publisher::Timestamp;
 use rustecal_types_serde::JsonMessage;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
@@ -26,7 +27,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let wrapped = JsonMessage::new(payload.clone());
 
         // send over eCAL pub/sub
-        publisher.send(&wrapped, None);
+        publisher.send(&wrapped, Timestamp::Auto);
         println!(
             "Sent: message = {}, count = {}",
             wrapped.data.message, wrapped.data.count

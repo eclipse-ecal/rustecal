@@ -1,4 +1,3 @@
-use std::sync::Arc;
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_protobuf::{ProtobufMessage, IsProtobufType};
 
@@ -7,6 +6,8 @@ mod animal { include!(concat!(env!("OUT_DIR"), "/pb.animal.rs")); }
 mod environment { include!(concat!(env!("OUT_DIR"), "/pb.environment.rs")); }
 
 use people::Person;
+use rustecal::pubsub::publisher::Timestamp;
+
 impl IsProtobufType for Person {}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -43,8 +44,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!();
 
         // wrap the person struct in ProtobufMessage
-        let wrapped = ProtobufMessage { data: Arc::from(person) };
-        publisher.send(&wrapped, None);
+        let wrapped = ProtobufMessage { data: person.into() };
+        publisher.send(&wrapped, Timestamp::Auto);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }

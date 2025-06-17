@@ -5,6 +5,14 @@ use crate::payload_writer::{PayloadWriter, CURRENT_WRITER, write_full_cb, write_
 use std::ffi::{CStr, CString};
 use std::ptr;
 
+/// When to assign a timestamp to an outgoing message.
+pub enum Timestamp {
+    /// Let eCAL assign its internal send timestamp.
+    Auto,
+    /// Use this custom timestamp (microseconds since epoch).
+    Custom(i64),
+}
+
 /// A safe and ergonomic wrapper around the eCAL C publisher API.
 ///
 /// This struct provides a high-level interface for sending serialized messages to
@@ -67,16 +75,16 @@ impl Publisher {
     /// # Arguments
     ///
     /// * `data` - A byte buffer containing the serialized message payload.
-    /// * `timestamp` - Optional timestamp in microseconds (use `None` to let eCAL determine the time).
+    /// * `timestamp` - When to timestamp the message.
     ///
     /// # Returns
     ///
     /// `true` on success, `false` on failure.
-    pub fn send(&self, data: &[u8], timestamp: Option<i64>) -> bool {
-        let ts_ptr = timestamp
-            .as_ref()
-            .map(|t| t as *const i64)
-            .unwrap_or(ptr::null());
+    pub fn send(&self, data: &[u8], timestamp: Timestamp) -> bool {
+        let ts_ptr = match timestamp {
+            Timestamp::Auto      => ptr::null(),
+            Timestamp::Custom(t) => &t as *const i64 as *const _,
+        };
         let ret = unsafe {
             eCAL_Publisher_Send(
                 self.handle,
@@ -89,12 +97,12 @@ impl Publisher {
         ret == 0
     }
 
-    /// Sends a zero-copy payload using a `PayloadWriter`.
+    /// Sends a zero-copy payload using a [`PayloadWriter`].
     ///
     /// # Arguments
     ///
     /// * `writer` - A mutable reference to a `PayloadWriter` implementation.
-    /// * `timestamp` - Optional timestamp in microseconds (use `None` to let eCAL determine the time).
+    /// * `timestamp` - When to timestamp the message.
     ///
     /// # Returns
     ///
@@ -102,7 +110,7 @@ impl Publisher {
     pub fn send_payload_writer<W: PayloadWriter>(
         &self,
         writer: &mut W,
-        timestamp: Option<i64>,
+        timestamp: Timestamp,
     ) -> bool {
         // stash the writer pointer in TLS
         let ptr = writer as *mut W as *mut dyn PayloadWriter;
@@ -118,10 +126,10 @@ impl Publisher {
         };
 
         // prepare timestamp pointer
-        let ts_ptr = timestamp
-            .as_ref()
-            .map(|t| t as *const i64)
-            .unwrap_or(ptr::null());
+        let ts_ptr = match timestamp {
+            Timestamp::Auto      => ptr::null(),
+            Timestamp::Custom(t) => &t as *const i64 as *const _,
+        };
 
         // call into the FFI
         let result = unsafe {

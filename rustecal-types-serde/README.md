@@ -23,7 +23,6 @@ rustecal-types-serde = "0.1"
 ### Publisher Example (JSON)
 
 ```rust
-use std::sync::Arc;
 use serde::{Serialize, Deserialize};
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_serde::JsonMessage;
@@ -41,7 +40,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     while Ecal::ok() {
         let payload = MyData { msg: "Hello from Rust".into() };
         let message = JsonMessage::new(payload);
-        publisher.send(&message);
+        publisher.send(&message, Timestamp::Auto);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
@@ -54,7 +53,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 ### Subscriber Example (JSON)
 
 ```rust
-use std::sync::Arc;
 use serde::{Serialize, Deserialize};
 use rustecal::{Ecal, EcalComponents, TypedSubscriber};
 use rustecal_types_serde::JsonMessage;

@@ -3,7 +3,6 @@
 ## Publisher
 
 ```rust
-use std::sync::Arc;
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_string::StringMessage;
 
@@ -13,8 +12,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let publisher = TypedPublisher::<StringMessage>::new("hello")?;
 
     while Ecal::ok() {
-        let message = StringMessage { data: Arc::from("Hello from Rust") };
-        publisher.send(&message);
+        let message = StringMessage { data: "Hello from Rust".into() };
+        publisher.send(&message, Timestamp::Auto);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }

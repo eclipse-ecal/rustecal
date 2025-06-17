@@ -31,7 +31,6 @@ This crate will fail to compile if the native libraries are not found.
 ### Publisher
 
 ```rust
-use std::sync::Arc;
 use std::time::Duration;
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_string::StringMessage;
@@ -44,11 +43,11 @@ fn main() {
     let publisher = TypedPublisher::<StringMessage>::new("hello").unwrap();
 
     // prepare the message to send
-    let message = StringMessage { data: Arc::from("Hello from Rust") };
+    let message = StringMessage { data: "Hello from Rust".into() };
 
     // publish until eCAL shuts down
     while Ecal::ok() {
-        publisher.send(&message);
+        publisher.send(&message, Timestamp::Auto);
         std::thread::sleep(Duration::from_millis(500));
     }
 

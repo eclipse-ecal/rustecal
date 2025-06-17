@@ -24,7 +24,6 @@ rustecal-types-protobuf = "0.1"
 ### Publisher Example
 
 ```rust
-use std::sync::Arc;
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_protobuf::{ProtobufMessage, IsProtobufType};
 
@@ -43,8 +42,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     while Ecal::ok() {
         let person = Person { id: 1, name: "Alice".into(), ..Default::default() };
 
-        let message = ProtobufMessage { data : Arc::from(person) };
-        publisher.send(&message);
+        let message = ProtobufMessage { data : person.into() };
+        publisher.send(&message, Timestamp::Auto);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }

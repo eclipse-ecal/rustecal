@@ -1,5 +1,5 @@
-use std::sync::Arc;
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
+use rustecal::pubsub::publisher::Timestamp;
 use rustecal_types_bytes::BytesMessage;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -15,8 +15,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let buffer = vec![counter; 1024];
         counter = counter.wrapping_add(1);
 
-        let wrapped = BytesMessage { data: Arc::from(buffer) };
-        publisher.send(&wrapped, None);
+        let wrapped = BytesMessage { data: buffer.into() };
+        publisher.send(&wrapped, Timestamp::Auto);
 
         println!("Sent buffer filled with {}", counter);
 

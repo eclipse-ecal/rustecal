@@ -3,7 +3,6 @@
 ## Publisher
 
 ```rust
-use std::sync::Arc;
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_bytes::BytesMessage;
 
@@ -17,8 +16,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let buf = vec![counter; 1024];
         counter = counter.wrapping_add(1);
 
-        let message = BytesMessage { data: Arc::from(buf) };
-        publisher.send(&message);
+        let message = BytesMessage { data: buf.into() };
+        publisher.send(&message, Timestamp::Auto);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }

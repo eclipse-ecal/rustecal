@@ -23,7 +23,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let person = Person { id: 1, name: "Alice".into(), ..Default::default() };
 
         let message = ProtobufMessage { data : Arc::from(person) };
-        publisher.send(&message);
+        publisher.send(&message, Timestamp::Auto);
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
