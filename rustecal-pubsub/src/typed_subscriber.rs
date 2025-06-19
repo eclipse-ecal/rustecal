@@ -2,30 +2,27 @@ use crate::subscriber::Subscriber;
 use crate::types::TopicId;
 use rustecal_core::types::DataTypeInfo;
 use rustecal_sys::{eCAL_SDataTypeInformation, eCAL_SReceiveCallbackData, eCAL_STopicId};
-use std::ffi::{c_void, CStr};
-use std::sync::Arc;
-use std::marker::PhantomData;
-use std::slice;
+use std::{ffi::{c_void, CStr}, marker::PhantomData, slice};
 
 /// A trait for message types that can be deserialized by [`TypedSubscriber`].
 ///
 /// Implement this trait for any type `T` that needs to be reconstructed
-/// from raw bytes plus metadata in a typed subscriber.
-pub trait SubscriberMessage: Sized {
+/// from a zero-copy byte slice plus metadata in a typed subscriber.
+pub trait SubscriberMessage<'a>: Sized {
     /// Returns metadata (encoding, type name, descriptor) for this message type.
     fn datatype() -> DataTypeInfo;
 
-    /// Deserializes a message instance from a byte buffer and its metadata.
+    /// Deserializes a message instance from a zero-copy byte slice and its metadata.
     ///
     /// # Arguments
     ///
-    /// * `bytes` — A shared byte buffer containing the payload.
-    /// * `data_type_info` — The corresponding `DataTypeInfo` describing the payload format.
+    /// * `bytes` - A shared byte buffer containing the payload.
+    /// * `data_type_info` - The corresponding `DataTypeInfo` describing the payload format.
     ///
     /// # Returns
     ///
     /// `Some(T)` on success, or `None` on failure.
-    fn from_bytes(bytes: Arc<[u8]>, data_type_info: &DataTypeInfo) -> Option<Self>;
+    fn from_bytes(bytes: &'a [u8], data_type_info: &DataTypeInfo) -> Option<Self>;
 }
 
 /// A received message, with payload and metadata.
@@ -45,18 +42,17 @@ pub struct Received<T> {
 }
 
 /// Wrapper to store a boxed callback for `Received<T>`
-struct CallbackWrapper<T: SubscriberMessage> {
-    callback: Box<dyn Fn(Received<T>) + Send + Sync>,
+struct CallbackWrapper<'buf, T: SubscriberMessage<'buf>> {
+    callback: Box<dyn Fn(Received<T>) + Send + Sync + 'static>,
+    _phantom: PhantomData<&'buf T>,
 }
 
-impl<T: SubscriberMessage> CallbackWrapper<T> {
+impl<'buf, T: SubscriberMessage<'buf>> CallbackWrapper<'buf, T> {
     fn new<F>(f: F) -> Self
     where
         F: Fn(Received<T>) + Send + Sync + 'static,
     {
-        Self {
-            callback: Box::new(f),
-        }
+        Self { callback: Box::new(f), _phantom: PhantomData }
     }
 
     fn call(&self, received: Received<T>) {
@@ -68,23 +64,13 @@ impl<T: SubscriberMessage> CallbackWrapper<T> {
 ///
 /// Wraps a lower-level [`Subscriber`] and provides automatic deserialization
 /// plus typed callbacks.
-///
-/// # Examples
-///
-/// ```no_run
-/// use rustecal::TypedSubscriber;
-/// use rustecal_types_string::StringMessage;
-///
-/// let mut sub = TypedSubscriber::<StringMessage>::new("topic").unwrap();
-/// sub.set_callback(|msg| println!("Got: {}", msg.payload.0));
-/// ```
-pub struct TypedSubscriber<T: SubscriberMessage> {
+pub struct TypedSubscriber<'buf, T: SubscriberMessage<'buf>> {
     subscriber: Subscriber,
-    user_data: *mut CallbackWrapper<T>,
-    _phantom: PhantomData<T>,
+    user_data: *mut CallbackWrapper<'buf, T>,
+    _phantom: PhantomData<&'buf T>,
 }
 
-impl<T: SubscriberMessage> TypedSubscriber<T> {
+impl<'buf, T: SubscriberMessage<'buf>> TypedSubscriber<'buf, T> {
     /// Creates a new typed subscriber for the specified topic.
     ///
     /// # Arguments
@@ -97,40 +83,29 @@ impl<T: SubscriberMessage> TypedSubscriber<T> {
     pub fn new(topic_name: &str) -> Result<Self, String> {
         let datatype = T::datatype();
 
-        // Set dummy callback for construction, real callback will be assigned later
-        let boxed: Box<CallbackWrapper<T>> = Box::new(CallbackWrapper::new(|_| {}));
+        // dummy callback for construction
+        let boxed     = Box::new(CallbackWrapper::new(|_| {}));
         let user_data = Box::into_raw(boxed);
 
-        let subscriber = Subscriber::new(topic_name, datatype, trampoline::<T>)?;
-
-        Ok(Self {
-            subscriber,
-            user_data,
-            _phantom: PhantomData,
-        })
+        let subscriber = Subscriber::new(topic_name, datatype, trampoline::< 'buf, T>)?;
+        Ok(Self { subscriber, user_data, _phantom: PhantomData })
     }
 
     /// Registers a user callback that receives a deserialized message with metadata.
-    ///
-    /// # Arguments
-    ///
-    /// * `callback` - A closure accepting a [`Received<T>`] message.
     pub fn set_callback<F>(&mut self, callback: F)
     where
         F: Fn(Received<T>) + Send + Sync + 'static,
     {
+        // drop the old callback
         unsafe {
-            // Drop the old callback
             let _ = Box::from_raw(self.user_data);
         }
-
-        let boxed = Box::new(CallbackWrapper::new(callback));
+        let boxed     = Box::new(CallbackWrapper::new(callback));
         self.user_data = Box::into_raw(boxed);
-
         unsafe {
             rustecal_sys::eCAL_Subscriber_SetReceiveCallback(
                 self.subscriber.raw_handle(),
-                Some(trampoline::<T>),
+                Some(trampoline::< 'buf, T>),
                 self.user_data as *mut _,
             );
         }
@@ -164,7 +139,7 @@ impl<T: SubscriberMessage> TypedSubscriber<T> {
     }
 }
 
-impl<T: SubscriberMessage> Drop for TypedSubscriber<T> {
+impl<'buf, T: SubscriberMessage<'buf>> Drop for TypedSubscriber<'buf, T> {
     /// Cleans up and removes the callback, releasing any boxed closures.
     fn drop(&mut self) {
         unsafe {
@@ -174,44 +149,48 @@ impl<T: SubscriberMessage> Drop for TypedSubscriber<T> {
     }
 }
 
-/// Internal trampoline for dispatching incoming messages to the registered user closure.
-///
-/// Converts C FFI types into Rust-safe [`Received<T>`] values and passes them to the callback.
-extern "C" fn trampoline<T: SubscriberMessage>(
-    topic_id: *const eCAL_STopicId,
+/// Internal trampoline for dispatching incoming messages to the registered user callback.
+extern "C" fn trampoline<'buf, T: SubscriberMessage<'buf> + 'buf>(
+    topic_id:      *const eCAL_STopicId,
     data_type_info: *const eCAL_SDataTypeInformation,
-    data: *const eCAL_SReceiveCallbackData,
-    user_data: *mut c_void,
+    data:           *const eCAL_SReceiveCallbackData,
+    user_data:      *mut c_void,
 ) {
     unsafe {
         if data.is_null() || user_data.is_null() {
             return;
         }
-        // Raw payload buffer
-        let msg_slice = slice::from_raw_parts((*data).buffer as *const u8, (*data).buffer_size);
-        let msg_arc: Arc<[u8]> = Arc::from(msg_slice);
-        // Build Rust DataTypeInfo from eCAL metadata
-        let encoding = CStr::from_ptr((*data_type_info).encoding).to_string_lossy().into_owned();
-        let type_name = CStr::from_ptr((*data_type_info).name).to_string_lossy().into_owned();
-        let descriptor = if (*data_type_info).descriptor.is_null() || (*data_type_info).descriptor_length == 0 {
+
+        // zero-copy view of the shared-memory payload
+        let rd      = &*data;
+        let payload = slice::from_raw_parts(rd.buffer as *const u8, rd.buffer_size as usize);
+
+        // rebuild DataTypeInfo
+        let info = &*data_type_info;
+        let encoding   = CStr::from_ptr(info.encoding).to_string_lossy().into_owned();
+        let type_name  = CStr::from_ptr(info.name).to_string_lossy().into_owned();
+        let descriptor = if info.descriptor.is_null() || info.descriptor_length == 0 {
             Vec::new()
         } else {
-            slice::from_raw_parts((*data_type_info).descriptor as *const u8, (*data_type_info).descriptor_length as usize).to_vec()
+            slice::from_raw_parts(info.descriptor as *const u8, info.descriptor_length as usize).to_vec()
         };
-        let dt_info = DataTypeInfo { encoding, type_name, descriptor };
-        // Deserialize with access to datatype information
-        if let Some(decoded) = T::from_bytes(msg_arc.clone(), &dt_info) {
-            let cb_wrapper = &*(user_data as *const CallbackWrapper<T>);
-            let topic_name = CStr::from_ptr((*topic_id).topic_name).to_string_lossy().into_owned();
-            let metadata = Received {
-                payload: decoded,
+        let dt_info = DataTypeInfo { encoding: encoding.clone(), type_name: type_name.clone(), descriptor };
+
+        // direct-borrow deserialization
+        if let Some(decoded) = T::from_bytes(payload, &dt_info) {
+            let cb_wrapper = &*(user_data as *const CallbackWrapper<'buf, T>);
+            let topic_name = CStr::from_ptr((*topic_id).topic_name)
+                .to_string_lossy()
+                .into_owned();
+            let received = Received {
+                payload:    decoded,
                 topic_name,
-                encoding: dt_info.encoding.clone(),
-                type_name: dt_info.type_name.clone(),
-                timestamp: (*data).send_timestamp,
-                clock: (*data).send_clock,
+                encoding:   encoding.clone(),
+                type_name:  type_name.clone(),
+                timestamp:  rd.send_timestamp,
+                clock:      rd.send_clock,
             };
-            cb_wrapper.call(metadata);
+            cb_wrapper.call(received);
         }
     }
 }

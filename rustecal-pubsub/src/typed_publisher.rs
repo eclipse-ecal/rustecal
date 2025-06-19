@@ -18,16 +18,6 @@ pub trait PublisherMessage {
 ///
 /// Wraps an untyped [`Publisher`] and enforces that only compatible messages
 /// (implementing [`PublisherMessage`]) are published.
-///
-/// # Examples
-///
-/// ```no_run
-/// use rustecal::TypedPublisher;
-/// use rustecal_types_string::StringMessage;
-///
-/// let pub_ = TypedPublisher::<StringMessage>::new("hello topic").unwrap();
-/// pub_.send(&StringMessage{data: "Hello!".into()}, Timestamp::Auto);
-/// ```
 pub struct TypedPublisher<T: PublisherMessage> {
     publisher: Publisher,
     _phantom:  PhantomData<T>,
@@ -38,7 +28,7 @@ impl<T: PublisherMessage> TypedPublisher<T> {
     ///
     /// # Arguments
     ///
-    /// * `topic_name` — The topic name to publish to.
+    /// * `topic_name` - The topic name to publish to.
     ///
     /// # Errors
     ///
@@ -57,8 +47,8 @@ impl<T: PublisherMessage> TypedPublisher<T> {
     ///
     /// # Arguments
     ///
-    /// * `message` — The typed message to send.
-    /// * `timestamp` — When to timestamp the message.
+    /// * `message` - The typed message to send.
+    /// * `timestamp` - When to timestamp the message.
     ///
     /// # Returns
     ///
@@ -75,8 +65,8 @@ impl<T: PublisherMessage> TypedPublisher<T> {
     ///
     /// # Arguments
     ///
-    /// * `writer` — A mutable reference to a `PayloadWriter`.
-    /// * `timestamp` — When to timestamp the message.
+    /// * `writer` - A mutable reference to a `PayloadWriter`.
+    /// * `timestamp` - When to timestamp the message.
     ///
     /// # Returns
     ///

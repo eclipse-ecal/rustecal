@@ -1,16 +1,6 @@
 //! # rustecal-types-protobuf
 //!
 //! Provides support for Protobuf message serialization with rustecal.
-//!
-//! ## Features
-//! - Wraps `prost`-based Protobuf types for eCAL transport.
-//! - Static descriptor embedding via `include_bytes!`.
-//!
-//! ## Example
-//! ```rust
-//! use rustecal_types_protobuf::ProtobufMessage;
-//! let msg = ProtobufMessage(Arc::new(my_proto::MyMessage::default()));
-//! ```
 
 use std::sync::Arc;
 use prost::Message;
@@ -34,7 +24,7 @@ pub struct ProtobufMessage<T> {
     pub data: Arc<T>,
 }
 
-impl<T> SubscriberMessage for ProtobufMessage<T>
+impl<T> SubscriberMessage<'_> for ProtobufMessage<T>
 where
     T: Message + Default + IsProtobufType,
 {
@@ -57,7 +47,7 @@ where
     /// # Returns
     /// - `Some(ProtobufMessage<T>)` on success
     /// - `None` if decoding fails
-    fn from_bytes(bytes: Arc<[u8]>, _data_type_info: &DataTypeInfo) -> Option<Self> {
+    fn from_bytes(bytes: &[u8], _data_type_info: &DataTypeInfo) -> Option<Self> {
         T::decode(bytes.as_ref()).ok().map(|msg| ProtobufMessage {
             data: Arc::new(msg),
         })

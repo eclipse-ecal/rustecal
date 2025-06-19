@@ -31,11 +31,11 @@ where T: Serialize + for<'de> Deserialize<'de> + Clone
         Arc::from(CborSupport::encode(&*self.data))
     }
 }
-impl<T> SubscriberMessage for CborMessage<T>
+impl<T> SubscriberMessage<'_> for CborMessage<T>
 where T: Serialize + for<'de> Deserialize<'de> + Clone
 {
     fn datatype() -> DataTypeInfo { <CborMessage<T> as PublisherMessage>::datatype() }
-    fn from_bytes(bytes: Arc<[u8]>, _dt: &DataTypeInfo) -> Option<Self> {
+    fn from_bytes(bytes: &[u8], _dt: &DataTypeInfo) -> Option<Self> {
         CborSupport::decode(bytes.as_ref()).map(|p| CborMessage { data: Arc::new(p) })
     }
 }

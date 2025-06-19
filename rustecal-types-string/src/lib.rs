@@ -1,13 +1,6 @@
 //! # rustecal-types-string
 //!
 //! Provides support for sending and receiving `String` messages with rustecal.
-//!
-//! ## Example
-//! ```rust
-//! use std::sync::Arc;
-//! use rustecal_types_string::StringMessage;
-//! let msg = StringMessage(Arc::from("Hello World"));
-//! ```
 
 use std::str;
 use std::sync::Arc;
@@ -23,7 +16,7 @@ pub struct StringMessage {
     pub data: Arc<str>,
 }
 
-impl SubscriberMessage for StringMessage {
+impl SubscriberMessage<'_> for StringMessage {
     /// Returns metadata describing this message type (`utf-8` encoded string).
     fn datatype() -> DataTypeInfo {
         DataTypeInfo {
@@ -34,7 +27,7 @@ impl SubscriberMessage for StringMessage {
     }
 
     /// Attempts to decode a UTF-8 string from a byte buffer.
-    fn from_bytes(bytes: Arc<[u8]>, _data_type_info: &DataTypeInfo) -> Option<Self> {
+    fn from_bytes(bytes: &[u8], _data_type_info: &DataTypeInfo) -> Option<Self> {
         str::from_utf8(bytes.as_ref())
             .ok()
             .map(|s| StringMessage{ data: Arc::<str>::from(s) })

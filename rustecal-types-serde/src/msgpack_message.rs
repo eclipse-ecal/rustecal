@@ -31,11 +31,11 @@ where T: Serialize + for<'de> Deserialize<'de> + Clone
         Arc::from(MsgpackSupport::encode(&*self.data))
     }
 }
-impl<T> SubscriberMessage for MsgpackMessage<T>
+impl<T> SubscriberMessage<'_> for MsgpackMessage<T>
 where T: Serialize + for<'de> Deserialize<'de> + Clone
 {
     fn datatype() -> DataTypeInfo { <MsgpackMessage<T> as PublisherMessage>::datatype() }
-    fn from_bytes(bytes: Arc<[u8]>, _dt: &DataTypeInfo) -> Option<Self> {
+    fn from_bytes(bytes: &[u8], _dt: &DataTypeInfo) -> Option<Self> {
         MsgpackSupport::decode(bytes.as_ref()).map(|p| MsgpackMessage { data: Arc::new(p) })
     }
 }

@@ -1,53 +1,68 @@
 //! # rustecal-types-bytes
 //!
 //! Provides support for sending and receiving raw binary messages (`Vec<u8>`) with rustecal.
-//!
-//! ## Example
-//! ```rust
-//! use std::sync::Arc;
-//! use rustecal_types_bytes::BytesMessage;
-//! let msg = BytesMessage(Arc::from([1, 2, 3, 4]));
-//! ```
 
-use std::sync::Arc;
+use std::{
+    borrow::Cow,
+    sync::Arc,
+};
 use rustecal_core::types::DataTypeInfo;
 use rustecal_pubsub::typed_publisher::PublisherMessage;
 use rustecal_pubsub::typed_subscriber::SubscriberMessage;
 
-/// A wrapper for raw binary messages used with typed eCAL pub/sub.
+/// A wrapper for raw‐binary messages used with typed eCAL pub/sub.
 ///
-/// This type allows sending and receiving raw binary payloads through the
-/// `TypedPublisher` and `TypedSubscriber` APIs.
-pub struct BytesMessage {
-    pub data: Arc<[u8]>,
+/// Internally holds either a borrowed slice (on receive) or an owned
+/// `Arc<[u8]>` (on send).
+pub struct BytesMessage<'a> {
+    pub data: Cow<'a, [u8]>,
 }
 
-impl SubscriberMessage for BytesMessage {
-    /// Returns metadata describing the message encoding and type.
-    ///
-    /// Encoding is `"raw"`, type name is `"bytes"`, and no descriptor is included.
+impl<'a> BytesMessage<'a> {
+    /// Construct for sending: takes ownership of an `Arc<[u8]>`.
+    pub fn owned(data: Arc<[u8]>) -> BytesMessage<'static> {
+        BytesMessage { data: Cow::Owned(data.as_ref().to_vec()) }
+    }
+}
+
+//
+// SubscriberMessage: zero‐copy on receive
+//
+impl<'a> SubscriberMessage<'a> for BytesMessage<'a> {
+    /// raw/bytes, no descriptor
     fn datatype() -> DataTypeInfo {
         DataTypeInfo {
-            encoding: "raw".into(),
-            type_name: "bytes".into(),
-            descriptor: vec![],
+            encoding:   "raw".into(),
+            type_name:  "bytes".into(),
+            descriptor: Vec::new(),
         }
     }
 
-    /// Creates a `BytesMessage` from a raw byte slice.
-    fn from_bytes(bytes: Arc<[u8]>, _data_type_info: &DataTypeInfo) -> Option<Self> {
-        Some(BytesMessage { data: Arc::from(bytes) })
+    /// On receive, we get a `&[u8]` slice straight from shared memory.
+    fn from_bytes(bytes: &'a [u8], _info: &DataTypeInfo) -> Option<Self> {
+        // zero‐copy: borrow the slice
+        Some(BytesMessage { data: Cow::Borrowed(bytes) })
     }
 }
 
-impl PublisherMessage for BytesMessage {
-    /// Reuses the `SubscriberMessage::datatype()` implementation.
+//
+// PublisherMessage: owns an Arc on send
+//
+impl<'a> PublisherMessage for BytesMessage<'a> {
+    /// same metadata as above
     fn datatype() -> DataTypeInfo {
         <BytesMessage as SubscriberMessage>::datatype()
     }
 
-    /// Returns the internal binary data as an Arc<[u8]> for zero-copy transmission.
+    /// For send, convert into an `Arc<[u8]>` so eCAL’s zero‐copy writer
+    /// can hand off the shared memory.  Note: this does copy *once*
+    /// into a fresh Arc; if you’re doing *true* zero‐copy send,
+    /// you’d use the PayloadWriter API instead of this path.
     fn to_bytes(&self) -> Arc<[u8]> {
-        self.data.clone()
+        // if we’re already owned, reuse; otherwise clone the borrowed slice
+        match &self.data {
+            Cow::Owned(vec) => Arc::from(&vec[..]),
+            Cow::Borrowed(s) => Arc::from(*s),
+        }
     }
 }

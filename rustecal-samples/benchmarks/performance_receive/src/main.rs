@@ -12,7 +12,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .expect("eCAL initialization failed");
 
     // create a typed subscriber for raw bytes
-    let mut subscriber: TypedSubscriber<BytesMessage> = TypedSubscriber::new("Performance")?;
+    let mut subscriber: TypedSubscriber<'_, BytesMessage<'_>> = TypedSubscriber::new("Performance")?;
 
     // shared counters & timer
     let msgs  = Arc::new(std::sync::atomic::AtomicU64::new(0));
@@ -26,7 +26,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let start = Arc::clone(&start);
 
         subscriber.set_callback(move |msg: Received<BytesMessage>| {
-            let buffer = &msg.payload.data;
+            let buffer: &[u8] = msg.payload.data.as_ref();
             if buffer.is_empty() {
                 // nothing to do
                 return;
