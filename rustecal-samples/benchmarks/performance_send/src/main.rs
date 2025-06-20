@@ -1,5 +1,5 @@
 //! A performance benchmark publisher in Rust, using the typed `BytesMessage` publisher
-//! with zero-copy payload support.
+//! to demonstrate zero-copy payload support.
 //!
 //! Sends messages of the given size in a tight loop, logging throughput every second.
 
@@ -47,7 +47,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     )?;
 
     // create a typed publisher for raw bytes
-    let typed_pub: TypedPublisher<BytesMessage> =
+    let publisher: TypedPublisher<BytesMessage> =
         TypedPublisher::new("Performance")?;
 
     // prepare our zero-copy payload writer
@@ -60,7 +60,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut last_log   = Instant::now();
 
     // wait for subscriber
-    while typed_pub.get_subscriber_count() == 0 {
+    while publisher.get_subscriber_count() == 0 {
         println!("Waiting for receiver …");
         sleep(Duration::from_secs(1));
     }
@@ -69,7 +69,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // send loop
     while Ecal::ok() {
         // zero-copy send via PayloadWriter
-        typed_pub.send_payload_writer(&mut payload, Timestamp::Auto);
+        publisher.send_payload_writer(&mut payload, Timestamp::Auto);
 
         msgs_sent  += 1;
         bytes_sent += payload_size as u64;

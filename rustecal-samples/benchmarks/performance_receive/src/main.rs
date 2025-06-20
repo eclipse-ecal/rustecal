@@ -1,7 +1,8 @@
-//! A performance benchmark subscriber in Rust, modeled on the eCAL C++ sample.
-//!
+//! A performance benchmark subscriber in Rust, using the typed `BytesMessage` subscriber
+//! to demonstrate zero-copy payload support.
 
 use std::{sync::{Arc, Mutex, atomic::Ordering}, thread, time::{Duration, Instant}};
+use std::thread::sleep;
 use rustecal::{Ecal, EcalComponents, TypedSubscriber};
 use rustecal::pubsub::typed_subscriber::Received;
 use rustecal_types_bytes::BytesMessage;
@@ -50,6 +51,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let msg_s      = (m as f64) / secs;
                 let latency_us = (secs * 1e6) / (m as f64);
 
+                println!("Topic name          : {}", msg.topic_name);
+                let slice = &buffer[..16];
+                let spaced = slice
+                    .iter()
+                    .map(|&b| (b as char).to_string())
+                    .collect::<Vec<String>>()
+                    .join(" ");
+                println!("Message [0 - 15]    : {:?}", spaced);
                 println!("Payload size (kB)   : {:.0}", buffer.len() / 1024);
                 println!("Throughput   (kB/s) : {:.0}", kbyte_s);
                 println!("Throughput   (MB/s) : {:.2}", mbyte_s);
@@ -63,6 +72,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         });
     }
+
+    // wait for publisher
+    while subscriber.get_publisher_count() == 0 {
+        println!("Waiting for publisher …");
+        sleep(Duration::from_secs(1));
+    }
+    println!();
 
     // keep the thread alive so callbacks can run
     while Ecal::ok() {
