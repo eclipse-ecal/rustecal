@@ -253,6 +253,7 @@
 <div style="break-before: page; page-break-before: always;"></div><h1 id="binary-message-example"><a class="header" href="#binary-message-example">Binary Message Example</a></h1>
 <h2 id="publisher"><a class="header" href="#publisher">Publisher</a></h2>
 <pre><pre class="playground"><code class="language-rust">use rustecal::{Ecal, EcalComponents, TypedPublisher};
+use rustecal::pubsub::publisher::Timestamp;
 use rustecal_types_bytes::BytesMessage;
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
@@ -296,6 +297,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 <div style="break-before: page; page-break-before: always;"></div><h1 id="string-message-example"><a class="header" href="#string-message-example">String Message Example</a></h1>
 <h2 id="publisher-1"><a class="header" href="#publisher-1">Publisher</a></h2>
 <pre><pre class="playground"><code class="language-rust">use rustecal::{Ecal, EcalComponents, TypedPublisher};
+use rustecal::pubsub::publisher::Timestamp;
 use rustecal_types_string::StringMessage;
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
@@ -336,6 +338,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 <h2 id="publisher-2"><a class="header" href="#publisher-2">Publisher</a></h2>
 <pre><pre class="playground"><code class="language-rust">use std::sync::Arc;
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
+use rustecal::pubsub::publisher::Timestamp;
 use rustecal_types_protobuf::{ProtobufMessage, IsProtobufType};
 
 mod people      { include!(concat!(env!("OUT_DIR"), "/pb.people.rs")); }
@@ -392,6 +395,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 <h2 id="publisher-3"><a class="header" href="#publisher-3">Publisher</a></h2>
 <pre><pre class="playground"><code class="language-rust">use serde::{Serialize, Deserialize};
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
+use rustecal::pubsub::publisher::Timestamp;
 use rustecal_types_serde::JsonMessage;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -579,6 +583,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use rustecal::{Ecal, EcalComponents, TypedPublisher};
+use rustecal::pubsub::publisher::Timestamp;
 use rustecal_types_string::StringMessage;
 
 let publisher = TypedPublisher::&lt;StringMessage&gt;::new("hello").unwrap();

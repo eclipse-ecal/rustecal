@@ -172,6 +172,7 @@
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use rustecal::{Ecal, EcalComponents, TypedPublisher};
+use rustecal::pubsub::publisher::Timestamp;
 use rustecal_types_string::StringMessage;
 
 let publisher = TypedPublisher::&lt;StringMessage&gt;::new("hello").unwrap();

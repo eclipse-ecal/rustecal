@@ -169,6 +169,7 @@
                         <h1 id="string-message-example"><a class="header" href="#string-message-example">String Message Example</a></h1>
 <h2 id="publisher"><a class="header" href="#publisher">Publisher</a></h2>
 <pre><pre class="playground"><code class="language-rust">use rustecal::{Ecal, EcalComponents, TypedPublisher};
+use rustecal::pubsub::publisher::Timestamp;
 use rustecal_types_string::StringMessage;
 
 fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
