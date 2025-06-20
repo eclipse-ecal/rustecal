@@ -27,6 +27,7 @@ This crate requires a native installation of the [Eclipse eCAL](https://github.c
 ```rust
 use std::time::Duration;
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
+use rustecal::pubsub::publisher::Timestamp;
 use rustecal_types_string::StringMessage;
 
 fn main() {

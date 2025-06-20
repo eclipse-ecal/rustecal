@@ -5,6 +5,7 @@
 ```rust
 use std::sync::Arc;
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
+use rustecal::pubsub::publisher::Timestamp;
 use rustecal_types_protobuf::{ProtobufMessage, IsProtobufType};
 
 mod people      { include!(concat!(env!("OUT_DIR"), "/pb.people.rs")); }

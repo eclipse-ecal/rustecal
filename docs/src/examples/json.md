@@ -5,6 +5,7 @@
 ```rust
 use serde::{Serialize, Deserialize};
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
+use rustecal::pubsub::publisher::Timestamp;
 use rustecal_types_serde::JsonMessage;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]

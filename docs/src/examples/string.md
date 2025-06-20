@@ -4,6 +4,7 @@
 
 ```rust
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
+use rustecal::pubsub::publisher::Timestamp;
 use rustecal_types_string::StringMessage;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
