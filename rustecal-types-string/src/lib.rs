@@ -28,7 +28,7 @@ impl SubscriberMessage<'_> for StringMessage {
 
     /// Attempts to decode a UTF-8 string from a byte buffer.
     fn from_bytes(bytes: &[u8], _data_type_info: &DataTypeInfo) -> Option<Self> {
-        str::from_utf8(bytes.as_ref()).ok().map(|s| StringMessage {
+        str::from_utf8(bytes).ok().map(|s| StringMessage {
             data: Arc::<str>::from(s),
         })
     }

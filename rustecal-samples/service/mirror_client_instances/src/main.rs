@@ -33,7 +33,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let response = instance.call(method, request.clone(), Some(1000));
 
                 println!();
-                println!("Method '{}' called with message: stressed", method);
+                println!("Method '{method}' called with message: stressed");
 
                 match response {
                     Some(res) => {

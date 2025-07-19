@@ -45,7 +45,7 @@ impl Ecal {
         // Convert the unit name (if any), mapping CString errors
         let (name_ptr, _): (*const i8, Option<CString>) = if let Some(name) = unit_name {
             let c = CString::new(name)
-                .map_err(|e| RustecalError::Internal(format!("invalid unit name: {}", e)))?;
+                .map_err(|e| RustecalError::Internal(format!("invalid unit name: {e}")))?;
             (c.as_ptr(), Some(c))
         } else {
             (ptr::null(), None)

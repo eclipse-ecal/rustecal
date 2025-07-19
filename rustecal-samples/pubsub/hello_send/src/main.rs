@@ -12,7 +12,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut count = 0;
     while Ecal::ok() {
         count += 1;
-        let msg = format!("HELLO WORLD FROM RUST ({})", count);
+        let msg = format!("HELLO WORLD FROM RUST ({count})");
 
         let wrapped = StringMessage { data: msg.into() };
         publisher.send(&wrapped, Timestamp::Auto);

@@ -44,6 +44,6 @@ where
         <JsonMessage<T> as PublisherMessage>::datatype()
     }
     fn from_bytes(bytes: &[u8], _dt: &DataTypeInfo) -> Option<Self> {
-        JsonSupport::decode(bytes.as_ref()).map(|p| JsonMessage { data: Arc::new(p) })
+        JsonSupport::decode(bytes).map(|p| JsonMessage { data: Arc::new(p) })
     }
 }
