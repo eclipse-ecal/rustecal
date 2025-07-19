@@ -1,5 +1,5 @@
+use rustecal::{CallState, ServiceClient, ServiceRequest};
 use rustecal::{Ecal, EcalComponents};
-use rustecal::{ServiceClient, ServiceRequest, CallState};
 use std::thread;
 use std::time::Duration;
 
@@ -34,25 +34,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("Method '{}' called with message: stressed", method_name);
 
             match response {
-                Some(res) => {
-                    match CallState::from(res.success as i32) {
-                        CallState::Executed => {
-                            let text = String::from_utf8_lossy(&res.payload);
-                            println!(
-                                "Received response: {} from service id {:?}",
-                                text, res.server_id.service_id.entity_id
-                            );
-                        }
-                        CallState::Failed => {
-                            println!(
-                                "Received error: {} from service id {:?}",
-                                res.error_msg.unwrap_or_else(|| "Unknown".into()),
-                                res.server_id.service_id.entity_id
-                            );
-                        }
-                        _ => {}
+                Some(res) => match CallState::from(res.success as i32) {
+                    CallState::Executed => {
+                        let text = String::from_utf8_lossy(&res.payload);
+                        println!(
+                            "Received response: {} from service id {:?}",
+                            text, res.server_id.service_id.entity_id
+                        );
                     }
-                }
+                    CallState::Failed => {
+                        println!(
+                            "Received error: {} from service id {:?}",
+                            res.error_msg.unwrap_or_else(|| "Unknown".into()),
+                            res.server_id.service_id.entity_id
+                        );
+                    }
+                    _ => {}
+                },
                 None => {
                     println!("Method blocking call failed ..");
                 }

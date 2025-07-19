@@ -1,5 +1,5 @@
-use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal::pubsub::publisher::Timestamp;
+use rustecal::{Ecal, EcalComponents, TypedPublisher};
 use rustecal_types_serde::JsonMessage;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]

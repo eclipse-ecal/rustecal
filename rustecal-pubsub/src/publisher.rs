@@ -1,7 +1,9 @@
-use rustecal_sys::*;
-use rustecal_core::types::DataTypeInfo;
+use crate::payload_writer::{
+    get_size_cb, write_full_cb, write_mod_cb, PayloadWriter, CURRENT_WRITER,
+};
 use crate::types::TopicId;
-use crate::payload_writer::{PayloadWriter, CURRENT_WRITER, write_full_cb, write_mod_cb, get_size_cb};
+use rustecal_core::types::DataTypeInfo;
+use rustecal_sys::*;
 use std::ffi::{CStr, CString};
 use std::ptr;
 
@@ -54,9 +56,8 @@ impl Publisher {
             descriptor_length: data_type.descriptor.len(),
         };
 
-        let handle = unsafe {
-            eCAL_Publisher_New(c_topic.as_ptr(), &data_type_info, None, ptr::null())
-        };
+        let handle =
+            unsafe { eCAL_Publisher_New(c_topic.as_ptr(), &data_type_info, None, ptr::null()) };
 
         if handle.is_null() {
             Err("Failed to create eCAL_Publisher".into())
@@ -82,16 +83,11 @@ impl Publisher {
     /// `true` on success, `false` on failure.
     pub fn send(&self, data: &[u8], timestamp: Timestamp) -> bool {
         let ts_ptr = match timestamp {
-            Timestamp::Auto      => ptr::null(),
+            Timestamp::Auto => ptr::null(),
             Timestamp::Custom(t) => &t as *const i64 as *const _,
         };
         let ret = unsafe {
-            eCAL_Publisher_Send(
-                self.handle,
-                data.as_ptr() as *const _,
-                data.len(),
-                ts_ptr,
-            )
+            eCAL_Publisher_Send(self.handle, data.as_ptr() as *const _, data.len(), ts_ptr)
         };
         // eCAL returns 0 on success
         ret == 0
@@ -120,25 +116,20 @@ impl Publisher {
 
         // build the C payload writer struct
         let c_writer = eCAL_PayloadWriter {
-            WriteFull:     Some(write_full_cb),
+            WriteFull: Some(write_full_cb),
             WriteModified: Some(write_mod_cb),
-            GetSize:       Some(get_size_cb),
+            GetSize: Some(get_size_cb),
         };
 
         // prepare timestamp pointer
         let ts_ptr = match timestamp {
-            Timestamp::Auto      => ptr::null(),
+            Timestamp::Auto => ptr::null(),
             Timestamp::Custom(t) => &t as *const i64 as *const _,
         };
 
         // call into the FFI
-        let result = unsafe {
-            eCAL_Publisher_SendPayloadWriter(
-                self.handle,
-                &c_writer as *const _,
-                ts_ptr,
-            )
-        };
+        let result =
+            unsafe { eCAL_Publisher_SendPayloadWriter(self.handle, &c_writer as *const _, ts_ptr) };
 
         // clear the slot
         CURRENT_WRITER.with(|cell| {
@@ -148,7 +139,7 @@ impl Publisher {
         // eCAL returns 0 on success
         result == 0
     }
-    
+
     /// Retrieves the number of currently connected subscribers.
     pub fn get_subscriber_count(&self) -> usize {
         unsafe { eCAL_Publisher_GetSubscriberCount(self.handle) }
@@ -216,7 +207,8 @@ impl Publisher {
             let descriptor = if info.descriptor.is_null() || info.descriptor_length == 0 {
                 vec![]
             } else {
-                std::slice::from_raw_parts(info.descriptor as *const u8, info.descriptor_length).to_vec()
+                std::slice::from_raw_parts(info.descriptor as *const u8, info.descriptor_length)
+                    .to_vec()
             };
 
             Some(DataTypeInfo {

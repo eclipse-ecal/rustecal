@@ -1,9 +1,15 @@
 use rustecal::{Ecal, EcalComponents, TypedPublisher};
-use rustecal_types_protobuf::{ProtobufMessage, IsProtobufType};
+use rustecal_types_protobuf::{IsProtobufType, ProtobufMessage};
 
-mod people { include!(concat!(env!("OUT_DIR"), "/pb.people.rs")); }
-mod animal { include!(concat!(env!("OUT_DIR"), "/pb.animal.rs")); }
-mod environment { include!(concat!(env!("OUT_DIR"), "/pb.environment.rs")); }
+mod people {
+    include!(concat!(env!("OUT_DIR"), "/pb.people.rs"));
+}
+mod animal {
+    include!(concat!(env!("OUT_DIR"), "/pb.animal.rs"));
+}
+mod environment {
+    include!(concat!(env!("OUT_DIR"), "/pb.environment.rs"));
+}
 
 use people::Person;
 use rustecal::pubsub::publisher::Timestamp;
@@ -30,21 +36,27 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 name: "Brandy".to_string(),
                 colour: "Brown".to_string(),
             }),
-            house: Some(environment::House {
-                rooms: 4,
-            }),
+            house: Some(environment::House { rooms: 4 }),
         };
 
         println!("person id    : {}", person.id);
         println!("person name  : {}", person.name);
         println!("person stype : {}", person.stype);
         println!("person email : {}", person.email);
-        println!("dog.name     : {}", person.dog.as_ref().map_or("", |d| &d.name));
-        println!("house.rooms  : {}", person.house.as_ref().map_or(0, |h| h.rooms));
+        println!(
+            "dog.name     : {}",
+            person.dog.as_ref().map_or("", |d| &d.name)
+        );
+        println!(
+            "house.rooms  : {}",
+            person.house.as_ref().map_or(0, |h| h.rooms)
+        );
         println!();
 
         // wrap the person struct in ProtobufMessage
-        let wrapped = ProtobufMessage { data: person.into() };
+        let wrapped = ProtobufMessage {
+            data: person.into(),
+        };
         publisher.send(&wrapped, Timestamp::Auto);
 
         std::thread::sleep(std::time::Duration::from_millis(500));

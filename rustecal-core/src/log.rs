@@ -4,8 +4,8 @@
 //! logging at various severity levels, as well as retrieval of current log entries.
 
 use crate::core_types::logging::LogMessage;
-use crate::log_level::LogLevel;
 use crate::error::RustecalError;
+use crate::log_level::LogLevel;
 use std::{ffi::CString, ptr, slice};
 
 /// Provides logging functions to emit and retrieve messages via the eCAL runtime.
@@ -16,8 +16,8 @@ impl Log {
     ///
     /// Any interior NUL in `message` is replaced with `"<invalid UTF-8>"`.
     pub fn log(level: LogLevel, message: &str) {
-        let cstr = CString::new(message)
-            .unwrap_or_else(|_| CString::new("<invalid UTF-8>").unwrap());
+        let cstr =
+            CString::new(message).unwrap_or_else(|_| CString::new("<invalid UTF-8>").unwrap());
 
         unsafe {
             rustecal_sys::eCAL_Logging_Log(level.into(), cstr.as_ptr());

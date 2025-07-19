@@ -22,40 +22,40 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LogLevel {
     /// No logging.
-    None    = 0,
+    None = 0,
     /// Informational messages.
-    Info    = 1,
+    Info = 1,
     /// Warnings.
     Warning = 2,
     /// Errors.
-    Error   = 4,
+    Error = 4,
     /// Fatal errors.
-    Fatal   = 8,
+    Fatal = 8,
     /// Debug level 1.
-    Debug1  = 16,
+    Debug1 = 16,
     /// Debug level 2.
-    Debug2  = 32,
+    Debug2 = 32,
     /// Debug level 3.
-    Debug3  = 64,
+    Debug3 = 64,
     /// Debug level 4.
-    Debug4  = 128,
+    Debug4 = 128,
     /// All levels.
-    All     = 255,
+    All = 255,
 }
 
 impl From<i32> for LogLevel {
     fn from(value: i32) -> Self {
         match value {
-            1   => LogLevel::Info,
-            2   => LogLevel::Warning,
-            4   => LogLevel::Error,
-            8   => LogLevel::Fatal,
-            16  => LogLevel::Debug1,
-            32  => LogLevel::Debug2,
-            64  => LogLevel::Debug3,
+            1 => LogLevel::Info,
+            2 => LogLevel::Warning,
+            4 => LogLevel::Error,
+            8 => LogLevel::Fatal,
+            16 => LogLevel::Debug1,
+            32 => LogLevel::Debug2,
+            64 => LogLevel::Debug3,
             128 => LogLevel::Debug4,
             255 => LogLevel::All,
-            _   => LogLevel::None,
+            _ => LogLevel::None,
         }
     }
 }

@@ -57,9 +57,7 @@ impl Ecal {
             .unwrap_or(ptr::null_mut());
 
         // Call the C API and map its return code
-        let ret = unsafe {
-            rustecal_sys::eCAL_Initialize(name_ptr, &components.bits(), cfg_ptr)
-        };
+        let ret = unsafe { rustecal_sys::eCAL_Initialize(name_ptr, &components.bits(), cfg_ptr) };
         check(ret)
     }
 

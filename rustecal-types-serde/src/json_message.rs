@@ -1,10 +1,10 @@
-use std::sync::Arc;
-use serde::{Deserialize, Serialize};
+use crate::format_support::{short_type_name, FormatSupport};
+use crate::make_format;
 use rustecal_core::types::DataTypeInfo;
 use rustecal_pubsub::typed_publisher::PublisherMessage;
 use rustecal_pubsub::typed_subscriber::SubscriberMessage;
-use crate::format_support::{FormatSupport, short_type_name};
-use crate::make_format;
+use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 
 /// JSON support using `serde_json`.
 #[derive(Debug, Clone)]
@@ -22,19 +22,27 @@ impl FormatSupport for JsonSupport {
 make_format!(JsonMessage, JsonSupport);
 
 impl<T> PublisherMessage for JsonMessage<T>
-where T: Serialize + for<'de> Deserialize<'de> + Clone
+where
+    T: Serialize + for<'de> Deserialize<'de> + Clone,
 {
     fn datatype() -> DataTypeInfo {
-        DataTypeInfo { encoding: JsonSupport::ENCODING.into(), type_name: short_type_name::<T>(), descriptor: vec![] }
+        DataTypeInfo {
+            encoding: JsonSupport::ENCODING.into(),
+            type_name: short_type_name::<T>(),
+            descriptor: vec![],
+        }
     }
     fn to_bytes(&self) -> Arc<[u8]> {
         Arc::from(JsonSupport::encode(&*self.data))
     }
 }
 impl<T> SubscriberMessage<'_> for JsonMessage<T>
-where T: Serialize + for<'de> Deserialize<'de> + Clone
+where
+    T: Serialize + for<'de> Deserialize<'de> + Clone,
 {
-    fn datatype() -> DataTypeInfo { <JsonMessage<T> as PublisherMessage>::datatype() }
+    fn datatype() -> DataTypeInfo {
+        <JsonMessage<T> as PublisherMessage>::datatype()
+    }
     fn from_bytes(bytes: &[u8], _dt: &DataTypeInfo) -> Option<Self> {
         JsonSupport::decode(bytes.as_ref()).map(|p| JsonMessage { data: Arc::new(p) })
     }

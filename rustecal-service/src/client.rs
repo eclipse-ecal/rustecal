@@ -1,7 +1,7 @@
-use rustecal_sys::*;
 use crate::client_instance::ClientInstance;
-use crate::types::ServiceRequest;
 use crate::response::ServiceResponse;
+use crate::types::ServiceRequest;
+use rustecal_sys::*;
 use std::ffi::CString;
 use std::os::raw::c_void;
 use std::ptr;
@@ -22,7 +22,12 @@ impl ServiceClient {
         }
     }
 
-    pub fn call(&self, method: &str, request: ServiceRequest, timeout_ms: Option<i32>) -> Option<ServiceResponse> {
+    pub fn call(
+        &self,
+        method: &str,
+        request: ServiceRequest,
+        timeout_ms: Option<i32>,
+    ) -> Option<ServiceResponse> {
         self.call_all(method, request, timeout_ms)?.pop()
     }
 

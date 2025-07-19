@@ -1,5 +1,5 @@
-use rustecal_sys::*;
 use crate::types::{MethodInfo, ServiceCallback};
+use rustecal_sys::*;
 use std::collections::HashMap;
 use std::ffi::{CStr, CString};
 use std::os::raw::{c_int, c_void};
@@ -24,10 +24,7 @@ impl ServiceServer {
             return Err("Failed to create eCAL_ServiceServer".into());
         }
 
-        Ok(Self {
-            handle,
-            callbacks,
-        })
+        Ok(Self { handle, callbacks })
     }
 
     pub fn add_method(&mut self, method: &str, callback: ServiceCallback) -> Result<(), String> {

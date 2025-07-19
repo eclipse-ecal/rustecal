@@ -1,9 +1,9 @@
-use rustecal_sys::*;
-use rustecal_core::types::DataTypeInfo;
 use crate::types::TopicId;
+use rustecal_core::types::DataTypeInfo;
+use rustecal_sys::*;
+use std::ffi::c_void;
 use std::ffi::{CStr, CString};
 use std::ptr;
-use std::ffi::c_void;
 
 /// A safe and ergonomic wrapper around the eCAL C subscriber API.
 ///
@@ -56,26 +56,14 @@ impl Subscriber {
             descriptor_length: data_type.descriptor.len(),
         };
 
-        let handle = unsafe {
-            eCAL_Subscriber_New(
-                c_topic.as_ptr(),
-                &data_type_info,
-                None,
-                ptr::null(),
-            )
-        };
+        let handle =
+            unsafe { eCAL_Subscriber_New(c_topic.as_ptr(), &data_type_info, None, ptr::null()) };
 
         if handle.is_null() {
             return Err("Failed to create eCAL_Subscriber".into());
         }
 
-        unsafe {
-            eCAL_Subscriber_SetReceiveCallback(
-                handle,
-                Some(callback),
-                ptr::null_mut(),
-            )
-        };
+        unsafe { eCAL_Subscriber_SetReceiveCallback(handle, Some(callback), ptr::null_mut()) };
 
         Ok(Self {
             handle,
@@ -159,7 +147,8 @@ impl Subscriber {
             let descriptor = if info.descriptor.is_null() || info.descriptor_length == 0 {
                 vec![]
             } else {
-                std::slice::from_raw_parts(info.descriptor as *const u8, info.descriptor_length).to_vec()
+                std::slice::from_raw_parts(info.descriptor as *const u8, info.descriptor_length)
+                    .to_vec()
             };
 
             Some(DataTypeInfo {

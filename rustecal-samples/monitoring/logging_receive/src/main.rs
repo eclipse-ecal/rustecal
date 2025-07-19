@@ -4,7 +4,11 @@ use std::{thread, time::Duration};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // initialize eCAL (only the logging component)
-    Ecal::initialize(Some("logging receive sample"), EcalComponents::LOGGING, None)?;
+    Ecal::initialize(
+        Some("logging receive sample"),
+        EcalComponents::LOGGING,
+        None,
+    )?;
     println!("eCAL initialized. Entering logging loop…");
 
     while Ecal::ok() {

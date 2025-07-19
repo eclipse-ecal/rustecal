@@ -20,17 +20,21 @@ macro_rules! make_format {
     ($msg_type:ident, $support:ty) => {
         #[derive(Debug, Clone)]
         pub struct $msg_type<T>
-        where T: serde::Serialize + for<'de> serde::Deserialize<'de> + Clone
+        where
+            T: serde::Serialize + for<'de> serde::Deserialize<'de> + Clone,
         {
             /// The inner payload.
             pub data: std::sync::Arc<T>,
         }
         impl<T> $msg_type<T>
-        where T: serde::Serialize + for<'de> serde::Deserialize<'de> + Clone
+        where
+            T: serde::Serialize + for<'de> serde::Deserialize<'de> + Clone,
         {
             /// Create a new message with given payload.
             pub fn new(payload: T) -> Self {
-                $msg_type { data: std::sync::Arc::new(payload) }
+                $msg_type {
+                    data: std::sync::Arc::new(payload),
+                }
             }
         }
     };

@@ -1,4 +1,8 @@
-use crate::{publisher::{Publisher, Timestamp}, payload_writer::PayloadWriter, types::TopicId};
+use crate::{
+    payload_writer::PayloadWriter,
+    publisher::{Publisher, Timestamp},
+    types::TopicId,
+};
 use rustecal_core::types::DataTypeInfo;
 use std::{marker::PhantomData, sync::Arc};
 
@@ -20,7 +24,7 @@ pub trait PublisherMessage {
 /// (implementing [`PublisherMessage`]) are published.
 pub struct TypedPublisher<T: PublisherMessage> {
     publisher: Publisher,
-    _phantom:  PhantomData<T>,
+    _phantom: PhantomData<T>,
 }
 
 impl<T: PublisherMessage> TypedPublisher<T> {
@@ -34,10 +38,13 @@ impl<T: PublisherMessage> TypedPublisher<T> {
     ///
     /// Returns an `Err(String)` if the underlying eCAL publisher could not be created.
     pub fn new(topic_name: &str) -> Result<Self, String> {
-        let datatype  = T::datatype();
+        let datatype = T::datatype();
         let publisher = Publisher::new(topic_name, datatype)?;
 
-        Ok(Self { publisher, _phantom: PhantomData })
+        Ok(Self {
+            publisher,
+            _phantom: PhantomData,
+        })
     }
 
     /// Sends a message of type `T` to all connected subscribers.
