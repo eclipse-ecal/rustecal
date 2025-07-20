@@ -69,17 +69,13 @@ impl Subscriber {
             return Err("Failed to create eCAL_Subscriber".into());
         }
 
-        let result = unsafe {
+        unsafe {
             eCAL_Subscriber_SetReceiveCallback(
                 handle,
                 Some(callback),
                 ptr::null_mut(),
             )
         };
-
-        if result != 0 {
-            return Err("Failed to set receive callback".into());
-        }
 
         Ok(Self {
             handle,
