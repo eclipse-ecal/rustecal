@@ -21,10 +21,9 @@
 //! ```
 //!
 
-
 // —————————————————————————————————————————————————————————————————————————————
 // Core initialization & types (always available)
-pub use rustecal_core::{Ecal, EcalComponents, Configuration};
+pub use rustecal_core::{Configuration, Ecal, EcalComponents};
 
 // —————————————————————————————————————————————————————————————————————————————
 // Pub/Sub API (requires the `pubsub` feature)
@@ -37,10 +36,13 @@ pub mod pubsub {
 #[cfg(feature = "pubsub")]
 pub use rustecal_pubsub::{
     // low‑level handles
-    Publisher, Subscriber,
+    Publisher,
+    PublisherMessage,
+    Subscriber,
+    SubscriberMessage,
     // typed wrappers
-    TypedPublisher, PublisherMessage,
-    TypedSubscriber, SubscriberMessage,
+    TypedPublisher,
+    TypedSubscriber,
 };
 
 // —————————————————————————————————————————————————————————————————————————————
@@ -53,14 +55,19 @@ pub mod service {
 
 #[cfg(feature = "service")]
 pub use rustecal_service::{
-    // server & client entrypoints
-    ServiceServer, ServiceClient, ClientInstance,
+    ClientInstance,
+    ServiceClient,
     // request/response types
-    ServiceRequest, ServiceResponse,
+    ServiceRequest,
+    ServiceResponse,
+    // server & client entrypoints
+    ServiceServer,
 };
 
 #[cfg(feature = "service")]
 pub use rustecal_service::types::{
+    CallState,
     // metadata & callback signature
-    MethodInfo, ServiceCallback, CallState,
+    MethodInfo,
+    ServiceCallback,
 };

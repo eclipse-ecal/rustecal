@@ -1,28 +1,37 @@
 //! A performance benchmark subscriber in Rust, using the typed `BytesMessage` subscriber
 //! to demonstrate zero-copy payload support.
 
-use std::{sync::{Arc, Mutex, atomic::Ordering}, thread, time::{Duration, Instant}};
-use std::thread::sleep;
-use rustecal::{Ecal, EcalComponents, TypedSubscriber};
 use rustecal::pubsub::typed_subscriber::Received;
+use rustecal::{Ecal, EcalComponents, TypedSubscriber};
 use rustecal_types_bytes::BytesMessage;
+use std::thread::sleep;
+use std::{
+    sync::{atomic::Ordering, Arc, Mutex},
+    thread,
+    time::{Duration, Instant},
+};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // initialize eCAL
-    Ecal::initialize(Some("performance receive rust"), EcalComponents::DEFAULT, None)
-        .expect("eCAL initialization failed");
+    Ecal::initialize(
+        Some("performance receive rust"),
+        EcalComponents::DEFAULT,
+        None,
+    )
+    .expect("eCAL initialization failed");
 
     // create a typed subscriber for raw bytes
-    let mut subscriber: TypedSubscriber<'_, BytesMessage<'_>> = TypedSubscriber::new("Performance")?;
+    let mut subscriber: TypedSubscriber<'_, BytesMessage<'_>> =
+        TypedSubscriber::new("Performance")?;
 
     // shared counters & timer
-    let msgs  = Arc::new(std::sync::atomic::AtomicU64::new(0));
+    let msgs = Arc::new(std::sync::atomic::AtomicU64::new(0));
     let bytes = Arc::new(std::sync::atomic::AtomicU64::new(0));
     let start = Arc::new(Mutex::new(Instant::now()));
 
     // register the receive-callback
     {
-        let msgs  = Arc::clone(&msgs);
+        let msgs = Arc::clone(&msgs);
         let bytes = Arc::clone(&bytes);
         let start = Arc::clone(&start);
 
@@ -45,10 +54,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let b = bytes.swap(0, Ordering::Relaxed);
 
                 let secs = elapsed.as_secs_f64();
-                let kbyte_s    = (b as f64 / 1024.0) / secs;
-                let mbyte_s    = kbyte_s / 1024.0;
-                let gbyte_s    = mbyte_s / 1024.0;
-                let msg_s      = (m as f64) / secs;
+                let kbyte_s = (b as f64 / 1024.0) / secs;
+                let mbyte_s = kbyte_s / 1024.0;
+                let gbyte_s = mbyte_s / 1024.0;
+                let msg_s = (m as f64) / secs;
                 let latency_us = (secs * 1e6) / (m as f64);
 
                 println!("Topic name          : {}", msg.topic_name);

@@ -1,5 +1,5 @@
-use rustecal::{Ecal, EcalComponents, TypedSubscriber};
 use rustecal::pubsub::typed_subscriber::Received;
+use rustecal::{Ecal, EcalComponents, TypedSubscriber};
 use rustecal_types_bytes::BytesMessage;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

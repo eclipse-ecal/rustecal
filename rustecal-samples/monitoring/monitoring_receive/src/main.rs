@@ -4,7 +4,11 @@ use std::{thread, time::Duration};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // initialize eCAL (only the monitoring component)
-    Ecal::initialize(Some("monitoring receive sample"), EcalComponents::MONITORING, None)?;
+    Ecal::initialize(
+        Some("monitoring receive sample"),
+        EcalComponents::MONITORING,
+        None,
+    )?;
     println!("eCAL initialized. Entering monitoring loop…");
 
     while Ecal::ok() {

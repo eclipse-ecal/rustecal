@@ -6,5 +6,6 @@ fn main() {
             "proto/house.proto",
         ],
         &["proto"],
-    ).unwrap();
+    )
+    .unwrap();
 }

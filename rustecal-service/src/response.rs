@@ -1,5 +1,5 @@
-use rustecal_sys::*;
 use crate::types::{CallState, ServiceId};
+use rustecal_sys::*;
 use std::ffi::CStr;
 
 /// Represents a structured response to a service request,
@@ -23,7 +23,9 @@ impl ServiceResponse {
             None
         } else {
             Some(unsafe {
-                CStr::from_ptr(response.error_msg).to_string_lossy().into_owned()
+                CStr::from_ptr(response.error_msg)
+                    .to_string_lossy()
+                    .into_owned()
             })
         };
 
@@ -31,10 +33,7 @@ impl ServiceResponse {
             vec![]
         } else {
             unsafe {
-                std::slice::from_raw_parts(
-                    response.response as *const u8,
-                    response.response_length,
-                )
+                std::slice::from_raw_parts(response.response as *const u8, response.response_length)
                     .to_vec()
             }
         };

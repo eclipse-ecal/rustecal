@@ -2,11 +2,11 @@
 //!
 //! Provides support for sending and receiving `String` messages with rustecal.
 
-use std::str;
-use std::sync::Arc;
 use rustecal_core::types::DataTypeInfo;
 use rustecal_pubsub::typed_publisher::PublisherMessage;
 use rustecal_pubsub::typed_subscriber::SubscriberMessage;
+use std::str;
+use std::sync::Arc;
 
 /// A wrapper for UTF-8 string messages used with typed eCAL pub/sub.
 ///
@@ -28,9 +28,9 @@ impl SubscriberMessage<'_> for StringMessage {
 
     /// Attempts to decode a UTF-8 string from a byte buffer.
     fn from_bytes(bytes: &[u8], _data_type_info: &DataTypeInfo) -> Option<Self> {
-        str::from_utf8(bytes)
-            .ok()
-            .map(|s| StringMessage{ data: Arc::<str>::from(s) })
+        str::from_utf8(bytes).ok().map(|s| StringMessage {
+            data: Arc::<str>::from(s),
+        })
     }
 }
 

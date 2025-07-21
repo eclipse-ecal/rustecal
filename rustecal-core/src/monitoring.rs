@@ -4,7 +4,7 @@
 //! a safe Rust API to access a snapshot of the middleware's state.
 
 use crate::core_types::monitoring::{
-    MonitoringSnapshot, ProcessInfo, TopicInfo, ServerInfo, ClientInfo,
+    ClientInfo, MonitoringSnapshot, ProcessInfo, ServerInfo, TopicInfo,
 };
 use crate::error::RustecalError;
 use std::{ptr, slice};
@@ -25,13 +25,10 @@ impl Monitoring {
     ///   when a snapshot *should* have been provided.
     pub fn get_snapshot() -> Result<MonitoringSnapshot, RustecalError> {
         // 1) Prepare a null pointer for the C function to fill in
-        let mut raw: *mut rustecal_sys::eCAL_Monitoring_SMonitoring =
-            ptr::null_mut();
+        let mut raw: *mut rustecal_sys::eCAL_Monitoring_SMonitoring = ptr::null_mut();
 
         // 2) Call the FFI: non‑zero means “no snapshot available”
-        let ret = unsafe {
-            rustecal_sys::eCAL_Monitoring_GetMonitoring(&mut raw, ptr::null())
-        };
+        let ret = unsafe { rustecal_sys::eCAL_Monitoring_GetMonitoring(&mut raw, ptr::null()) };
 
         // 3) If nothing to monitor, return an empty snapshot
         if ret != 0 {

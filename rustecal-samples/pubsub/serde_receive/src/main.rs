@@ -1,6 +1,6 @@
+use rustecal::pubsub::typed_subscriber::Received;
 use rustecal::{Ecal, EcalComponents, TypedSubscriber};
 use rustecal_types_serde::JsonMessage;
-use rustecal::pubsub::typed_subscriber::Received;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 struct SimpleMessage {

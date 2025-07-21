@@ -5,7 +5,7 @@
 // with eCAL's `SendPayloadWriter` API, using mutable references rather than owning values.
 
 use std::cell::RefCell;
-use std::os::raw::{c_void, c_int};
+use std::os::raw::{c_int, c_void};
 
 /// A zero‐copy payload writer: you fill the shared‐memory buffer in place.
 pub trait PayloadWriter {
@@ -35,7 +35,11 @@ pub(crate) unsafe extern "C" fn write_full_cb(buffer: *mut c_void, size: usize) 
         if let Some(writer_ptr) = *cell.borrow() {
             let writer: &mut dyn PayloadWriter = &mut *writer_ptr;
             let buf = std::slice::from_raw_parts_mut(buffer as *mut u8, size);
-            if writer.write_full(buf) { 0 } else { -1 }
+            if writer.write_full(buf) {
+                0
+            } else {
+                -1
+            }
         } else {
             -1
         }
@@ -48,7 +52,11 @@ pub(crate) unsafe extern "C" fn write_mod_cb(buffer: *mut c_void, size: usize) -
         if let Some(writer_ptr) = *cell.borrow() {
             let writer: &mut dyn PayloadWriter = &mut *writer_ptr;
             let buf = std::slice::from_raw_parts_mut(buffer as *mut u8, size);
-            if writer.write_modified(buf) { 0 } else { -1 }
+            if writer.write_modified(buf) {
+                0
+            } else {
+                -1
+            }
         } else {
             -1
         }

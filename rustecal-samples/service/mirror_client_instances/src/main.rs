@@ -5,8 +5,12 @@ use std::time::Duration;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // initialize eCAL
-    Ecal::initialize(Some("mirror client instances rust"), EcalComponents::DEFAULT, None)
-        .expect("eCAL initialization failed");
+    Ecal::initialize(
+        Some("mirror client instances rust"),
+        EcalComponents::DEFAULT,
+        None,
+    )
+    .expect("eCAL initialization failed");
 
     let client = ServiceClient::new("mirror")?;
     let methods = ["echo", "reverse"];
@@ -29,9 +33,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let response = instance.call(method, request.clone(), Some(1000));
 
                 println!();
-                println!(
-                    "Method '{method}' called with message: stressed"
-                );
+                println!("Method '{method}' called with message: stressed");
 
                 match response {
                     Some(res) => {

@@ -1,7 +1,7 @@
 //! Types used by the pub/sub layer of eCAL.
 
-use rustecal_sys::*;
 use rustecal_core::types::EntityId;
+use rustecal_sys::*;
 use std::ffi::CStr;
 
 /// Internal eCAL topic identifier, used by publishers and subscribers.

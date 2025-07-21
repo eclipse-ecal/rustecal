@@ -18,8 +18,8 @@ fn main() {
 
     if cfg!(target_os = "windows") {
         // --- Windows: Use ECAL_HOME ---
-        let ecal_home = env::var("ECAL_HOME")
-            .expect("ECAL_HOME environment variable must be set on Windows");
+        let ecal_home =
+            env::var("ECAL_HOME").expect("ECAL_HOME environment variable must be set on Windows");
         let include_path = format!("{ecal_home}/include");
         let lib_path = format!("{ecal_home}/lib");
 
@@ -47,9 +47,7 @@ fn main() {
     }
 
     // Final bindgen output
-    let bindings = builder
-        .generate()
-        .expect("Unable to generate bindings");
+    let bindings = builder.generate().expect("Unable to generate bindings");
 
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
     bindings
