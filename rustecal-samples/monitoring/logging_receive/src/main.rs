@@ -12,7 +12,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let entries = Log::get_logging()?;
 
         println!("=== Logging Snapshot ===\n");
-        println!("Entries:\n{:#?}", entries);
+        println!("Entries:\n{entries:#?}");
 
         // sleep before next poll
         thread::sleep(Duration::from_secs(1));

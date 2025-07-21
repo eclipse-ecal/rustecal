@@ -18,7 +18,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let wrapped = BytesMessage { data: buffer.into() };
         publisher.send(&wrapped, Timestamp::Auto);
 
-        println!("Sent buffer filled with {}", counter);
+        println!("Sent buffer filled with {counter}");
 
         std::thread::sleep(std::time::Duration::from_millis(500));
     }

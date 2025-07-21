@@ -58,13 +58,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .map(|&b| (b as char).to_string())
                     .collect::<Vec<String>>()
                     .join(" ");
-                println!("Message [0 - 15]    : {:?}", spaced);
+                println!("Message [0 - 15]    : {spaced:?}");
                 println!("Payload size (kB)   : {:.0}", buffer.len() / 1024);
-                println!("Throughput   (kB/s) : {:.0}", kbyte_s);
-                println!("Throughput   (MB/s) : {:.2}", mbyte_s);
-                println!("Throughput   (GB/s) : {:.2}", gbyte_s);
-                println!("Messages     (1/s)  : {:.0}", msg_s);
-                println!("Latency      (µs)   : {:.2}", latency_us);
+                println!("Throughput   (kB/s) : {kbyte_s:.0}");
+                println!("Throughput   (MB/s) : {mbyte_s:.2}");
+                println!("Throughput   (GB/s) : {gbyte_s:.2}");
+                println!("Messages     (1/s)  : {msg_s:.0}");
+                println!("Latency      (µs)   : {latency_us:.2}");
                 println!();
 
                 // reset the timer

@@ -30,8 +30,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                 println!();
                 println!(
-                    "Method '{}' called with message: stressed",
-                    method
+                    "Method '{method}' called with message: stressed"
                 );
 
                 match response {

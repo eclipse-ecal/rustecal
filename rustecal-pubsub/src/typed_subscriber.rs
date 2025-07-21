@@ -163,7 +163,7 @@ extern "C" fn trampoline<'buf, T: SubscriberMessage<'buf> + 'buf>(
 
         // zero-copy view of the shared-memory payload
         let rd      = &*data;
-        let payload = slice::from_raw_parts(rd.buffer as *const u8, rd.buffer_size as usize);
+        let payload = slice::from_raw_parts(rd.buffer as *const u8, rd.buffer_size);
 
         // rebuild DataTypeInfo
         let info = &*data_type_info;
@@ -172,7 +172,7 @@ extern "C" fn trampoline<'buf, T: SubscriberMessage<'buf> + 'buf>(
         let descriptor = if info.descriptor.is_null() || info.descriptor_length == 0 {
             Vec::new()
         } else {
-            slice::from_raw_parts(info.descriptor as *const u8, info.descriptor_length as usize).to_vec()
+            slice::from_raw_parts(info.descriptor as *const u8, info.descriptor_length).to_vec()
         };
         let dt_info = DataTypeInfo { encoding: encoding.clone(), type_name: type_name.clone(), descriptor };
 

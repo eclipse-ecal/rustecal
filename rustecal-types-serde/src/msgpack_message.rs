@@ -36,6 +36,6 @@ where T: Serialize + for<'de> Deserialize<'de> + Clone
 {
     fn datatype() -> DataTypeInfo { <MsgpackMessage<T> as PublisherMessage>::datatype() }
     fn from_bytes(bytes: &[u8], _dt: &DataTypeInfo) -> Option<Self> {
-        MsgpackSupport::decode(bytes.as_ref()).map(|p| MsgpackMessage { data: Arc::new(p) })
+        MsgpackSupport::decode(bytes).map(|p| MsgpackMessage { data: Arc::new(p) })
     }
 }

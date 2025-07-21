@@ -36,6 +36,6 @@ where T: Serialize + for<'de> Deserialize<'de> + Clone
 {
     fn datatype() -> DataTypeInfo { <CborMessage<T> as PublisherMessage>::datatype() }
     fn from_bytes(bytes: &[u8], _dt: &DataTypeInfo) -> Option<Self> {
-        CborSupport::decode(bytes.as_ref()).map(|p| CborMessage { data: Arc::new(p) })
+        CborSupport::decode(bytes).map(|p| CborMessage { data: Arc::new(p) })
     }
 }

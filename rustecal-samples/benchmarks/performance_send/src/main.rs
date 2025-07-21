@@ -27,10 +27,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .unwrap_or(PAYLOAD_SIZE_DEFAULT);
 
     // log performance settings
-    println!("Zero copy mode          : {}", ZERO_COPY);
-    println!("Number of write buffers : {}", BUFFER_COUNT);
-    println!("Acknowledge timeout     : {} ms", ACKNOWLEDGE_TIMEOUT_MS);
-    println!("Payload size            : {} bytes", payload_size);
+    println!("Zero copy mode          : {ZERO_COPY}");
+    println!("Number of write buffers : {BUFFER_COUNT}");
+    println!("Acknowledge timeout     : {ACKNOWLEDGE_TIMEOUT_MS} ms");
+    println!("Payload size            : {payload_size} bytes");
     println!();
 
     // configure eCAL
@@ -85,11 +85,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let latency_us = (secs * 1e6) / (msgs_sent as f64);
 
             println!("Payload size (kB)   : {}", payload_size / 1024);
-            println!("Throughput (kB/s)   : {:.0}", kbyte_s);
-            println!("Throughput (MB/s)   : {:.2}", mbyte_s);
-            println!("Throughput (GB/s)   : {:.2}", gbyte_s);
-            println!("Messages     (1/s)  : {:.0}", msg_s);
-            println!("Latency      (µs)   : {:.2}", latency_us);
+            println!("Throughput (kB/s)   : {kbyte_s:.0}");
+            println!("Throughput (MB/s)   : {mbyte_s:.2}");
+            println!("Throughput (GB/s)   : {gbyte_s:.2}");
+            println!("Messages     (1/s)  : {msg_s:.0}");
+            println!("Latency      (µs)   : {latency_us:.2}");
             println!();
 
             // reset counters and timer
