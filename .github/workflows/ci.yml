@@ -1,0 +1,79 @@
+name: rustecal CI
+
+env:
+  RUSTFLAGS: "-D warnings"
+  RUSTDOCFLAGS: "-D warnings"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      ecal_version:
+        description: "eCAL tag to install (e.g. v6.0.0-rc.5). Use 'auto' or leave blank for the newest (pre-)release."
+        required: false
+        default: "auto"
+
+jobs:
+  cargo:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        task:
+          - {
+              name: clippy,
+              cmd: "clippy --workspace --all-targets --all-features --tests --examples",
+            }
+          - { name: fmt, cmd: "fmt --all -- --check" }
+          - {
+              name: check,
+              cmd: "check --workspace --all-targets --all-features",
+            }
+          - {
+              name: test,
+              cmd: "test --workspace --all-targets --all-features --lib --bins --tests --examples",
+            }
+          - {
+              name: doc,
+              cmd: "doc --workspace --no-deps --all-features --document-private-items",
+            }
+    name: ${{ matrix.task.name }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+          components: clippy, rustfmt
+          cache: true
+
+      - name: Install eCAL (${{ github.event.inputs.ecal_version || 'auto' }})
+        env:
+          ECAL_VER: ${{ github.event.inputs.ecal_version || 'auto' }}
+        run: |
+          set -eux; \
+          # Install dependencies for the eCAL installation, rustecal and examples
+          sudo apt-get update; \
+          DEBIAN_FRONTEND=noninteractive \
+          sudo apt-get install -y --no-install-recommends \
+            ca-certificates curl jq \
+            clang libclang-14-dev llvm-dev \
+            protobuf-compiler && \
+          # Replace the placeholder with the actual eCAL version
+          if [ -z "$ECAL_VER" ] || [ "$ECAL_VER" = "auto" ]; then \
+            ECAL_VER=$(curl -sSL https://api.github.com/repos/eclipse-ecal/ecal/releases \
+              | jq -r '[.[] | .tag_name][0]'); \
+          fi; \
+          # Locate the .deb that matches the tag and Ubuntu 22.04
+          DEB_URL=$(curl -sSL https://api.github.com/repos/eclipse-ecal/ecal/releases/tags/${ECAL_VER} \
+            | jq -r '[.assets[] | select(.name|test("jammy_amd64\\.deb$"))][0].browser_download_url'); \
+          curl -sSL -o /tmp/ecal.deb "$DEB_URL" && \
+          # Install eCAL and tidy up
+          sudo apt-get install -y /tmp/ecal.deb; \
+          rm /tmp/ecal.deb
+
+      - name: run ${{ matrix.task.name }}
+        run: cargo ${{ matrix.task.cmd }}
