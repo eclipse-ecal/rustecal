@@ -1,6 +1,6 @@
 [package]
 name          = "rustecal-pubsub"
-version       = "0.1.6"
+version       = "0.1.7"
 authors       = ["Rex Schilasky"]
 edition       = "2021"
 description   = "Publish/Subscribe API for Eclipse eCAL"
