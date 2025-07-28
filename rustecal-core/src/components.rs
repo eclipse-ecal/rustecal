@@ -5,7 +5,7 @@
 //!
 //! The flags can be combined using bitwise OR operations (e.g., `PUBLISHER | LOGGING`).
 //!
-//! These flags are passed to [`crate::ecal::core::Ecal::initialize`] to enable
+//! These flags are passed to [`crate::Ecal::initialize`] to enable
 //! or disable subsystems for performance, resource usage, or system design reasons.
 
 use bitflags::bitflags;
