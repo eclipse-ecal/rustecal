@@ -13,11 +13,9 @@
 //! use rustecal::{Ecal, TypedPublisher};
 //! use rustecal_types_string::StringMessage;
 //!
-//! fn main() {
-//!     Ecal::initialize(Some("example node"), EcalComponents::DEFAULT, None).unwrap();
-//!     let pub_ = TypedPublisher::<StringMessage>::new("hello topic").unwrap();
-//!     pub_.send(&StringMessage{data: "Hello!".into()}, Timestamp::Auto);
-//! }
+//! Ecal::initialize(Some("example node"), EcalComponents::DEFAULT, None).unwrap();
+//! let pub_ = TypedPublisher::<StringMessage>::new("hello topic").unwrap();
+//! pub_.send(&StringMessage{data: "Hello!".into()}, Timestamp::Auto);
 //! ```
 //!
 

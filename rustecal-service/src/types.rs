@@ -45,6 +45,12 @@ pub struct ServiceId {
 }
 
 impl ServiceId {
+    /// Constructs a `ServiceId` from its FFI representation.
+    ///
+    /// # Safety
+    /// - `raw` must refer to a valid, properly initialized `eCAL_SServiceId`.
+    /// - Any pointers inside `raw` must be non-null and correctly aligned.
+    /// - The memory behind `raw` must remain valid for the duration of this call.
     pub unsafe fn from_ffi(raw: &eCAL_SServiceId) -> Self {
         Self {
             service_id: raw.service_id,
