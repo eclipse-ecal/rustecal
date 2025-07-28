@@ -51,7 +51,7 @@ impl Log {
         let logs = unsafe {
             let logging = &*raw_ptr;
             let raw_messages = logging.log_messages;
-            let len = logging.log_messages_length as usize;
+            let len = logging.log_messages_length;
 
             let entries = slice::from_raw_parts(raw_messages, len)
                 .iter()

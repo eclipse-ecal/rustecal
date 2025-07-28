@@ -49,7 +49,7 @@ impl Monitoring {
         // 5) Build the snapshot and free the C‑allocated memory
         let snapshot = unsafe {
             let processes = {
-                let cnt = (*raw).processes_length as usize;
+                let cnt = (*raw).processes_length;
                 let ptr = (*raw).processes;
                 slice::from_raw_parts(ptr, cnt)
                     .iter()
@@ -58,7 +58,7 @@ impl Monitoring {
             };
 
             let publishers = {
-                let cnt = (*raw).publishers_length as usize;
+                let cnt = (*raw).publishers_length;
                 let ptr = (*raw).publishers;
                 slice::from_raw_parts(ptr, cnt)
                     .iter()
@@ -67,7 +67,7 @@ impl Monitoring {
             };
 
             let subscribers = {
-                let cnt = (*raw).subscribers_length as usize;
+                let cnt = (*raw).subscribers_length;
                 let ptr = (*raw).subscribers;
                 slice::from_raw_parts(ptr, cnt)
                     .iter()
@@ -76,7 +76,7 @@ impl Monitoring {
             };
 
             let servers = {
-                let cnt = (*raw).servers_length as usize;
+                let cnt = (*raw).servers_length;
                 let ptr = (*raw).servers;
                 slice::from_raw_parts(ptr, cnt)
                     .iter()
@@ -85,7 +85,7 @@ impl Monitoring {
             };
 
             let clients = {
-                let cnt = (*raw).clients_length as usize;
+                let cnt = (*raw).clients_length;
                 let ptr = (*raw).clients;
                 slice::from_raw_parts(ptr, cnt)
                     .iter()
