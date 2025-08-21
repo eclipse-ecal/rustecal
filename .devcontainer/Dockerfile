@@ -18,7 +18,7 @@ RUN set -eux; \
     # Replace the placeholder with the actual eCAL version
     if [ "$ECAL_VER" = "auto" ]; then \
         ECAL_VER=$(curl -sSL https://api.github.com/repos/eclipse-ecal/ecal/releases \
-                  | jq -r '[.[] | .tag_name][0]'); \
+                  | jq -r '[.[] | select(.tag_name|test("^v6\\.[0-9]+\\.[0-9]+")) | .tag_name][0]'); \
     fi; \
     # Locate the .deb that matches the tag and Ubuntu 22.04
     DEB_URL=$(curl -sSL https://api.github.com/repos/eclipse-ecal/ecal/releases/tags/${ECAL_VER} \
