@@ -33,13 +33,9 @@ thread_local! {
 pub(crate) unsafe extern "C" fn write_full_cb(buffer: *mut c_void, size: usize) -> c_int {
     CURRENT_WRITER.with(|cell| {
         if let Some(writer_ptr) = *cell.borrow() {
-            let writer: &mut dyn PayloadWriter = &mut *writer_ptr;
-            let buf = std::slice::from_raw_parts_mut(buffer as *mut u8, size);
-            if writer.write_full(buf) {
-                0
-            } else {
-                -1
-            }
+            let writer: &mut dyn PayloadWriter = unsafe { &mut *writer_ptr };
+            let buf = unsafe { std::slice::from_raw_parts_mut(buffer as *mut u8, size) };
+            if writer.write_full(buf) { 0 } else { -1 }
         } else {
             -1
         }
@@ -50,13 +46,9 @@ pub(crate) unsafe extern "C" fn write_full_cb(buffer: *mut c_void, size: usize) 
 pub(crate) unsafe extern "C" fn write_mod_cb(buffer: *mut c_void, size: usize) -> c_int {
     CURRENT_WRITER.with(|cell| {
         if let Some(writer_ptr) = *cell.borrow() {
-            let writer: &mut dyn PayloadWriter = &mut *writer_ptr;
-            let buf = std::slice::from_raw_parts_mut(buffer as *mut u8, size);
-            if writer.write_modified(buf) {
-                0
-            } else {
-                -1
-            }
+            let writer: &mut dyn PayloadWriter = unsafe { &mut *writer_ptr };
+            let buf = unsafe { std::slice::from_raw_parts_mut(buffer as *mut u8, size) };
+            if writer.write_modified(buf) { 0 } else { -1 }
         } else {
             -1
         }
@@ -67,7 +59,7 @@ pub(crate) unsafe extern "C" fn write_mod_cb(buffer: *mut c_void, size: usize) -
 pub(crate) unsafe extern "C" fn get_size_cb() -> usize {
     CURRENT_WRITER.with(|cell| {
         if let Some(writer_ptr) = *cell.borrow() {
-            let writer: &mut dyn PayloadWriter = &mut *writer_ptr;
+            let writer: &mut dyn PayloadWriter = unsafe { &mut *writer_ptr };
             writer.get_size()
         } else {
             0
