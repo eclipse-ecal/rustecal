@@ -2,7 +2,7 @@
 name          = "rustecal-types-bytes"
 version       = "0.1.6"
 authors       = ["Rex Schilasky"]
-edition       = "2021"
+edition       = "2024"
 description   = "Vec<u8> type support for rustecal TypedPublisher/TypedSubscriber"
 license       = "Apache-2.0"
 repository    = "https://github.com/eclipse-ecal/rustecal"

@@ -2,7 +2,7 @@
 name          = "rustecal-sys"
 version       = "0.1.4"
 authors       = ["Rex Schilasky"]
-edition       = "2021"
+edition       = "2024"
 build         = "build.rs"
 description   = "Raw FFI bindings to Eclipse eCAL C API"
 license       = "Apache-2.0"

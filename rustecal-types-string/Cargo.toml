@@ -2,7 +2,7 @@
 name          = "rustecal-types-string"
 version       = "0.1.4"
 authors       = ["Rex Schilasky"]
-edition       = "2021"
+edition       = "2024"
 description   = "String type support for rustecal TypedPublisher/TypedSubscriber"
 license       = "Apache-2.0"
 repository    = "https://github.com/eclipse-ecal/rustecal"
