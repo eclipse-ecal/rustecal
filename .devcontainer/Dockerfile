@@ -1,7 +1,7 @@
 # The official rust images are based on Debian, but we need Ubuntu for eCAL
 FROM ubuntu:22.04
 
-# ECAL_VER=auto  -> resolve the newest tag via the GitHub API
+# ECAL_VER=auto  -> resolve the newest release via the GitHub API
 # ECAL_VER=<tag> -> use that tag (e.g. v6.0.0-rc.5) as-is
 ARG ECAL_VER=auto
 ENV ECAL_VER=${ECAL_VER}

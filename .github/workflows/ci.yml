@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       ecal_version:
-        description: "eCAL tag to install (e.g. v6.0.0-rc.5). Use 'auto' or leave blank for the newest (pre-)release."
+        description: "eCAL tag to install (e.g. v6.0.0-rc.5). Use 'auto' or leave blank for the newest release."
         required: false
         default: "auto"
 
