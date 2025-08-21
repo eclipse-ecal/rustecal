@@ -65,7 +65,9 @@ jobs:
           # Replace the placeholder with the actual eCAL version
           if [ -z "$ECAL_VER" ] || [ "$ECAL_VER" = "auto" ]; then \
             ECAL_VER=$(curl -sSL https://api.github.com/repos/eclipse-ecal/ecal/releases \
-              | jq -r '[.[] | .tag_name][0]'); \
+            | jq -r '.[] | select((.draft|not) and (.prerelease|not)) | .tag_name' \
+            | sort -V \
+            | tail -n1); \
           fi; \
           # Locate the .deb that matches the tag and Ubuntu 22.04
           DEB_URL=$(curl -sSL https://api.github.com/repos/eclipse-ecal/ecal/releases/tags/${ECAL_VER} \
