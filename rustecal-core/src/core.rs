@@ -18,7 +18,7 @@ use std::ptr;
 
 use crate::components::EcalComponents;
 use crate::configuration::Configuration;
-use crate::error::{check, RustecalError};
+use crate::error::{RustecalError, check};
 use crate::types::Version;
 
 /// Provides access to the core initialization, shutdown, and state‑checking functions of eCAL.

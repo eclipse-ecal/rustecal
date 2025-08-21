@@ -1,4 +1,4 @@
-use crate::format_support::{short_type_name, FormatSupport};
+use crate::format_support::{FormatSupport, short_type_name};
 use crate::make_format;
 use rustecal_core::types::DataTypeInfo;
 use rustecal_pubsub::typed_publisher::PublisherMessage;

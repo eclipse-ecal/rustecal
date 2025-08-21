@@ -1,5 +1,5 @@
 use crate::payload_writer::{
-    get_size_cb, write_full_cb, write_mod_cb, PayloadWriter, CURRENT_WRITER,
+    CURRENT_WRITER, PayloadWriter, get_size_cb, write_full_cb, write_mod_cb,
 };
 use crate::types::TopicId;
 use rustecal_core::types::DataTypeInfo;

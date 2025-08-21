@@ -6,7 +6,7 @@ use rustecal::{Ecal, EcalComponents, TypedSubscriber};
 use rustecal_types_bytes::BytesMessage;
 use std::thread::sleep;
 use std::{
-    sync::{atomic::Ordering, Arc, Mutex},
+    sync::{Arc, Mutex, atomic::Ordering},
     thread,
     time::{Duration, Instant},
 };
