@@ -43,12 +43,11 @@ impl Ecal {
         config: Option<&Configuration>,
     ) -> Result<(), RustecalError> {
         // Convert the unit name (if any), mapping CString errors
-        let (name_ptr, _): (*const i8, Option<CString>) = if let Some(name) = unit_name {
-            let c = CString::new(name)
-                .map_err(|e| RustecalError::Internal(format!("invalid unit name: {e}")))?;
-            (c.as_ptr(), Some(c))
+        let name: CString = if let Some(name) = unit_name {
+            CString::new(name)
+                .map_err(|e| RustecalError::Internal(format!("invalid unit name: {e}")))?
         } else {
-            (ptr::null(), None)
+            CString::new("").unwrap()
         };
 
         // Determine pointer to eCAL_Configuration (or null)
@@ -57,7 +56,8 @@ impl Ecal {
             .unwrap_or(ptr::null_mut());
 
         // Call the C API and map its return code
-        let ret = unsafe { rustecal_sys::eCAL_Initialize(name_ptr, &components.bits(), cfg_ptr) };
+        let ret =
+            unsafe { rustecal_sys::eCAL_Initialize(name.as_ptr(), &components.bits(), cfg_ptr) };
         check(ret)
     }
 
