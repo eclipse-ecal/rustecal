@@ -12,6 +12,6 @@ keywords      = ["ecal", "ipc", "pubsub", "message-support", "middleware"]
 categories    = ["network-programming", "api-bindings"]
 
 [dependencies]
-prost           = "0.13"
+prost           = "0.14"
 rustecal-core   = { version = "0.1", path = "../rustecal-core" }
 rustecal-pubsub = { version = "0.1", path = "../rustecal-pubsub" }

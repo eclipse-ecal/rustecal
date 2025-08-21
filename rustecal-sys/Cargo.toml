@@ -13,7 +13,7 @@ keywords      = ["ecal", "ipc", "pubsub", "server-client", "middleware"]
 categories    = ["network-programming", "api-bindings"]
 
 [build-dependencies]
-bindgen       = "0.71"
+bindgen       = "0.72"
 
 [features]
 default = ["dynamic"]

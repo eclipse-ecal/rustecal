@@ -5,9 +5,9 @@ edition = "2021"
 build = "build.rs"
 
 [dependencies]
-prost = "0.13.5"
+prost = "0.14"
 rustecal = { path = "../../../rustecal", features = ["pubsub"] }
 rustecal-types-protobuf = { path = "../../../rustecal-types-protobuf" }
 
 [build-dependencies]
-prost-build = "0.13.5"
+prost-build = "0.14"
