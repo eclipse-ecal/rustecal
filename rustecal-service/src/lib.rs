@@ -7,11 +7,11 @@
 //! - `ServiceServer`: host services, handle requests with callbacks.
 //!
 //! ## Example
-//! ```rust
+//! '''rust
 //! use rustecal_service::ServiceClient;
 //! let client = ServiceClient::new("mirror_service").unwrap();
 //! let response = client.call("Hello!".as_bytes(), std::time::Duration::from_millis(500));
-//! ```
+//! '''
 
 pub mod client;
 pub mod client_instance;

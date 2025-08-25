@@ -6,8 +6,10 @@ build = "build.rs"
 
 [dependencies]
 prost = "0.14"
+prost-reflect = { version = "0.16.0", features = ["derive"] }
 rustecal = { path = "../../../rustecal", features = ["pubsub"] }
 rustecal-types-protobuf = { path = "../../../rustecal-types-protobuf" }
 
 [build-dependencies]
 prost-build = "0.14"
+prost-reflect-build = "0.16.0"

@@ -3,6 +3,7 @@
 //! Provides support for Protobuf message serialization with rustecal.
 
 use prost::Message;
+use prost_reflect::ReflectMessage;
 use rustecal_core::types::DataTypeInfo;
 use rustecal_pubsub::typed_publisher::PublisherMessage;
 use rustecal_pubsub::typed_subscriber::SubscriberMessage;
@@ -26,7 +27,7 @@ pub struct ProtobufMessage<T> {
 
 impl<T> SubscriberMessage<'_> for ProtobufMessage<T>
 where
-    T: Message + Default + IsProtobufType,
+    T: Message + Default + IsProtobufType + ReflectMessage,
 {
     /// Returns metadata used by eCAL to describe the Protobuf type.
     ///
@@ -35,10 +36,12 @@ where
     /// - the Rust type name
     /// - an optional descriptor (currently empty)
     fn datatype() -> DataTypeInfo {
+        let default_instance = T::default();
+
         DataTypeInfo {
             encoding: "proto".to_string(),
-            type_name: std::any::type_name::<T>().to_string(),
-            descriptor: vec![], // descriptor injection planned
+            type_name: default_instance.descriptor().full_name().to_string(),
+            descriptor: default_instance.descriptor().parent_pool().encode_to_vec(), // descriptor injection planned
         }
     }
 
@@ -56,7 +59,7 @@ where
 
 impl<T> PublisherMessage for ProtobufMessage<T>
 where
-    T: Message + Default + IsProtobufType,
+    T: Message + Default + IsProtobufType + ReflectMessage,
 {
     /// Returns the same datatype information as [`SubscriberMessage`] implementation.
     fn datatype() -> DataTypeInfo {
