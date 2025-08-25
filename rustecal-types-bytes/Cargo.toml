@@ -1,6 +1,6 @@
 [package]
 name          = "rustecal-types-bytes"
-version       = "0.1.6"
+version       = "0.1.7"
 authors       = ["Rex Schilasky"]
 edition       = "2024"
 description   = "Vec<u8> type support for rustecal TypedPublisher/TypedSubscriber"
