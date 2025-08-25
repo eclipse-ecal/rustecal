@@ -40,7 +40,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let person = Person {
             id: cnt,
             name: "Max".to_string(),
-            stype: 1,
+            stype: 0,
             email: "max@mail.net".to_string(),
             dog: Some(animal::Dog {
                 name: "Brandy".to_string(),
