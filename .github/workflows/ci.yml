@@ -24,7 +24,7 @@ jobs:
         task:
           - {
               name: clippy,
-              cmd: "clippy --workspace --all-targets --all-features --tests --examples",
+              cmd: "clippy --workspace --all-targets --all-features --tests --examples -- -D warnings",
             }
           - { name: fmt, cmd: "fmt --all -- --check" }
           - {
