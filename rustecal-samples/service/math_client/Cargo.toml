@@ -1,0 +1,13 @@
+[package]
+name = "math_client"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rustecal = { path = "../../../rustecal", features = ["service"] }
+prost = "0.14"
+
+
+[build-dependencies]
+prost-build = "0.14"
+prost-reflect-build = "0.16.0"

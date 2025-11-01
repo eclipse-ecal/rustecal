@@ -22,6 +22,8 @@ members = [
     "rustecal-samples/pubsub/person_receive",
     "rustecal-samples/pubsub/serde_send",
     "rustecal-samples/pubsub/serde_receive",
+    "rustecal-samples/service/math_client",
+    "rustecal-samples/service/math_server",
     "rustecal-samples/service/mirror_client",
     "rustecal-samples/service/mirror_client_instances",
     "rustecal-samples/service/mirror_server",
