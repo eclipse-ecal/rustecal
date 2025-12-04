@@ -15,7 +15,7 @@ bitflags! {
     ///
     /// These flags are used with [`Ecal::initialize`](crate::ecal::core::Ecal::initialize)
     /// to control which components are active.
-    #[derive(Default)]
+    #[derive(Default, Debug, Clone, PartialEq)]
     pub struct EcalComponents: u32 {
         /// Disable all components (no subsystems enabled).
         const NONE       = 0x000;
