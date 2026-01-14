@@ -31,7 +31,7 @@ fn main() {
         // Debug info
         println!("cargo:warning=Building on Windows");
         println!("cargo:warning=Using ECAL_HOME = {ecal_home}");
-    } else if cfg!(target_os = "linux") {
+    } else if cfg!(target_os = "linux") || cfg!(target_os = "macos") {
         match env::var("ECAL_HOME") {
             Ok(ecal_home) => {
                 println!("cargo:warning=Using ECAL_HOME = {ecal_home}");
@@ -50,7 +50,7 @@ fn main() {
         println!("cargo:rustc-link-lib=dylib=ecal_core_c");
 
         // Debug info
-        println!("cargo:warning=Building on Linux");
+        println!("cargo:warning=Building on Unix");
     } else {
         panic!("Unsupported platform for rustecal-sys build");
     }
