@@ -7,6 +7,7 @@ use prost_reflect::{FileDescriptor, ReflectMessage};
 use rustecal_core::types::DataTypeInfo;
 use rustecal_pubsub::typed_publisher::PublisherMessage;
 use rustecal_pubsub::typed_subscriber::SubscriberMessage;
+use std::collections::HashSet;
 use std::sync::Arc;
 
 /// Marker trait to opt-in a Protobuf type for use with eCAL.
@@ -38,31 +39,39 @@ where
     fn datatype() -> DataTypeInfo {
         let default_instance = T::default();
         let instance_descriptor = default_instance.descriptor();
+        let instance_file = instance_descriptor.parent_file();
         let type_name = instance_descriptor.full_name().to_string();
 
-        let mut descriptor_pool = prost_reflect::DescriptorPool::new();
+        // Loop through all the dependencies of T
+        fn process_protos_recursively(file: &FileDescriptor, visited: &mut HashSet<String>) {
+            let name = file.name().to_string();
 
-        // List of proto files for a specific protobuf message type
-        let mut proto_filenames = instance_descriptor
-            .parent_file_descriptor_proto()
-            .dependency
-            .clone();
-        // Add the main proto message file
-        proto_filenames.push(
-            instance_descriptor
-                .parent_file_descriptor_proto()
-                .name()
-                .to_string(),
-        );
+            if visited.contains(&name) {
+                return;
+            }
 
-        // Filter the pool to the set of file decriptors needed
+            visited.insert(name);
+
+            for dep in file.dependencies() {
+                process_protos_recursively(&dep, visited);
+            }
+        }
+
+        // Filenames of protos for T
+        let mut visited = HashSet::new();
+        process_protos_recursively(&instance_file, &mut visited);
+
+        // Collect a filtered list of FileDescriptors for T
         let file_descriptors: Vec<FileDescriptor> = instance_descriptor
             .parent_pool()
             .files()
-            .filter(|s| proto_filenames.contains(&s.name().to_string()))
+            .filter(|s| visited.contains(s.name()))
             .collect();
 
-        for proto_file in file_descriptors.iter() {
+        let mut descriptor_pool = prost_reflect::DescriptorPool::new();
+
+        // Add to the file descriptor pool
+        for proto_file in file_descriptors {
             let mut file_descriptor_proto = proto_file.file_descriptor_proto().clone();
             // Remove the source_code_info from the descriptor which add excess comments
             // from original proto to the descriptor message that aren't needed
@@ -70,7 +79,7 @@ where
 
             descriptor_pool
                 .add_file_descriptor_proto(file_descriptor_proto)
-                .unwrap();
+                .expect("Unable to add protobuf to pool");
         }
 
         DataTypeInfo {
@@ -113,5 +122,54 @@ where
             .encode(&mut buf)
             .expect("Failed to encode protobuf message");
         Arc::from(buf)
+    }
+}
+
+#[cfg(test)]
+pub static DESCRIPTOR_POOL: once_cell::sync::Lazy<prost_reflect::DescriptorPool> =
+    once_cell::sync::Lazy::new(|| {
+        prost_reflect::DescriptorPool::decode(
+            include_bytes!(concat!(env!("OUT_DIR"), "/file_descriptor_set.bin")).as_ref(),
+        )
+        .unwrap()
+    });
+
+#[cfg(test)]
+pub mod tests {
+    use super::*;
+
+    use prost::Name;
+
+    // Include protobuf mod definitions
+    include!(concat!(env!("OUT_DIR"), "/_include.rs"));
+
+    use example::msg::basic::Basic;
+    use example::msg::nested::Nested;
+
+    impl IsProtobufType for Basic {}
+    impl IsProtobufType for Nested {}
+
+    #[test]
+    fn basic_proto() {
+        type TestProto = Basic;
+
+        let datainfo =
+            <ProtobufMessage<TestProto> as rustecal_pubsub::PublisherMessage>::datatype();
+
+        assert!(datainfo.type_name == TestProto::full_name());
+        assert!(datainfo.encoding == "proto");
+    }
+
+    #[test]
+    // This would fail on <= 0.1.6
+    // called `Result::unwrap()` on an `Err` value: nested/status.proto: imported file 'google/protobuf/any.proto' has not been added
+    fn nested_proto() {
+        type TestProto = Nested;
+
+        let datainfo =
+            <ProtobufMessage<TestProto> as rustecal_pubsub::PublisherMessage>::datatype();
+
+        assert!(datainfo.type_name == TestProto::full_name());
+        assert!(datainfo.encoding == "proto");
     }
 }

@@ -78,7 +78,7 @@ impl<T: PublisherMessage> TypedPublisher<T> {
     /// # Returns
     ///
     /// `true` on success, `false` on failure.
-    pub fn send_payload_writer<W: PayloadWriter>(
+    pub fn send_payload_writer<W: PayloadWriter + 'static>(
         &self,
         writer: &mut W,
         timestamp: Timestamp,

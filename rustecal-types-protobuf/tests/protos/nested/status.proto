@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package example.rpc;
+
+import "google/protobuf/any.proto";
+
+message Status {
+  repeated google.protobuf.Any any = 1;
+}
