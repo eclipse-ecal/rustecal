@@ -1,7 +1,7 @@
 fn main() {
-    let protos = ["./tests/protos/basic.proto", "./tests/protos/nested.proto"];
+    let protos = ["./protos/basic.proto", "./protos/nested.proto"];
 
-    let protos_inc = ["./tests/protos"];
+    let protos_inc = ["./protos"];
 
     let mut config = prost_build::Config::new();
     config.include_file("_include.rs"); // Generate mod import file

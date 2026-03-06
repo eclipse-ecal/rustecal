@@ -126,25 +126,13 @@ where
 }
 
 #[cfg(test)]
-pub static DESCRIPTOR_POOL: once_cell::sync::Lazy<prost_reflect::DescriptorPool> =
-    once_cell::sync::Lazy::new(|| {
-        prost_reflect::DescriptorPool::decode(
-            include_bytes!(concat!(env!("OUT_DIR"), "/file_descriptor_set.bin")).as_ref(),
-        )
-        .unwrap()
-    });
-
-#[cfg(test)]
 pub mod tests {
     use super::*;
 
     use prost::Name;
 
-    // Include protobuf mod definitions
-    include!(concat!(env!("OUT_DIR"), "/_include.rs"));
-
-    use example::msg::basic::Basic;
-    use example::msg::nested::Nested;
+    use test_rustecal_types_protobuf::example::msg::basic::Basic;
+    use test_rustecal_types_protobuf::example::msg::nested::Nested;
 
     impl IsProtobufType for Basic {}
     impl IsProtobufType for Nested {}
@@ -162,7 +150,7 @@ pub mod tests {
 
     #[test]
     // This would fail on <= 0.1.6
-    // called `Result::unwrap()` on an `Err` value: nested/status.proto: imported file 'google/protobuf/any.proto' has not been added
+    // called `Result::unwrap()` on an `Err` value: nested/status.proto: imported file 'nested/nested2/any.proto' has not been added
     fn nested_proto() {
         type TestProto = Nested;
 

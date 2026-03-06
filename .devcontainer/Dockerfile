@@ -14,7 +14,7 @@ RUN set -eux; \
         gnupg2 \
         ca-certificates curl jq \
         clang libclang-14-dev llvm-dev \
-        protobuf-compiler libprotobuf-dev && \
+        protobuf-compiler && \
     # Replace the placeholder with the actual eCAL version
     if [ "$ECAL_VER" = "auto" ]; then \
         ECAL_VER=$(curl -sSL https://api.github.com/repos/eclipse-ecal/ecal/releases \
