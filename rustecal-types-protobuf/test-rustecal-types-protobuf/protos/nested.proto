@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package example.msg.nested;
+
+import "nested/status.proto";
+
+message Nested {
+    string name = 1;
+    uint32 count = 2;
+    float value = 3;
+    example.rpc.Status status = 4;
+}

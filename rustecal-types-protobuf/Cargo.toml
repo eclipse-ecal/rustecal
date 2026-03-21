@@ -16,3 +16,7 @@ prost = "0.14"
 prost-reflect = { version = "0.16.0", features = ["derive"] }
 rustecal-core   = { version = "0.1", path = "../rustecal-core" }
 rustecal-pubsub = { version = "0.1", path = "../rustecal-pubsub" }
+
+[dev-dependencies]
+test-rustecal-types-protobuf = { path = "./test-rustecal-types-protobuf" }
+

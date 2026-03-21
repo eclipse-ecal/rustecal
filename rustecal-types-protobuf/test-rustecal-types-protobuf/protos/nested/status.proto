@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package example.rpc;
+
+// This would trigger an error on rustecal-type-protobuf <=0.1.6
+import "nested/nested2/any.proto";
+
+message Status {
+  nested2.msg.Any any = 1;
+}
