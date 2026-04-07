@@ -2,6 +2,7 @@
 name          = "rustecal-types-serde"
 version       = "0.1.5"
 edition       = "2024"
+rust-version  = "1.85"
 description   = "JSON/CBOR/MessagePack type support for rustecal TypedPublisher/TypedSubscriber"
 license       = "Apache-2.0"
 repository    = "https://github.com/eclipse-ecal/rustecal"

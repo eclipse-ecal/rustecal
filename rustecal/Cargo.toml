@@ -2,6 +2,7 @@
 name          = "rustecal"
 version       = "0.1.8"
 edition       = "2024"
+rust-version  = "1.85"
 description   = "Meta-crate for rustecal: re-exports core, pubsub and service APIs"
 license       = "Apache-2.0"
 repository    = "https://github.com/eclipse-ecal/rustecal"
