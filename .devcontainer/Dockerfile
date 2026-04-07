@@ -2,8 +2,8 @@
 FROM ubuntu:22.04
 
 # ECAL_VER=auto  -> resolve the newest release via the GitHub API
-# ECAL_VER=<tag> -> use that tag (e.g. v6.0.0-rc.5) as-is
-ARG ECAL_VER=auto
+# ECAL_VER=<tag> -> use that tag (e.g. v6.1.1) as-is
+ARG ECAL_VER=v6.1.1
 ENV ECAL_VER=${ECAL_VER}
 
 RUN set -eux; \
