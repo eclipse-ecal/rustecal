@@ -16,6 +16,7 @@ impl CallState {
 }
 
 impl From<i32> for CallState {
+    #[allow(clippy::unnecessary_cast)] // eCAL_eCallState constants may be u32 or i32 depending on eCAL version
     fn from(value: i32) -> Self {
         match value {
             x if x == rustecal_sys::eCAL_eCallState_eCAL_eCallState_none as i32 => CallState::None,
