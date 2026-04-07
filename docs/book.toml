@@ -7,3 +7,4 @@ language = "en"
 create-missing = true
 
 [preprocessor.linkcheck]
+optional = true
